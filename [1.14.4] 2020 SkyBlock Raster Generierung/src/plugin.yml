@@ -1,0 +1,9 @@
+name: SkyBlockSimulation
+version: 1.0
+author: IchMagOmasKekse
+main: me.ichmagomaskekse.de.SkyBlock
+commands:
+  simulate:
+    description: 'Start a skyblock raster simulation'
+  undo:
+    description: 'Undo all Simulations'
