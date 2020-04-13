@@ -5,14 +5,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 
+import me.ichmagomaskekse.de.SkyBlockGenerator;
+
 public class SkyWorldGenerator extends ChunkGenerator {
-	
-	
+		
 	/*
 	 * TODO: Kann als Post-ChunkGenerator verstanden werden
 	 *
@@ -29,9 +32,9 @@ public class SkyWorldGenerator extends ChunkGenerator {
 	public ChunkData generateChunkData(World world, Random random, int chunkX, int chunkZ, BiomeGrid grid) {
 		ChunkData data = createChunkData(world);
 		
-		for(int x = 0; x < 16; x++) {			
+		for(int x = 0; x < 16; x++) {
 			for(int z = 0; z < 16; z++) {
-				data.setBlock(x, 0, z, Material.AIR);
+//				data.setBlock(x, 0, z, Material.AIR);
 			}
 		}
 		

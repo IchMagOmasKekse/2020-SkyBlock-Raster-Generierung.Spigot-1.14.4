@@ -2,7 +2,6 @@ package me.ichmagomaskekse.de;
 
 import org.bukkit.Bukkit;
 import org.bukkit.WorldCreator;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -40,12 +39,16 @@ public class SkyBlock extends JavaPlugin {
 	 * TODO: Alle Einstellungen werdne getätigt
 	 */
 	public void init() {
+		SkyWorldGenerator generator = new SkyWorldGenerator();
 		WorldCreator cr = new WorldCreator("skyblockworld");
-		cr.generator(new SkyWorldGenerator());
+		cr.generator(generator);
 		cr.generateStructures(false);
+		for(Player p : Bukkit.getOnlinePlayers()) p.sendMessage("§eSkyWorld Wird generiert...");
 		Bukkit.getConsoleSender().sendMessage("§eSkyWorld Wird generiert...");
 		Bukkit.createWorld(cr);
+		
 		Bukkit.getConsoleSender().sendMessage("§eSkyWorld Wurde generiert!");
+		for(Player p : Bukkit.getOnlinePlayers()) p.sendMessage("§eSkyWorld Wurde generiert!");
 	}
 	
 	/*
@@ -57,6 +60,9 @@ public class SkyBlock extends JavaPlugin {
 	public void postInit() {
 		new JoinAndQuitListener();
 		new SkyBlockCommands();
+		
+		for(Player p : Bukkit.getOnlinePlayers()) p.sendMessage("Benutze Algorithmus...");
+		SkyBlockGenerator.generateIfReady(20, 10, 5);
 		
 		for(Player p : Bukkit.getOnlinePlayers()) {
 			if(p.isOp()) p.sendMessage(">>> §eVerwende §7/simulate §eum an deiner Location auf Höhe 230 eine Simulation zu starten");
