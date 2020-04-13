@@ -7,7 +7,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import me.ichmagomaskekse.de.SkyBlock;
 
 public class JoinAndQuitListener implements Listener {
-	//PEni
 	
 	public JoinAndQuitListener() {
 		//Registriere alle Envents in dieser Klasse
