@@ -21,9 +21,7 @@ public class SkyBlockGenerator {
 	static String skyworldName = "skyblockworld";
 	static Location curLoc = new Location(Bukkit.getWorld(skyworldName), curx, islandHeight, curz);
 	
-	//TEST
-	
-	public static boolean generateIfReady(int test, int amount, int islandsize, int spacebetween) {
+	public static boolean generateIfReady(int amount, int islandsize, int spacebetween) {
 		amountOfIslands = amount;
 		issize = islandsize;
 		spaceBetweenIslands = spacebetween;
