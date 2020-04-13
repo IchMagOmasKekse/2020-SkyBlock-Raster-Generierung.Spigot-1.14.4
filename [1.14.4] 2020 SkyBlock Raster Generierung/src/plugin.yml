@@ -1,6 +1,10 @@
 name: SkyBlockSimulation
 version: 1.0
 author: IchMagOmasKekse
+version: 0.1
+
+load: startup
+
 main: me.ichmagomaskekse.de.SkyBlock
 commands:
   simulate:

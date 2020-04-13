@@ -1,11 +1,14 @@
 package me.ichmagomaskekse.de;
 
 import org.bukkit.Bukkit;
+import org.bukkit.WorldCreator;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import me.ichmagomaskekse.de.commands.SkyBlockCommands;
 import me.ichmagomaskekse.de.events.JoinAndQuitListener;
+import me.ichmagomaskekse.de.generators.SkyWorldGenerator;
 
 public class SkyBlock extends JavaPlugin {
 	
@@ -37,7 +40,12 @@ public class SkyBlock extends JavaPlugin {
 	 * TODO: Alle Einstellungen werdne getätigt
 	 */
 	public void init() {
-		
+		WorldCreator cr = new WorldCreator("skyblockworld");
+		cr.generator(new SkyWorldGenerator());
+		cr.generateStructures(false);
+		Bukkit.getConsoleSender().sendMessage("§eSkyWorld Wird generiert...");
+		Bukkit.createWorld(cr);
+		Bukkit.getConsoleSender().sendMessage("§eSkyWorld Wurde generiert!");
 	}
 	
 	/*
