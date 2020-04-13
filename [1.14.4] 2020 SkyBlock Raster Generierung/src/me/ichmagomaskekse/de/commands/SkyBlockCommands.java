@@ -30,14 +30,14 @@ public class SkyBlockCommands implements CommandExecutor {
 					case 0:
 						//Starte den Simulation-Vorgang
 						
-						if(SkyBlockGenerator.generateIfReady(p)) {
+						if(SkyBlockGenerator.generateIfReady()) {
 							p.sendMessage(">>> §bDer Generier-Vorgang für die Simulation wird ausgeführt...");
 						}else p.sendMessage(">>> §cDer Generator ist nicht bereit für die Simulation. Probiere es gleich erneut.");
 						break;
 					case 1:
 						//Starte den Simulation-Vorgang
 						
-						if(SkyBlockGenerator.generateIfReady(p, Integer.valueOf(args[0]))) {
+						if(SkyBlockGenerator.generateIfReady(Integer.valueOf(args[0]))) {
 							p.sendMessage(">>> §bDer Generier-Vorgang für die Simulation wird ausgeführt...");
 							p.sendMessage(">>> §eParameter: [§fAmountOfIsland=§7"+args[0]+"§f, IslandSize=§7Previous§f, SpaceBetweenIslands=§7Previous§e]");
 						}else p.sendMessage(">>> §cDer Generator ist nicht bereit für die Simulation. Probiere es gleich erneut.");
@@ -45,7 +45,7 @@ public class SkyBlockCommands implements CommandExecutor {
 					case 2:
 						//Starte den Simulation-Vorgang
 						
-						if(SkyBlockGenerator.generateIfReady(p, Integer.valueOf(args[0]), Integer.valueOf(args[1]))) {
+						if(SkyBlockGenerator.generateIfReady(Integer.valueOf(args[0]), Integer.valueOf(args[1]))) {
 							p.sendMessage(">>> §bDer Generier-Vorgang für die Simulation wird ausgeführt...");
 							p.sendMessage(">>> §eParameter: [§fAmountOfIsland=§7"+args[0]+"§f, IslandSize=§7"+args[1]+"§f, SpaceBetweenIslands=§7Previous§e]");
 						}else p.sendMessage(">>> §cDer Generator ist nicht bereit für die Simulation. Probiere es gleich erneut.");
@@ -53,7 +53,7 @@ public class SkyBlockCommands implements CommandExecutor {
 					case 3:
 						//Starte den Simulation-Vorgang
 						
-						if(SkyBlockGenerator.generateIfReady(p, Integer.valueOf(args[0]), Integer.valueOf(args[1]), Integer.valueOf(args[2]))) {
+						if(SkyBlockGenerator.generateIfReady(Integer.valueOf(args[0]), Integer.valueOf(args[1]), Integer.valueOf(args[2]))) {
 							p.sendMessage(">>> §bDer Generier-Vorgang für die Simulation wird ausgeführt...");
 							p.sendMessage(">>> §eParameter: [§fAmountOfIsland=§7"+args[0]+"§f, IslandSize=§7"+args[1]+"§f, SpaceBetweenIslands=§7"+args[2]+"§e]");
 						}else p.sendMessage(">>> §cDer Generator ist nicht bereit für die Simulation. Probiere es gleich erneut.");
