@@ -1,5 +1,5 @@
 name: SkyBlockSimulation
-author: IchMagOmasKekse
+author: TeamDream
 version: 0.1
 
 load: STARTUP
@@ -10,3 +10,6 @@ commands:
     description: 'Start a skyblock raster simulation'
   undo:
     description: 'Undo all Simulations'
+  is:
+    description: 'Maincommand for Skyblock'
+    aliases: [skyblock, sb, sky, island, islands]

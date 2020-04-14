@@ -11,6 +11,10 @@ import org.bukkit.generator.ChunkGenerator;
 
 public class SkyWorldGenerator extends ChunkGenerator {
 		
+	public SkyWorldGenerator() {
+		
+	}
+	
 	/*
 	 * TODO: Kann als Post-ChunkGenerator verstanden werden
 	 *

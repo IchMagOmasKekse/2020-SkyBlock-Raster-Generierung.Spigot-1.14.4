@@ -5,8 +5,10 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import me.ichmagomaskekse.de.Prefixes;
 import me.ichmagomaskekse.de.SkyBlock;
 import me.ichmagomaskekse.de.SkyBlockGenerator;
+import me.ichmagomaskekse.de.filemanagement.SkyFileManager;
 
 public class SkyBlockCommands implements CommandExecutor {
 	
@@ -14,6 +16,7 @@ public class SkyBlockCommands implements CommandExecutor {
 		//Registriere Commands
 		SkyBlock.getInstance().getCommand("simulate").setExecutor(this);
 		SkyBlock.getInstance().getCommand("undo").setExecutor(this);
+		SkyBlock.getInstance().getCommand("is").setExecutor(this);
 	}
 	
 	/*
@@ -65,6 +68,25 @@ public class SkyBlockCommands implements CommandExecutor {
 					SkyBlockGenerator.undo();
 					p.sendMessage(">>> §aDie Simulationen wurden rückgängig gemacht");
 				}
+			}else if(cmd.getName().equalsIgnoreCase("is")) {
+				
+				switch(args.length) {
+				case 0:
+					if(hasPermission(p, "skyblock.island")) {	//Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
+						sendCommandInfo(p, "is");
+					}					
+					break;
+				case 1:
+					if(args[0].equalsIgnoreCase("create") && hasPermission(p, "skyblock.island")) { //Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
+						int id = SkyFileManager.getUnclaimedIslandID(false);
+						p.sendMessage(Prefixes.SERVER.getPrefix()+"Deine Island-ID ist "+id);
+						p.sendMessage(Prefixes.SERVER.getPrefix()+"Owner "+SkyFileManager.getOwnerUUID(id));
+					}
+					break;
+					default:
+						
+						break;
+				}
 			}
 		}else sender.sendMessage("§cDer Befehl ist nur für Spieler!");
 		return false;
@@ -83,6 +105,23 @@ public class SkyBlockCommands implements CommandExecutor {
 		else {
 			p.sendMessage("§cDu hast kein Recht dazu!");
 			return false;
+		}
+	}
+	
+	/*
+	 * TODO: sendCommandInfo() sendet Information über einen command an einen Spieler
+	 */
+	public void sendCommandInfo(Player p, String cmd) {
+		if(cmd.equalsIgnoreCase("is")) {
+			p.sendMessage("");
+			p.sendMessage(" §7» §b/is §fHilfe zu SkyBlock Commands");
+			p.sendMessage(" §7» §b/is create §fInsel erstellen");
+			p.sendMessage(" §7» §b/is delete §fInsel löschen");
+			p.sendMessage(" §7» §b/is visit <Player> §fAndere Inseln besuchen");
+			p.sendMessage(" §7» §b/is kick <Player> §fSpieler von der Insel schmeißen");
+			p.sendMessage(" §7» §b/is ban <Player> §fSpieler von der Insel verbannen");
+			p.sendMessage(" §7» §b/is pardon <Player> §fHebe eine Verbannung auf");
+			p.sendMessage(" §7» §b/is addfriend <Player> §fSpieler zur Insel einladen");
 		}
 	}
 
