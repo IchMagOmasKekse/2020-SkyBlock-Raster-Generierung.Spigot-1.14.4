@@ -1,5 +1,6 @@
 package me.ichmagomaskekse.de.commands;
 
+import org.bukkit.FireworkEffect.Type;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -8,7 +9,6 @@ import org.bukkit.entity.Player;
 import me.ichmagomaskekse.de.Prefixes;
 import me.ichmagomaskekse.de.SkyBlock;
 import me.ichmagomaskekse.de.SkyBlockGenerator;
-import me.ichmagomaskekse.de.filemanagement.SkyFileManager;
 
 public class SkyBlockCommands implements CommandExecutor {
 	
@@ -17,6 +17,9 @@ public class SkyBlockCommands implements CommandExecutor {
 		SkyBlock.getInstance().getCommand("simulate").setExecutor(this);
 		SkyBlock.getInstance().getCommand("undo").setExecutor(this);
 		SkyBlock.getInstance().getCommand("is").setExecutor(this);
+		SkyBlock.getInstance().getCommand("spawn").setExecutor(this);
+		SkyBlock.getInstance().getCommand("accept").setExecutor(this);
+		SkyBlock.getInstance().getCommand("deny").setExecutor(this);
 	}
 	
 	/*
@@ -72,20 +75,40 @@ public class SkyBlockCommands implements CommandExecutor {
 				
 				switch(args.length) {
 				case 0:
-					if(hasPermission(p, "skyblock.island")) {	//Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
-						sendCommandInfo(p, "is");
-					}					
+					CommandFunction.teleportToIsland(p);
 					break;
 				case 1:
-					if(args[0].equalsIgnoreCase("create") && hasPermission(p, "skyblock.island")) { //Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
-						int id = SkyFileManager.getUnclaimedIslandID(false);
-						p.sendMessage(Prefixes.SERVER.getPrefix()+"Deine Island-ID ist "+id);
-						p.sendMessage(Prefixes.SERVER.getPrefix()+"Owner "+SkyFileManager.getOwnerUUID(id));
-					}
+					if(args[0].equalsIgnoreCase("help") && hasPermission(p, "skyblock.island.help")) { //Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
+						sendCommandInfo(p, "is");
+					}else if(args[0].equalsIgnoreCase("create") && hasPermission(p, "skyblock.island.create")) { //Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
+						CommandFunction.createIsland(p);
+					}else if(args[0].equalsIgnoreCase("delworld") && hasPermission(p, "skyblock.island.delworld")) { //Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
+						CommandFunction.deleteWorld(p);
+					}else if(args[0].equalsIgnoreCase("delete") && hasPermission(p, "skyblock.island.delete")) { //Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
+						CommandFunction.deleteIsland(p);
+					}else sendCommandInfo(p, "is");
+					break;
+				case 2:
+					if(args[0].equalsIgnoreCase("visit") && hasPermission(p, "skyblock.island.visit")) { //Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
+						CommandFunction.requestVisit(p, args);
+					}else sendCommandInfo(p, "is");
 					break;
 					default:
-						
+						sendCommandInfo(p, "is");
 						break;
+				}
+			}else if(cmd.getName().equalsIgnoreCase("spawn")) {
+				if(hasPermission(p, "skyblock.spawn")) {
+					p.teleport(SkyBlock.spawn.clone().add(0,0.5,0));
+					SkyBlock.spawnFireworks(p.getLocation().clone(), 1, true, true, Type.BALL_LARGE);
+				}
+			}else if(cmd.getName().equalsIgnoreCase("accept")) {
+				if(hasPermission(p, "skyblock.accept")) {
+					CommandFunction.acceptRequest(p);
+				}
+			}else if(cmd.getName().equalsIgnoreCase("deny")) {
+				if(hasPermission(p, "skyblock.deny")) {
+					CommandFunction.denyRequest(p);
 				}
 			}
 		}else sender.sendMessage("§cDer Befehl ist nur für Spieler!");
@@ -100,10 +123,10 @@ public class SkyBlockCommands implements CommandExecutor {
 	 * - Diese Methode spart einige Zeilen an Code.
 	 * 
 	 */
-	public boolean hasPermission(Player p, String permission) {
+	public static boolean hasPermission(Player p, String permission) {
 		if(p.hasPermission(permission)) return true;
 		else {
-			p.sendMessage("§cDu hast kein Recht dazu!");
+			p.sendMessage(Prefixes.SERVER.getPrefix()+"§cDu hast kein Recht dazu!");
 			return false;
 		}
 	}
@@ -114,7 +137,8 @@ public class SkyBlockCommands implements CommandExecutor {
 	public void sendCommandInfo(Player p, String cmd) {
 		if(cmd.equalsIgnoreCase("is")) {
 			p.sendMessage("");
-			p.sendMessage(" §7» §b/is §fHilfe zu SkyBlock Commands");
+			p.sendMessage(" §7» §b/is §fTeleport zur Insel");
+			p.sendMessage(" §7» §b/is help §fHilfe zu SkyBlock Commands");
 			p.sendMessage(" §7» §b/is create §fInsel erstellen");
 			p.sendMessage(" §7» §b/is delete §fInsel löschen");
 			p.sendMessage(" §7» §b/is visit <Player> §fAndere Inseln besuchen");

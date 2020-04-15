@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
@@ -33,7 +34,7 @@ public class SkyWorldGenerator extends ChunkGenerator {
 		
 		for(int x = 0; x < 16; x++) {
 			for(int z = 0; z < 16; z++) {
-//				data.setBlock(x, 0, z, Material.AIR);
+				data.setBlock(x, 0, z, Material.AIR);
 			}
 		}
 		

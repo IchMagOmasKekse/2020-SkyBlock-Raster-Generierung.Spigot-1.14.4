@@ -1,5 +1,6 @@
 package me.ichmagomaskekse.de.events;
 
+import org.bukkit.FireworkEffect.Type;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -18,7 +19,7 @@ public class JoinAndQuitListener implements Listener {
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e) {
 		e.setJoinMessage(Prefixes.JOIN.getPrefix()+"§e"+e.getPlayer().getName()+" §7ist dem Server beigetreten");
-		SkyBlock.spawnFireworks(e.getPlayer().getLocation().clone(), 1);
+		SkyBlock.spawnFireworks(e.getPlayer().getLocation().clone(), 1, true, true, Type.BALL_LARGE);
 	}
 	
 	@EventHandler

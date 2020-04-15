@@ -1,0 +1,19 @@
+#Alle Permission von diesem Plugin
+admin permissions: (Müssen noch in den Methoden hasPermission(Player p, String permission) implementiert werden!)
+  - *
+  - skyblock.*
+  - skyblock.island.*
+  - skyblock.chat.*
+command:
+  spawn: skyblock.spawn
+  simulate: skyblock.simulate
+  is: skyblock.island
+  is help: skyblock.island.help
+  is create: skyblock.island.create
+  is delete: skyblock.island.delete
+  is delworld: skyblock.island.delworld
+  is visit: skyblock.island.visit
+function:
+  chatcolor: skyblock.chat.color
+  accept: skyblock.accept
+  deny: skyblock.deny

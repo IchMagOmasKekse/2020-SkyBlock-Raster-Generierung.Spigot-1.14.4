@@ -1,9 +1,8 @@
 name: SkyBlockSimulation
 author: TeamDream
-version: 0.1
-
-load: STARTUP
-
+version: 1.0
+loadbefore: [Multiverse-Core]
+api-version: 1.15
 main: me.ichmagomaskekse.de.SkyBlock
 commands:
   simulate:
@@ -13,3 +12,10 @@ commands:
   is:
     description: 'Maincommand for Skyblock'
     aliases: [skyblock, sb, sky, island, islands]
+  spawn:
+    description: 'Teleports you to spawn'
+    aliases: [hub, leave, lounge, lobby]
+  accept:
+    description: 'Accept a outstanding request'
+  deny:
+    description: 'Deny a outstanding request'
