@@ -11,6 +11,7 @@ import me.ichmagomaskekse.de.Prefixes;
 import me.ichmagomaskekse.de.SkyBlock;
 import me.ichmagomaskekse.de.SkyBlockGenerator;
 import me.ichmagomaskekse.de.filemanagement.SkyFileManager;
+import me.ichmagomaskekse.de.profiles.IslandManager;
 import me.ichmagomaskekse.de.requests.Request;
 import me.ichmagomaskekse.de.requests.Request.RequestManager;
 import me.ichmagomaskekse.de.requests.VisitRequest;
@@ -108,7 +109,8 @@ public class CommandFunction {
 	public static boolean teleportToIsland(Player p) {
 		if(SkyBlockCommands.hasPermission(p, "skyblock.island.tp")) {//Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
 			if(SkyFileManager.hasIsland(p)) {
-				p.teleport(SkyFileManager.getLocationOfIsland(p).add(0,0.5,0));
+				IslandManager.loadProfile(p);
+				p.teleport(SkyFileManager.getLocationOfIsland(p).add(0.5,0.5,0.5));
 				SkyBlock.spawnFireworks(p.getLocation(), 1, true, false, Type.BURST, Color.LIME);
 			}else p.performCommand("is create");
 		}
@@ -137,6 +139,7 @@ public class CommandFunction {
 					SkyBlockGenerator.islandHeight,
 					SkyFileManager.getLocationZ(p.getUniqueId().toString()));
 		}
+		IslandManager.loadProfile(p);
 		if(is_loc.getBlock().getType().isSolid() == false && is_loc.clone().add(0,-1,0).getBlock().getType().isSolid() == false) is_loc.getBlock().setType(Material.STONE);
 		p.teleport(is_loc);
 		return true;

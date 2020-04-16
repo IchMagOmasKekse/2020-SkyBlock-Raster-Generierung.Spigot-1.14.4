@@ -29,6 +29,21 @@ public class SkyFileManager {
 		}
 	}
 	
+	/*
+	 * TODO: Gibt die ID einer Insel zurück
+	 */
+	public static int getIslandID(String uuid) {
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(getIslandFile(uuid));
+		return cfg.getInt("Islands.ID");
+	}
+	
+	/*
+	 * TODO: Gibt den Spawnpunkt einer Insel zurück
+	 */
+	public static Location getSpawnpoint(String uuid) {
+		Location spawnpoint = new Location(getWorld(uuid), getLocationX(uuid), SkyBlockGenerator.islandHeight, getLocationZ(uuid));
+		return spawnpoint;
+	}
 	
 	/*
 	 * TODO: Löscht die Insel eines Spielers
@@ -101,6 +116,9 @@ public class SkyFileManager {
 			cfg2.set("Islands.World", cfg.getString("Islands.ID-"+island_id+".World"));
 			cfg2.set("Islands.LocX", cfg.getInt("Islands.ID-"+island_id+".LocX"));
 			cfg2.set("Islands.LocZ", cfg.getInt("Islands.ID-"+island_id+".LocZ"));
+			cfg2.set("Islands.Spawnpoint.World", cfg.getString("Islands.ID-"+island_id+".World"));
+			cfg2.set("Islands.Spawnpoint.LocX", cfg.getInt("Islands.ID-"+island_id+".LocX"));
+			cfg2.set("Islands.Spawnpoint.LocZ", cfg.getInt("Islands.ID-"+island_id+".LocZ"));
 			cfg2.set("Islands.Collab With", "none");
 			cfg2.set("Islands.Biome", "minecraft:forest");
 			cfg2.set("Islands.Settings.Allow Visiting", true);
