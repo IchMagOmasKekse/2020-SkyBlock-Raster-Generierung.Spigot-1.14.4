@@ -17,3 +17,4 @@ function:
   chatcolor: skyblock.chat.color
   accept: skyblock.accept
   deny: skyblock.deny
+  schematic(set position): skyblock.schematic.useaxe

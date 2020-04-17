@@ -20,17 +20,17 @@ public class IslandManager {
 	}
 	
 	/*
-	 * TODO: Gibt zurÃ¼ck, ob ein Spieler sich auf einem Insel GrundstÃ¼ck befindet
+	 * TODO: Gibt zurück, ob ein Spieler sich auf einem Insel Grundstück befindet
 	 */
 	public static boolean isInIslandRegion(String uuid_target, Player p) {
 		for(Player t : profiles.keySet()) {
-			//TODO: Zu mÃ¼de um diese Methode zu programmieren
+			//TODO: Zu müde um diese Methode zu programmieren
 		}
 		return false;
 	}
 	
 	/*
-	 * TODO: Gibt das Insel Profil zurÃ¼ck
+	 * TODO: Gibt das Insel Profil zurück
 	 */
 	public static IslandProfile getProfile(Player p) {
 		if(profiles.containsKey(p)) return profiles.get(p);
@@ -74,12 +74,14 @@ public class IslandManager {
 		
 		private int id = 0;
 		private UUID uuid = null;
-		private Location spawnpoint = SkyFileManager.getSpawnpoint(uuid.toString());
+		private Location spawnpoint = null;
 		private Cuboid cuboid = null;
 		
 		public IslandProfile(int island_id, UUID owner) {
 			this.id = island_id;
 			this.uuid = owner;
+			
+			spawnpoint = SkyFileManager.getSpawnpoint(uuid.toString());
 			
 			int x1 = SkyFileManager.getLocationX(owner.toString())-(SkyBlockGenerator.issize/2);
 			int z1 = SkyFileManager.getLocationZ(owner.toString())-(SkyBlockGenerator.issize/2);
@@ -92,28 +94,28 @@ public class IslandManager {
 		}
 		
 		/*
-		 * TODO: Gibt den Spawnpunkt einer Insel zurÃ¼ck
+		 * TODO: Gibt den Spawnpunkt einer Insel zurück
 		 */
 		public Location getSpawnpoint() {
 			return spawnpoint;
 		}
 		
 		/*
-		 * TODO: Gibt die ID von der Insel zurÃ¼ck
+		 * TODO: Gibt die ID von der Insel zurück
 		 */
 		public int getIslandID() {
 			return id;
 		}
 		
 		/*
-		 * TODO: Gibt die UUID des Owners zurÃ¼ck
+		 * TODO: Gibt die UUID des Owners zurück
 		 */
 		public UUID getOwnerUUID() {
 			return uuid;
 		}
 		
 		/*
-		 * TODO: Gibt zurÃ¼ck, ob der Spieler p sich auf dem GrundstÃ¼ck der Insel befindet
+		 * TODO: Gibt zurück, ob der Spieler p sich auf dem Grundstück der Insel befindet
 		 */
 		public boolean isInIslandregion(Player p) {
 			return cuboid.isIn(p);

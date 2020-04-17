@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import me.ichmagomaskekse.de.commands.SchematicCommands;
 import me.ichmagomaskekse.de.commands.SkyBlockCommands;
 import me.ichmagomaskekse.de.events.AsyncChatListener;
 import me.ichmagomaskekse.de.events.JoinAndQuitListener;
@@ -25,19 +26,20 @@ import me.ichmagomaskekse.de.events.ServerListListener;
 import me.ichmagomaskekse.de.filemanagement.SkyFileManager;
 import me.ichmagomaskekse.de.generators.SkyWorldGenerator;
 import me.ichmagomaskekse.de.requests.Request.RequestManager;
+import me.ichmagomaskekse.de.schematics.SchematicManager;
 
 public class SkyBlock extends JavaPlugin {
 	
 	private static SkyBlock instance = null;
-	public static SkyBlock getInstance() { return instance; } //Gebe die einzigartige Instanz der Main-Klasse zurÃ¼ck
+	public static SkyBlock getInstance() { return instance; } //Gebe die einzigartige Instanz der Main-Klasse zurück
 	public static Location spawn = null;
 	public boolean generateNewWorld = false;
 	
 	@Override
 	public void onEnable() {
-		preInit(); //BenÃ¶tigte Inhalte werden geladen
-		init(); //Einstellungen werden getÃ¤tigt
-		postInit(); //Listener, Commands, Craftingrezepte und weitere Additionen werden hinzugefÃ¼gt
+		preInit(); //Benötigte Inhalte werden geladen
+		init(); //Einstellungen werden getätigt
+		postInit(); //Listener, Commands, Craftingrezepte und weitere Additionen werden hinzugefügt
 		super.onEnable();
 	}
 	
@@ -52,7 +54,7 @@ public class SkyBlock extends JavaPlugin {
 	}
 	
 	/*
-	 * TODO: BenÃ¶tigte Inhalte werden geladen und zum Starten des Plugins breitgestellt
+	 * TODO: Benötigte Inhalte werden geladen und zum Starten des Plugins breitgestellt
 	 */
 	public void preInit() {
 		instance = this;
@@ -60,7 +62,7 @@ public class SkyBlock extends JavaPlugin {
 	}
 	
 	/*
-	 * TODO: Alle Einstellungen werdne getÃ¤tigt
+	 * TODO: Alle Einstellungen werdne getätigt
 	 */
 	public void init() {
 		if(Bukkit.getWorld("skyblockworld") == null) {
@@ -72,7 +74,7 @@ public class SkyBlock extends JavaPlugin {
 	
 	/*
 	 * TODO: Listener, Commands, Craftingrezepte und weite Additionen wie das Laden von
-	 * Spielerprofilen, GrundstÃ¼cksprofilen oder Schematiken werden hinzugefÃ¼gt bzw. durchgefÃ¼hrt
+	 * Spielerprofilen, Grundstücksprofilen oder Schematiken werden hinzugefügt bzw. durchgeführt
 	 * 
 	 * 
 	 */
@@ -80,9 +82,13 @@ public class SkyBlock extends JavaPlugin {
 		//Starte den RequestManager
 		new RequestManager();
 		
-		//Registreire Events
-		new JoinAndQuitListener();
+		//Registriere Commands
 		new SkyBlockCommands();
+		new SchematicCommands();
+		
+		//Registriere Events
+		new SchematicManager();
+		new JoinAndQuitListener();
 		new ServerListListener();
 		new PlayerRespawnAndDeathListener();
 		new AsyncChatListener();
@@ -90,7 +96,7 @@ public class SkyBlock extends JavaPlugin {
 		
 		//Erstelle SkyBock Welt
 		if(generateNewWorld && new File("/Plugins/SkyBlock/Islands-Databank.yml").exists() == false) {
-			for(Player p : Bukkit.getOnlinePlayers()) p.sendMessage("Â§eBenutze Algorithmus...");
+			for(Player p : Bukkit.getOnlinePlayers()) p.sendMessage("§eBenutze Algorithmus...");
 			SkyBlockGenerator.generateIfReady(10, 10, 10);			
 		}
 	}
@@ -154,11 +160,11 @@ public class SkyBlock extends JavaPlugin {
 		WorldCreator cr = new WorldCreator("skyblockworld");
 		cr.generator(generator);
 		cr.generateStructures(false);
-		for(Player p : Bukkit.getOnlinePlayers()) p.sendMessage("Â§eSkyWorld Wird generiert...");
-		Bukkit.getConsoleSender().sendMessage("Â§eSkyWorld Wird generiert...");
+		for(Player p : Bukkit.getOnlinePlayers()) p.sendMessage("§eSkyWorld Wird generiert...");
+		Bukkit.getConsoleSender().sendMessage("§eSkyWorld Wird generiert...");
 		Bukkit.createWorld(cr);
-		Bukkit.getConsoleSender().sendMessage("Â§eSkyWorld Wurde generiert!");
-		for(Player p : Bukkit.getOnlinePlayers()) p.sendMessage("Â§eSkyWorld Wurde generiert!");
+		Bukkit.getConsoleSender().sendMessage("§eSkyWorld Wurde generiert!");
+		for(Player p : Bukkit.getOnlinePlayers()) p.sendMessage("§eSkyWorld Wurde generiert!");
 		generateNewWorld = true;
     }
     
@@ -169,5 +175,20 @@ public class SkyBlock extends JavaPlugin {
     		}
     	}
     }
+    
+	/*
+	 * TODO: Benutzerdefinierte Permission-Abfrage
+	 * 
+	 * - Gibt eine benutzerdefinierte non-permission Message aus.
+	 * - Diese Methode spart einige Zeilen an Code.
+	 * 
+	 */
+	public static boolean hasPermission(Player p, String permission) {
+		if(p.hasPermission(permission)) return true;
+		else {
+			p.sendMessage(Prefixes.SERVER.getPrefix()+"§cDu hast kein Recht dazu!");
+			return false;
+		}
+	}
 	
 }

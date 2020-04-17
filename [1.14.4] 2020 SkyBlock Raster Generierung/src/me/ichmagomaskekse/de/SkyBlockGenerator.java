@@ -50,10 +50,10 @@ public class SkyBlockGenerator {
 		curLoc = new Location(world, curx, 72, curz);
 		int left = 1;
 		int round = 0;
-		int addx1 = 1; //←
-		int addy1 = 1; //↓
-		int addx2 = 2; //→
-		int addy2 = 0; //↑
+		int addx1 = 1; //â†�
+		int addy1 = 1; //â†“
+		int addx2 = 2; //â†’
+		int addy2 = 0; //â†‘
 		while(left < (amountOfIslands+1) || pause == true) {
 			
 			if(round==0) {
@@ -61,7 +61,7 @@ public class SkyBlockGenerator {
 				left++;
 			}
 			
-			if(left < (amountOfIslands+1)) { //↑
+			if(left < (amountOfIslands+1)) { //â†‘
 				for(int a = 0; a != addy2; a++) {
 					if(left < (amountOfIslands+1)) {						
 						curz-=(issize+spaceBetweenIslands);
@@ -71,7 +71,7 @@ public class SkyBlockGenerator {
 				}
 			}
 			
-			if(left < (amountOfIslands+1)) { //←
+			if(left < (amountOfIslands+1)) { //â†�
 				for(int a = 0; a != addx1; a++) {
 					if(left < (amountOfIslands+1)) {						
 						curx-=(issize+spaceBetweenIslands);
@@ -81,7 +81,7 @@ public class SkyBlockGenerator {
 				}			
 			}
 			
-			if(left < (amountOfIslands+1)) { //↓
+			if(left < (amountOfIslands+1)) { //â†“
 				for(int a = 0; a != addy1; a++) {
 					if(left < (amountOfIslands+1)) {						
 						curz+=(issize+spaceBetweenIslands);
@@ -91,7 +91,7 @@ public class SkyBlockGenerator {
 				}	
 			}
 			
-			if(left < (amountOfIslands+1)) { //→
+			if(left < (amountOfIslands+1)) { //â†’
 				for(int a = 0; a != addx2; a++) {
 					if(left < (amountOfIslands+1)) {
 						curx+=(issize+spaceBetweenIslands);
@@ -100,10 +100,10 @@ public class SkyBlockGenerator {
 					}else break;
 				}
 			}
-			addy2+=2; //↑
-			addx1+=2; //←
-			addy1+=2; //↓
-			addx2+=2; //→
+			addy2+=2; //â†‘
+			addx1+=2; //â†�
+			addy1+=2; //â†“
+			addx2+=2; //â†’
 			round++;
 		}
 		return true;

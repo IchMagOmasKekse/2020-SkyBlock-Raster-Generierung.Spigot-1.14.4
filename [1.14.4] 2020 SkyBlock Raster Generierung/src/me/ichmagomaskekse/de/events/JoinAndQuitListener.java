@@ -18,13 +18,13 @@ public class JoinAndQuitListener implements Listener {
 	
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e) {
-		e.setJoinMessage(Prefixes.JOIN.getPrefix()+"ยงe"+e.getPlayer().getName()+" ยง7ist dem Server beigetreten");
+		e.setJoinMessage(Prefixes.JOIN.getPrefix()+"งe"+e.getPlayer().getName()+" ง7ist dem Server beigetreten");
 		SkyBlock.spawnFireworks(e.getPlayer().getLocation().clone(), 1, true, true, Type.BALL_LARGE);
 	}
 	
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
-		e.setQuitMessage(Prefixes.QUIT.getPrefix() + "ยงe"+e.getPlayer().getName()+" ยง7hat den Server verlassen");
+		e.setQuitMessage(Prefixes.QUIT.getPrefix() + "งe"+e.getPlayer().getName()+" ง7hat den Server verlassen");
 	}
 
 }

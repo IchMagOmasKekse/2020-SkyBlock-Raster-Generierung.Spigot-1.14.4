@@ -33,7 +33,7 @@ public class PlayerRespawnAndDeathListener implements Listener {
 	 */
 	@EventHandler
 	public void onDeath(PlayerDeathEvent e) {
-		e.setDeathMessage(Prefixes.DEATH.getPrefix()+e.getEntity().getName()+" ist flÃ¶ten gegangen");
+		e.setDeathMessage(Prefixes.DEATH.getPrefix()+e.getEntity().getName()+" ist flöten gegangen");
 	}
 	
 }

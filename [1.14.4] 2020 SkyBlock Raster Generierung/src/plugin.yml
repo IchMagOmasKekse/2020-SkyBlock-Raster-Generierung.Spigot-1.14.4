@@ -19,3 +19,6 @@ commands:
     description: 'Accept a outstanding request'
   deny:
     description: 'Deny a outstanding request'
+  s:
+    description: 'Maincommand for Schematic-System'
+    aliases: [schem, schematic]
