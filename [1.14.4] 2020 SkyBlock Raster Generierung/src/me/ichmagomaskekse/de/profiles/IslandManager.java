@@ -26,6 +26,7 @@ public class IslandManager {
 		for(Player t : profiles.keySet()) {
 			//TODO: Zu müde um diese Methode zu programmieren
 		}
+		return false;
 	}
 	
 	/*
