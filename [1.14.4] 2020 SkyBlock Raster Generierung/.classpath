@@ -7,5 +7,6 @@
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="/Users/arianokoslowski/Eclipse APIs/spigot-1.15.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/koslo/spigot-1.15.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
