@@ -91,7 +91,8 @@ public class SchematicManager implements Listener {
 		 * TODO: Gibt zurück, ob zwei Locations ausgewählt wurden
 		 */
 		public boolean readyTocopy() {
-			if(pos1 != null && pos2 != null) return true;
+			if(pos1 != null && pos2 != null) return false;
+//			if(pos1 != null && pos2 != null) return true;
 			else return false;
 		}
 		

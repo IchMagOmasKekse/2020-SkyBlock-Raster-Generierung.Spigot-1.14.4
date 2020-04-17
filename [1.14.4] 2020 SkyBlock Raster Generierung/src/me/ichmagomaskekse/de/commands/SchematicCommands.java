@@ -34,7 +34,10 @@ public class SchematicCommands implements CommandExecutor {
 							if(profile.getSchematic().copy(true)) {
 								p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Die Region wurde kopiert");
 							}else p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"§cDie Region konnte nicht kopiert werden");
-						}else p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Du musst §7§n2§e Location auswählen");
+						}else {
+							p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Ich habe die Copy Funktion erstmal deaktiviert. Sie bringt den Server zum Crashen hehe");
+							p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Du musst §7§n2§e Location auswählen");
+						}
 					}
 					break;
 				case 2:
@@ -46,7 +49,10 @@ public class SchematicCommands implements CommandExecutor {
 								if(profile.getSchematic().copy(false)) {
 									p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Die Region wurde kopiert");
 								}else p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"§cDie Region konnte nicht kopiert werden");
-							}else p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Du musst §7§n2§e Location auswählen");
+							}else {
+								p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Ich habe die Copy Funktion erstmal deaktiviert. Sie bringt den Server zum Crashen hehe");
+//								p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Du musst §7§n2§e Location auswählen");
+							}
 						}
 					}
 					break;
@@ -64,6 +70,7 @@ public class SchematicCommands implements CommandExecutor {
 	public void sendCommandInfo(Player p, String cmd) {
 		if(cmd.equalsIgnoreCase("s")) {
 			p.sendMessage("");
+			p.sendMessage(" §6Info: §eMit der Gold Axt kann man die region markieren");
 			p.sendMessage(" §7» §6/s §fHilfe zum Schematic-System");
 			p.sendMessage(" §7» §6/s save <Name> §fSpeichert ausgewählte Schematic");
 			p.sendMessage(" §7» §6/s copy [-a] §fKopiert Bereich zur Schematic");
