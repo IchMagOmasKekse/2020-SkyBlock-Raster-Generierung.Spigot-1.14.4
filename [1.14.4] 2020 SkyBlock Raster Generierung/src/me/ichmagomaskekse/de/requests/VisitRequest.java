@@ -10,16 +10,16 @@ public class VisitRequest extends Request {
 	public VisitRequest(Player sender, Player receiver) {
 		super(sender, receiver, RequestType.VISITING);
 		registerRequest(this);
-		sender.sendMessage(Prefixes.REQUEST.getPrefix()+"Deine Anfrage wurde verschickt. Diese gilt für §75 Minuten");
-		receiver.sendMessage(Prefixes.REQUEST.getPrefix()+"§e"+sender.getName()+" §bmöchte deine Insel besuchen");
-		receiver.sendMessage(Prefixes.REQUEST.getPrefix()+"Nutze §7/accept §bzum §aannehmen §boder §7/deny §bzum §cablehnen");
+		sender.sendMessage(Prefixes.REQUEST.getPrefix()+"Deine Anfrage wurde verschickt. Diese gilt fÂ§r Â§75 Minuten");
+		receiver.sendMessage(Prefixes.REQUEST.getPrefix()+"Â§e"+sender.getName()+" Â§bmÂ§chte deine Insel besuchen");
+		receiver.sendMessage(Prefixes.REQUEST.getPrefix()+"Nutze Â§7/accept Â§bzum Â§aannehmen Â§boder Â§7/deny Â§bzum Â§cablehnen");
 	}
 
 	@Override
 	public boolean accept() {
 		this.hasAccepted = true;
-		sender.sendMessage(Prefixes.REQUEST.getPrefix()+"§e"+receiver.getName()+" §bhat deine Anfrage §aangenommen");
-		receiver.sendMessage(Prefixes.REQUEST.getPrefix()+"Du hast die Anfrage von §e"+sender.getName()+" §aangenommen");
+		sender.sendMessage(Prefixes.REQUEST.getPrefix()+"Â§e"+receiver.getName()+" Â§bhat deine Anfrage Â§aangenommen");
+		receiver.sendMessage(Prefixes.REQUEST.getPrefix()+"Du hast die Anfrage von Â§e"+sender.getName()+" Â§aangenommen");
 		SkyBlockCommandFunction.visitIsland(sender, receiver);
 		RequestManager.removeRequest(this);
 		return false;
@@ -28,8 +28,8 @@ public class VisitRequest extends Request {
 	@Override
 	public boolean deny() {
 		this.hasDenied = true;
-		sender.sendMessage(Prefixes.REQUEST.getPrefix()+"§e"+receiver.getName()+" §bhat deine Anfrage §cabgelehnt");
-		receiver.sendMessage(Prefixes.REQUEST.getPrefix()+"Du hast die Anfrage von §e"+sender.getName()+" §cabgeehnt");
+		sender.sendMessage(Prefixes.REQUEST.getPrefix()+"Â§e"+receiver.getName()+" Â§bhat deine Anfrage Â§cabgelehnt");
+		receiver.sendMessage(Prefixes.REQUEST.getPrefix()+"Du hast die Anfrage von Â§e"+sender.getName()+" Â§cabgeehnt");
 		RequestManager.removeRequest(this);
 		return false;
 	}

@@ -22,3 +22,7 @@ commands:
   s:
     description: 'Maincommand for Schematic-System'
     aliases: [schem, schematic]
+  loaditem:
+    description: 'Load an item from item preset file'
+  saveitem:
+    decription: 'Save an item to preset file'

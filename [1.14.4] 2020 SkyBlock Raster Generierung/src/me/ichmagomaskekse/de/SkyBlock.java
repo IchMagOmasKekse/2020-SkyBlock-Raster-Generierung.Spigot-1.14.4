@@ -26,20 +26,21 @@ import me.ichmagomaskekse.de.events.ServerListListener;
 import me.ichmagomaskekse.de.filemanagement.SkyFileManager;
 import me.ichmagomaskekse.de.generators.SkyWorldGenerator;
 import me.ichmagomaskekse.de.requests.Request.RequestManager;
+import me.ichmagomaskekse.de.schematics.ChestGenerator;
 import me.ichmagomaskekse.de.schematics.SchematicManager;
 
 public class SkyBlock extends JavaPlugin {
 	
 	private static SkyBlock instance = null;
-	public static SkyBlock getInstance() { return instance; } //Gebe die einzigartige Instanz der Main-Klasse zurück
+	public static SkyBlock getInstance() { return instance; } //Gebe die einzigartige Instanz der Main-Klasse zurÂ§ck
 	public static Location spawn = null;
 	public boolean generateNewWorld = false;
 	
 	@Override
 	public void onEnable() {
-		preInit(); //Benötigte Inhalte werden geladen
-		init(); //Einstellungen werden getätigt
-		postInit(); //Listener, Commands, Craftingrezepte und weitere Additionen werden hinzugefügt
+		preInit(); //BenÂ§tigte Inhalte werden geladen
+		init(); //Einstellungen werden getÂ§tigt
+		postInit(); //Listener, Commands, Craftingrezepte und weitere Additionen werden hinzugefÂ§gt
 		super.onEnable();
 	}
 	
@@ -54,7 +55,7 @@ public class SkyBlock extends JavaPlugin {
 	}
 	
 	/*
-	 * TODO: Benötigte Inhalte werden geladen und zum Starten des Plugins breitgestellt
+	 * TODO: BenÂ§tigte Inhalte werden geladen und zum Starten des Plugins breitgestellt
 	 */
 	public void preInit() {
 		instance = this;
@@ -62,7 +63,7 @@ public class SkyBlock extends JavaPlugin {
 	}
 	
 	/*
-	 * TODO: Alle Einstellungen werdne getätigt
+	 * TODO: Alle Einstellungen werdne getÂ§tigt
 	 */
 	public void init() {
 		if(Bukkit.getWorld("skyblockworld") == null) {
@@ -74,7 +75,7 @@ public class SkyBlock extends JavaPlugin {
 	
 	/*
 	 * TODO: Listener, Commands, Craftingrezepte und weite Additionen wie das Laden von
-	 * Spielerprofilen, Grundstücksprofilen oder Schematiken werden hinzugefügt bzw. durchgeführt
+	 * Spielerprofilen, GrundstÂ§cksprofilen oder Schematiken werden hinzugefÂ§gt bzw. durchgefÂ§hrt
 	 * 
 	 * 
 	 */
@@ -93,10 +94,11 @@ public class SkyBlock extends JavaPlugin {
 		new PlayerRespawnAndDeathListener();
 		new AsyncChatListener();
 		new PlayerDamageListener();
+		new ChestGenerator();
 		
 		//Erstelle SkyBock Welt
 		if(generateNewWorld && new File("/Plugins/SkyBlock/Islands-Databank.yml").exists() == false) {
-			for(Player p : Bukkit.getOnlinePlayers()) p.sendMessage("§eBenutze Algorithmus...");
+			for(Player p : Bukkit.getOnlinePlayers()) p.sendMessage("Â§eBenutze Algorithmus...");
 			SkyBlockGenerator.generateIfReady(10, 10, 10);			
 		}
 	}
@@ -160,11 +162,11 @@ public class SkyBlock extends JavaPlugin {
 		WorldCreator cr = new WorldCreator("skyblockworld");
 		cr.generator(generator);
 		cr.generateStructures(false);
-		for(Player p : Bukkit.getOnlinePlayers()) p.sendMessage("§eSkyWorld Wird generiert...");
-		Bukkit.getConsoleSender().sendMessage("§eSkyWorld Wird generiert...");
+		for(Player p : Bukkit.getOnlinePlayers()) p.sendMessage("Â§eSkyWorld Wird generiert...");
+		Bukkit.getConsoleSender().sendMessage("Â§eSkyWorld Wird generiert...");
 		Bukkit.createWorld(cr);
-		Bukkit.getConsoleSender().sendMessage("§eSkyWorld Wurde generiert!");
-		for(Player p : Bukkit.getOnlinePlayers()) p.sendMessage("§eSkyWorld Wurde generiert!");
+		Bukkit.getConsoleSender().sendMessage("Â§eSkyWorld Wurde generiert!");
+		for(Player p : Bukkit.getOnlinePlayers()) p.sendMessage("Â§eSkyWorld Wurde generiert!");
 		generateNewWorld = true;
     }
     
@@ -186,7 +188,7 @@ public class SkyBlock extends JavaPlugin {
 	public static boolean hasPermission(Player p, String permission) {
 		if(p.hasPermission(permission)) return true;
 		else {
-			p.sendMessage(Prefixes.SERVER.getPrefix()+"§cDu hast kein Recht dazu!");
+			p.sendMessage(Prefixes.SERVER.getPrefix()+"Â§cDu hast kein Recht dazu!");
 			return false;
 		}
 	}

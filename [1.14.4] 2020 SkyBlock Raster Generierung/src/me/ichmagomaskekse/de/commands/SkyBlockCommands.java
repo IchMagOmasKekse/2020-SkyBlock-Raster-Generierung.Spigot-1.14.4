@@ -37,39 +37,39 @@ public class SkyBlockCommands implements CommandExecutor {
 						//Starte den Simulation-Vorgang
 						
 						if(SkyBlockGenerator.generateIfReady()) {
-							p.sendMessage(">>> §bDer Generier-Vorgang für die Simulation wird ausgeführt...");
-						}else p.sendMessage(">>> §cDer Generator ist nicht bereit für die Simulation. Probiere es gleich erneut.");
+							p.sendMessage(">>> Â§bDer Generier-Vorgang fÂ§r die Simulation wird ausgefÂ§hrt...");
+						}else p.sendMessage(">>> Â§cDer Generator ist nicht bereit fÂ§r die Simulation. Probiere es gleich erneut.");
 						break;
 					case 1:
 						//Starte den Simulation-Vorgang
 						
 						if(SkyBlockGenerator.generateIfReady(Integer.valueOf(args[0]))) {
-							p.sendMessage(">>> §bDer Generier-Vorgang für die Simulation wird ausgeführt...");
-							p.sendMessage(">>> §eParameter: [§fAmountOfIsland=§7"+args[0]+"§f, IslandSize=§7Previous§f, SpaceBetweenIslands=§7Previous§e]");
-						}else p.sendMessage(">>> §cDer Generator ist nicht bereit für die Simulation. Probiere es gleich erneut.");
+							p.sendMessage(">>> Â§bDer Generier-Vorgang fÂ§r die Simulation wird ausgefÂ§hrt...");
+							p.sendMessage(">>> Â§eParameter: [Â§fAmountOfIsland=Â§7"+args[0]+"Â§f, IslandSize=Â§7PreviousÂ§f, SpaceBetweenIslands=Â§7PreviousÂ§e]");
+						}else p.sendMessage(">>> Â§cDer Generator ist nicht bereit fÂ§r die Simulation. Probiere es gleich erneut.");
 						break;
 					case 2:
 						//Starte den Simulation-Vorgang
 						
 						if(SkyBlockGenerator.generateIfReady(Integer.valueOf(args[0]), Integer.valueOf(args[1]))) {
-							p.sendMessage(">>> §bDer Generier-Vorgang für die Simulation wird ausgeführt...");
-							p.sendMessage(">>> §eParameter: [§fAmountOfIsland=§7"+args[0]+"§f, IslandSize=§7"+args[1]+"§f, SpaceBetweenIslands=§7Previous§e]");
-						}else p.sendMessage(">>> §cDer Generator ist nicht bereit für die Simulation. Probiere es gleich erneut.");
+							p.sendMessage(">>> Â§bDer Generier-Vorgang fÂ§r die Simulation wird ausgefÂ§hrt...");
+							p.sendMessage(">>> Â§eParameter: [Â§fAmountOfIsland=Â§7"+args[0]+"Â§f, IslandSize=Â§7"+args[1]+"Â§f, SpaceBetweenIslands=Â§7PreviousÂ§e]");
+						}else p.sendMessage(">>> Â§cDer Generator ist nicht bereit fÂ§r die Simulation. Probiere es gleich erneut.");
 						break;
 					case 3:
 						//Starte den Simulation-Vorgang
 						
 						if(SkyBlockGenerator.generateIfReady(Integer.valueOf(args[0]), Integer.valueOf(args[1]), Integer.valueOf(args[2]))) {
-							p.sendMessage(">>> §bDer Generier-Vorgang für die Simulation wird ausgeführt...");
-							p.sendMessage(">>> §eParameter: [§fAmountOfIsland=§7"+args[0]+"§f, IslandSize=§7"+args[1]+"§f, SpaceBetweenIslands=§7"+args[2]+"§e]");
-						}else p.sendMessage(">>> §cDer Generator ist nicht bereit für die Simulation. Probiere es gleich erneut.");
+							p.sendMessage(">>> Â§bDer Generier-Vorgang fÂ§r die Simulation wird ausgefÂ§hrt...");
+							p.sendMessage(">>> Â§eParameter: [Â§fAmountOfIsland=Â§7"+args[0]+"Â§f, IslandSize=Â§7"+args[1]+"Â§f, SpaceBetweenIslands=Â§7"+args[2]+"Â§e]");
+						}else p.sendMessage(">>> Â§cDer Generator ist nicht bereit fÂ§r die Simulation. Probiere es gleich erneut.");
 						break;
 					}
 				}
 			}else if(cmd.getName().equalsIgnoreCase("undo")) {
 				if(SkyBlock.hasPermission(p, "skyblock.undo")) {	//Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
 					SkyBlockGenerator.undo();
-					p.sendMessage(">>> §aDie Simulationen wurden rückgängig gemacht");
+					p.sendMessage(">>> Â§aDie Simulationen wurden rÂ§ckgÂ§ngig gemacht");
 				}
 			}else if(cmd.getName().equalsIgnoreCase("is")) {
 				
@@ -111,25 +111,25 @@ public class SkyBlockCommands implements CommandExecutor {
 					SkyBlockCommandFunction.denyRequest(p);
 				}
 			}
-		}else sender.sendMessage("§cDer Befehl ist nur für Spieler!");
+		}else sender.sendMessage("Â§cDer Befehl ist nur fÃ¼r Spieler!");
 		return false;
 	}
 	
 	/*
-	 * TODO: sendCommandInfo() sendet Information über einen command an einen Spieler
+	 * TODO: sendCommandInfo() sendet Information Â§ber einen command an einen Spieler
 	 */
 	public void sendCommandInfo(Player p, String cmd) {
 		if(cmd.equalsIgnoreCase("is")) {
 			p.sendMessage("");
-			p.sendMessage(" §7» §b/is §fTeleport zur Insel");
-			p.sendMessage(" §7» §b/is help §fHilfe zu SkyBlock Commands");
-			p.sendMessage(" §7» §b/is create §fInsel erstellen");
-			p.sendMessage(" §7» §b/is delete §fInsel löschen");
-			p.sendMessage(" §7» §b/is visit <Player> §fAndere Inseln besuchen");
-			p.sendMessage(" §7» §b/is kick <Player> §fSpieler von der Insel schmeißen");
-			p.sendMessage(" §7» §b/is ban <Player> §fSpieler von der Insel verbannen");
-			p.sendMessage(" §7» §b/is pardon <Player> §fHebe eine Verbannung auf");
-			p.sendMessage(" §7» §b/is addfriend <Player> §fSpieler zur Insel einladen");
+			p.sendMessage(" Â§7Â» Â§b/is Â§fTeleport zur Insel");
+			p.sendMessage(" Â§7Â» Â§b/is help Â§fHilfe zu SkyBlock Commands");
+			p.sendMessage(" Â§7Â» Â§b/is create Â§fInsel erstellen");
+			p.sendMessage(" Â§7Â» Â§b/is delete Â§fInsel lÂ§schen");
+			p.sendMessage(" Â§7Â» Â§b/is visit <Player> Â§fAndere Inseln besuchen");
+			p.sendMessage(" Â§7Â» Â§b/is kick <Player> Â§fSpieler von der Insel schmeiÂ§en");
+			p.sendMessage(" Â§7Â» Â§b/is ban <Player> Â§fSpieler von der Insel verbannen");
+			p.sendMessage(" Â§7Â» Â§b/is pardon <Player> Â§fHebe eine Verbannung auf");
+			p.sendMessage(" Â§7Â» Â§b/is addfriend <Player> Â§fSpieler zur Insel einladen");
 		}
 	}
 

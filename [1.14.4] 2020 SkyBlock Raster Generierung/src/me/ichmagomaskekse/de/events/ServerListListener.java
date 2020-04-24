@@ -15,7 +15,7 @@ public class ServerListListener implements Listener {
 	
 	@EventHandler
 	public void onPing(ServerListPingEvent e) {
-		e.setMotd("§cTesting, Testing und noch mehr Testing");
+		e.setMotd("Â§cTesting, Testing und noch mehr Testing");
 	}
 	
 }

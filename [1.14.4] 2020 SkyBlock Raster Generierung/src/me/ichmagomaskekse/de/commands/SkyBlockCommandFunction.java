@@ -3,6 +3,7 @@ package me.ichmagomaskekse.de.commands;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect.Type;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -15,6 +16,8 @@ import me.ichmagomaskekse.de.profiles.IslandManager;
 import me.ichmagomaskekse.de.requests.Request;
 import me.ichmagomaskekse.de.requests.Request.RequestManager;
 import me.ichmagomaskekse.de.requests.VisitRequest;
+import me.ichmagomaskekse.de.schematics.SchematicManager;
+import me.ichmagomaskekse.de.schematics.SchematicManager.SchematicProfile;
 
 public class SkyBlockCommandFunction {
 	
@@ -26,7 +29,7 @@ public class SkyBlockCommandFunction {
 			Request r = RequestManager.getReceivedRequest(p);
 			r.deny();
 		}else {
-			p.sendMessage(Prefixes.REQUEST.getPrefix()+"§cDu hast keine Anfrage erhalten");
+			p.sendMessage(Prefixes.REQUEST.getPrefix()+"Â§cDu hast keine Anfrage erhalten");
 			return false;
 		}
 		return true;
@@ -41,7 +44,7 @@ public class SkyBlockCommandFunction {
 			Request r = RequestManager.getReceivedRequest(p);
 			r.accept();
 		}else {
-			p.sendMessage(Prefixes.REQUEST.getPrefix()+"§cDu hast keine Anfrage erhalten");
+			p.sendMessage(Prefixes.REQUEST.getPrefix()+"Â§cDu hast keine Anfrage erhalten");
 			return false;
 		}
 		return true;
@@ -52,11 +55,11 @@ public class SkyBlockCommandFunction {
 	 */
 	public static boolean requestVisit(Player p, String[] args) {
 		if(args[1].equalsIgnoreCase(p.getName())) {
-			p.sendMessage(Prefixes.REQUEST.getPrefix()+"Nutze §7/is §bwenn du deine Insel besuchen möchtest :)");
+			p.sendMessage(Prefixes.REQUEST.getPrefix()+"Nutze Â§7/is Â§bwenn du deine Insel besuchen mÂ§chtest :)");
 			return false;
 		}
 		if(RequestManager.hasSendRequest(p)) {
-			p.sendMessage(Prefixes.REQUEST.getPrefix()+"Du kannst nur §7eine §bAnfrage gleichzeit schicken");
+			p.sendMessage(Prefixes.REQUEST.getPrefix()+"Du kannst nur Â§7eine Â§bAnfrage gleichzeit schicken");
 			return false;
 		}
 		Player t = Bukkit.getPlayer(args[1]);
@@ -83,21 +86,21 @@ public class SkyBlockCommandFunction {
 	}
 	
 	/*
-	 * TODO: Löscht die Insel eines Spielers
+	 * TODO: LÂ§scht die Insel eines Spielers
 	 */
 	public static boolean deleteIsland(Player p) {
 		if(SkyFileManager.hasIsland(p)) return SkyFileManager.deleteIsland(p);
 		else {
-			p.sendMessage(Prefixes.SERVER.getPrefix()+"§cDu besitzt keine Insel");
+			p.sendMessage(Prefixes.SERVER.getPrefix()+"Â§cDu besitzt keine Insel");
 			return false;
 		}
 	}
 	
 	/*
-	 * TODO: Ist eine AbkÃ¼rzung, um die Welt mit Multiverse zu löschen
+	 * TODO: Ist eine AbkÃ¼rzung, um die Welt mit Multiverse zu lÂ§schen
 	 */
 	public static boolean deleteWorld(Player p) {
-		p.sendMessage("Lösche skyblockworld");
+		p.sendMessage("LÂ§sche skyblockworld");
 		p.performCommand("mv delete skyblockworld");
 		p.performCommand("mv confirm");
 		return true;
@@ -110,7 +113,7 @@ public class SkyBlockCommandFunction {
 		if(SkyBlock.hasPermission(p, "skyblock.island.is")) {//Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
 			if(SkyFileManager.hasIsland(p) && SkyFileManager.getLocationOfIsland(p) != null) {
 				IslandManager.loadProfile(p);
-				p.teleport(SkyFileManager.getLocationOfIsland(p).add(0.5,0.5,0.5));
+				p.teleport(SkyFileManager.getLocationOfIsland(p).add(0.5,1.5,0.5));
 				SkyBlock.spawnFireworks(p.getLocation(), 1, true, false, Type.BURST, Color.LIME);
 			}else p.performCommand("is create");
 		}
@@ -132,15 +135,18 @@ public class SkyBlockCommandFunction {
 		}else {							
 			int id = SkyFileManager.getUnclaimedIslandID(false);
 			SkyFileManager.claimIsland(id, p);
-			p.sendMessage(Prefixes.SERVER.getPrefix()+"§aDeine Insel wurde erfolgreich erstellt");
-			p.sendMessage(Prefixes.SERVER.getPrefix()+"Du hast die Insel Nummer §b"+id+"§7!");
+			p.sendMessage(Prefixes.SERVER.getPrefix()+"Â§aDeine Insel wurde erfolgreich erstellt");
+			p.sendMessage(Prefixes.SERVER.getPrefix()+"Du hast die Insel Nummer Â§b"+id+"Â§7!");
 			is_loc = new Location(SkyFileManager.getWorld(p.getUniqueId().toString()),
 					SkyFileManager.getLocationX(p.getUniqueId().toString()),
 					SkyBlockGenerator.islandHeight,
 					SkyFileManager.getLocationZ(p.getUniqueId().toString()));
+			p.sendMessage(Prefixes.SERVER.getPrefix()+"Â§aInsel wird generiert...");
+			SchematicManager.pasteSchematicAt(is_loc, p, "island_2", true);
 		}
 		IslandManager.loadProfile(p);
 		if(is_loc.getBlock().getType().isSolid() == false && is_loc.clone().add(0,-1,0).getBlock().getType().isSolid() == false) is_loc.getBlock().setType(Material.STONE);
+		p.setGameMode(GameMode.SPECTATOR);
 		p.teleport(is_loc);
 		return true;
 	}

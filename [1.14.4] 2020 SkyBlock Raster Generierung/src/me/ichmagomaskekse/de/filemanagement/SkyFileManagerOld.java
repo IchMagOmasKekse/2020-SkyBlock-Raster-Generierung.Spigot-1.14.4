@@ -26,8 +26,8 @@ public class SkyFileManagerOld {
 	
 	public SkyFileManagerOld() {
 		if(file.exists() == false) {
-			SkyBlock.sendOperatorMessage("Die Island-Databank.yml im Ordner §f'§7/plugins/SkyBlock/§f'§c existiert nicht!",
-					                     "Gebe §nbitte§c umgehend §7§nIchMagOmasKekse§c Bescheid!");
+			SkyBlock.sendOperatorMessage("Die Island-Databank.yml im Ordner Â§f'Â§7/plugins/SkyBlock/Â§f'Â§c existiert nicht!",
+					                     "Gebe Â§nbitteÂ§c umgehend Â§7Â§nIchMagOmasKekseÂ§c Bescheid!");
 		}
 	}
 	

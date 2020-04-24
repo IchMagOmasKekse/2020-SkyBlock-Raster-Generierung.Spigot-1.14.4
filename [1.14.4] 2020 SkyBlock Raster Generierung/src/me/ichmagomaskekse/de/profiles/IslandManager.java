@@ -20,17 +20,17 @@ public class IslandManager {
 	}
 	
 	/*
-	 * TODO: Gibt zurück, ob ein Spieler sich auf einem Insel Grundstück befindet
+	 * TODO: Gibt zurÂ§ck, ob ein Spieler sich auf einem Insel GrundstÂ§ck befindet
 	 */
 	public static boolean isInIslandRegion(String uuid_target, Player p) {
 		for(Player t : profiles.keySet()) {
-			//TODO: Zu müde um diese Methode zu programmieren
+			//TODO: Zu mÂ§de um diese Methode zu programmieren
 		}
 		return false;
 	}
 	
 	/*
-	 * TODO: Gibt das Insel Profil zurück
+	 * TODO: Gibt das Insel Profil zurÂ§ck
 	 */
 	public static IslandProfile getProfile(Player p) {
 		if(profiles.containsKey(p)) return profiles.get(p);
@@ -94,28 +94,28 @@ public class IslandManager {
 		}
 		
 		/*
-		 * TODO: Gibt den Spawnpunkt einer Insel zurück
+		 * TODO: Gibt den Spawnpunkt einer Insel zurÂ§ck
 		 */
 		public Location getSpawnpoint() {
 			return spawnpoint;
 		}
 		
 		/*
-		 * TODO: Gibt die ID von der Insel zurück
+		 * TODO: Gibt die ID von der Insel zurÂ§ck
 		 */
 		public int getIslandID() {
 			return id;
 		}
 		
 		/*
-		 * TODO: Gibt die UUID des Owners zurück
+		 * TODO: Gibt die UUID des Owners zurÂ§ck
 		 */
 		public UUID getOwnerUUID() {
 			return uuid;
 		}
 		
 		/*
-		 * TODO: Gibt zurück, ob der Spieler p sich auf dem Grundstück der Insel befindet
+		 * TODO: Gibt zurÂ§ck, ob der Spieler p sich auf dem GrundstÂ§ck der Insel befindet
 		 */
 		public boolean isInIslandregion(Player p) {
 			return cuboid.isIn(p);

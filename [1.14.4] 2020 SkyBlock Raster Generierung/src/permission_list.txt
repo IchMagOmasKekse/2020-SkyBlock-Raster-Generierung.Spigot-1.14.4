@@ -5,6 +5,8 @@ admin permissions: (Müssen noch in den Methoden hasPermission(Player p, String 
   - skyblock.island.*
   - skyblock.chat.*
 command:
+  loaditem: skyblock.loaditem
+  saveitem: skyblock.saveitem
   spawn: skyblock.spawn
   simulate: skyblock.simulate
   is: skyblock.island
@@ -18,3 +20,4 @@ function:
   accept: skyblock.accept
   deny: skyblock.deny
   schematic(set position): skyblock.schematic.useaxe
+  inventar speichern: skyblock.chestsaver

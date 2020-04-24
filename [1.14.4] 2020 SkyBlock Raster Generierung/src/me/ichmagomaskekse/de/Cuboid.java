@@ -10,21 +10,37 @@ import org.bukkit.entity.Player;
 
 public class Cuboid {
 
-    private final int xMin;
-    private final int xMax;
-    private final int yMin;
-    private final int yMax;
-    private final int zMin;
-    private final int zMax;
-    private final double xMinCentered;
-    private final double xMaxCentered;
-    private final double yMinCentered;
-    private final double yMaxCentered;
-    private final double zMinCentered;
-    private final double zMaxCentered;
-    private final World world;
+    private int xMin;
+    private int xMax;
+    private int yMin;
+    private int yMax;
+    private int zMin;
+    private int zMax;
+    private double xMinCentered;
+    private double xMaxCentered;
+    private double yMinCentered;
+    private double yMaxCentered;
+    private double zMinCentered;
+    private double zMaxCentered;
+    private World world;
 
     public Cuboid(final Location point1, final Location point2) {
+        this.xMin = Math.min(point1.getBlockX(), point2.getBlockX());
+        this.xMax = Math.max(point1.getBlockX(), point2.getBlockX());
+        this.yMin = Math.min(point1.getBlockY(), point2.getBlockY());
+        this.yMax = Math.max(point1.getBlockY(), point2.getBlockY());
+        this.zMin = Math.min(point1.getBlockZ(), point2.getBlockZ());
+        this.zMax = Math.max(point1.getBlockZ(), point2.getBlockZ());
+        this.world = point1.getWorld();
+        this.xMinCentered = this.xMin + 0.5;
+        this.xMaxCentered = this.xMax + 0.5;
+        this.yMinCentered = this.yMin + 0.5;
+        this.yMaxCentered = this.yMax + 0.5;
+        this.zMinCentered = this.zMin + 0.5;
+        this.zMaxCentered = this.zMax + 0.5;
+    }
+    
+    public void setPoints(Location point1, Location point2) {
         this.xMin = Math.min(point1.getBlockX(), point2.getBlockX());
         this.xMax = Math.max(point1.getBlockX(), point2.getBlockX());
         this.yMin = Math.min(point1.getBlockY(), point2.getBlockY());

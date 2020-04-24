@@ -16,7 +16,7 @@ public class AsyncChatListener implements Listener {
 	@EventHandler
 	public void onChat(AsyncPlayerChatEvent e) {
 		if(e.getPlayer().isOp() || e.getPlayer().hasPermission("skyblock.chat.color")) {
-			e.setMessage(e.getMessage().replace("&", "ง"));
+			e.setMessage(e.getMessage().replace("&", "ยง"));
 		}
 	}
 	

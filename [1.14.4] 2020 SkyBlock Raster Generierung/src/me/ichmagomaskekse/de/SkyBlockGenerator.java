@@ -50,7 +50,7 @@ public class SkyBlockGenerator {
 		curLoc = new Location(world, curx, 72, curz);
 		int left = 1;
 		int round = 0;
-		int addx1 = 1; //â†�
+		int addx1 = 1; //â†§
 		int addy1 = 1; //â†“
 		int addx2 = 2; //â†’
 		int addy2 = 0; //â†‘
@@ -71,7 +71,7 @@ public class SkyBlockGenerator {
 				}
 			}
 			
-			if(left < (amountOfIslands+1)) { //â†�
+			if(left < (amountOfIslands+1)) { //â†§
 				for(int a = 0; a != addx1; a++) {
 					if(left < (amountOfIslands+1)) {						
 						curx-=(issize+spaceBetweenIslands);
@@ -101,7 +101,7 @@ public class SkyBlockGenerator {
 				}
 			}
 			addy2+=2; //â†‘
-			addx1+=2; //â†�
+			addx1+=2; //â†§
 			addy1+=2; //â†“
 			addx2+=2; //â†’
 			round++;
