@@ -15,9 +15,20 @@ command:
   is delete: skyblock.island.delete
   is delworld: skyblock.island.delworld
   is visit: skyblock.island.visit
+  is kick: skyblock.island.kick
 function:
   chatcolor: skyblock.chat.color
   accept: skyblock.accept
   deny: skyblock.deny
   schematic(set position): skyblock.schematic.useaxe
   inventar speichern: skyblock.chestsaver
+  am Spawn jeden GameMode nehmen können: skyblock.spawn.gamemode.bypass
+  überall bauen: skyblock.modify.skyrects
+  überall mit Entities interagieren: skyblock.interact.entity
+  überall mit Blöcken interagieren: skyblock.interact.blocks
+  
+  
+  
+  Liste der Spieler die von Anfang an den 'Noob' Rang bekommen
+-> xxLuk04sgxx (Beleidigung der Admins, als der Server noch nichtmal in der Beta wa xd)
+-> C3lin_e (Beleidigung der Admins, als der Server noch nichtmal in der Beta wa xd)

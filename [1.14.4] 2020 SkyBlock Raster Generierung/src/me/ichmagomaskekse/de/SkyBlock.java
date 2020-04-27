@@ -8,14 +8,19 @@ import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.FireworkEffect.Builder;
 import org.bukkit.FireworkEffect.Type;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import me.ichmagomaskekse.de.area.BuildProtection;
+import me.ichmagomaskekse.de.area.SpawnToIslandPortal;
 import me.ichmagomaskekse.de.commands.SchematicCommands;
 import me.ichmagomaskekse.de.commands.SkyBlockCommands;
 import me.ichmagomaskekse.de.events.AsyncChatListener;
@@ -24,7 +29,9 @@ import me.ichmagomaskekse.de.events.PlayerDamageListener;
 import me.ichmagomaskekse.de.events.PlayerRespawnAndDeathListener;
 import me.ichmagomaskekse.de.events.ServerListListener;
 import me.ichmagomaskekse.de.filemanagement.SkyFileManager;
+import me.ichmagomaskekse.de.generators.CobbleGenerator;
 import me.ichmagomaskekse.de.generators.SkyWorldGenerator;
+import me.ichmagomaskekse.de.profiles.IslandManager;
 import me.ichmagomaskekse.de.requests.Request.RequestManager;
 import me.ichmagomaskekse.de.schematics.ChestGenerator;
 import me.ichmagomaskekse.de.schematics.SchematicManager;
@@ -32,38 +39,38 @@ import me.ichmagomaskekse.de.schematics.SchematicManager;
 public class SkyBlock extends JavaPlugin {
 	
 	private static SkyBlock instance = null;
-	public static SkyBlock getInstance() { return instance; } //Gebe die einzigartige Instanz der Main-Klasse zur§ck
+	public static SkyBlock getInstance() { return instance; } //Gebe die einzigartige Instanz der Main-Klasse zurück
 	public static Location spawn = null;
 	public boolean generateNewWorld = false;
+	public BukkitRunnable spawn_checker = null;
 	
 	@Override
 	public void onEnable() {
-		preInit(); //Ben§tigte Inhalte werden geladen
-		init(); //Einstellungen werden get§tigt
-		postInit(); //Listener, Commands, Craftingrezepte und weitere Additionen werden hinzugef§gt
-		super.onEnable();
+		preInit(); //Benötigte Inhalte werden geladen
+		init(); //Einstellungen werden getätigt
+		postInit(); //Listener, Commands, Craftingrezepte und weitere Additionen werden hinzugefügt
 	}
 	
 	@Override
 	public void onLoad() {
-		super.onLoad();
 	}
 	
 	@Override
 	public void onDisable() {
-		super.onDisable();
+		if(spawn_checker != null) spawn_checker.cancel();
 	}
 	
 	/*
-	 * TODO: Ben§tigte Inhalte werden geladen und zum Starten des Plugins breitgestellt
+	 * TODO: Benötigte Inhalte werden geladen und zum Starten des Plugins breitgestellt
 	 */
 	public void preInit() {
 		instance = this;
-		spawn = Bukkit.getWorld("world").getSpawnLocation();
+//		spawn = Bukkit.getWorld("world").getSpawnLocation();
+		spawn = new Location(Bukkit.getWorld("world"), 79, 116, 313, -90, -32);
 	}
 	
 	/*
-	 * TODO: Alle Einstellungen werdne get§tigt
+	 * TODO: Alle Einstellungen werdne getätigt
 	 */
 	public void init() {
 		if(Bukkit.getWorld("skyblockworld") == null) {
@@ -75,11 +82,10 @@ public class SkyBlock extends JavaPlugin {
 	
 	/*
 	 * TODO: Listener, Commands, Craftingrezepte und weite Additionen wie das Laden von
-	 * Spielerprofilen, Grundst§cksprofilen oder Schematiken werden hinzugef§gt bzw. durchgef§hrt
-	 * 
-	 * 
+	 * Spielerprofilen, Grundstücksprofilen oder Schematiken werden hinzugefügt bzw. durchgeführt
 	 */
 	public void postInit() {
+		
 		//Starte den RequestManager
 		new RequestManager();
 		
@@ -95,12 +101,43 @@ public class SkyBlock extends JavaPlugin {
 		new AsyncChatListener();
 		new PlayerDamageListener();
 		new ChestGenerator();
+		new CobbleGenerator();
+		new BuildProtection();
+		
+		//Starte IslandManager
+		new IslandManager();
+		
+		//Erstelle Portale
+		new SpawnToIslandPortal();
 		
 		//Erstelle SkyBock Welt
-		if(generateNewWorld && new File("/Plugins/SkyBlock/Islands-Databank.yml").exists() == false) {
+		if(generateNewWorld && new File("/plugins/SkyBlock/Islands-Databank.yml").exists() == false) {
 			for(Player p : Bukkit.getOnlinePlayers()) p.sendMessage("§eBenutze Algorithmus...");
 			SkyBlockGenerator.generateIfReady(10, 10, 10);			
 		}
+		
+		for(Player p : Bukkit.getOnlinePlayers()) {
+			if(p.isOp()) {
+				PermissionAttachment att = p.addAttachment(SkyBlock.getInstance());
+				att.setPermission("mv.bypass.gamemode.*", true);
+			}
+		}
+		
+		
+		//Check ob jeder Spieler am Spawn im Adventure Mode ist
+		spawn_checker = new BukkitRunnable() {
+			
+			@Override
+			public void run() {
+				for(Player p : Bukkit.getWorld("world").getPlayers()) {
+					if(p.isOp() == false && p.hasPermission("skyblock.spawn.gamemode.bypass") == false) {						
+						if(p.getGameMode() != GameMode.ADVENTURE) p.setGameMode(GameMode.ADVENTURE);
+					}
+				}
+			}
+		};
+		spawn_checker.runTaskTimer(getInstance(), 0, 20l);
+		
 	}
 	
 	/*
@@ -191,6 +228,19 @@ public class SkyBlock extends JavaPlugin {
 			p.sendMessage(Prefixes.SERVER.getPrefix()+"§cDu hast kein Recht dazu!");
 			return false;
 		}
+	}
+	
+	public static void sendChangelog(Player p) {
+//		p.sendMessage(" §bALLE NEUERUNGEN AUF EINEM BLICK");
+//		p.sendMessage(" §aAdded §7/s copy §bDer SchematicManager liest eine Region nun korrekt aus");
+//		p.sendMessage(" §aAdded §7/s paste §bSchematiken werden nun an einer vom Plugin festgelegten Position gepastet oder an der aktuellen Position des Spieler");
+//		p.sendMessage(" §aAdded §7/is create §bAnimation enthalten und automatische Überleitung vom Ausführen des Commands bis zum TP zu deiner Insel.");
+//		p.sendMessage(" §aAdded §7/is kick §bSpieler, die sich auf deiner Insel befinden, kannst du nun kicken. Diese werden dann zum Spawn teleportiert");
+//		p.sendMessage(" §aAdded §7/is delete §bLöscht nun auch die gebauten Blöcke");
+//		p.sendMessage(" §aAdded §7Chest Loader und Chest Saver wurden eingeführt. Bennen eine Chest um zu 'Chest Saver:<Inventar Name>' und klicke damit eine Kiste an, um den Inhalt zu speichern. Bennene eine Kiste um nach 'Chest Loader:<Inventar Name>' und platziere diese Kiste, um ihr Inventar zu laden");
+//		p.sendMessage(" §aAdded §7Cobble-Generator generiert nicht nur Cobble");
+//		p.sendMessage(" §aAdded §7/vote §bDas Vote Menü wurde designed und anschaubar gemacht");
+//		p.sendMessage(" §fIncreased §eSpawn §bDer zukünftige Spawn wurde ein ganzes Stück weiter gebaut");
 	}
 	
 }

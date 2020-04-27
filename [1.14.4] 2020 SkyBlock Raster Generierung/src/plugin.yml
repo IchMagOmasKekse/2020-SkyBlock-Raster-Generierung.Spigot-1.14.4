@@ -1,7 +1,6 @@
 name: SkyBlockSimulation
 author: TeamDream
 version: 1.0
-loadbefore: [Multiverse-Core]
 api-version: 1.15
 main: me.ichmagomaskekse.de.SkyBlock
 commands:

@@ -1,11 +1,10 @@
 package me.ichmagomaskekse.de.schematics;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect.Type;
 import org.bukkit.GameMode;
@@ -13,7 +12,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.command.CommandSender;
@@ -24,14 +22,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import me.ichmagomaskekse.de.Cuboid;
 import me.ichmagomaskekse.de.Prefixes;
 import me.ichmagomaskekse.de.SkyBlock;
 import me.ichmagomaskekse.de.filemanagement.SkyFileManager;
-import me.ichmagomaskekse.de.schematics.SchematicManager.Schematic.BlockStore;
+import me.ichmagomaskekse.de.schematics.SchematicReaderAndWriter.BlockProfile;
 
 public class SchematicManager implements Listener {
 	
@@ -61,7 +58,9 @@ public class SchematicManager implements Listener {
 	 * TODO: Registriert ein SchematicProfil und gibt dieses zurück
 	 */
 	public static SchematicProfile registerProfile(Player p) {
-		if(profiles.containsKey(p) == false) profiles.put(p, new SchematicProfile(p));
+		if(profiles.containsKey(p) == false) {
+			profiles.put(p, new SchematicProfile(p));
+		}
 		return profiles.get(p);
 	}
 	
@@ -97,11 +96,10 @@ public class SchematicManager implements Listener {
 	public static class SchematicProfile {
 		
 		private Player p = null;
-		private String loaded_schematic_name = "";
-		private String saved_schematic_name = "";
+		public String loaded_schematic_name = "";
+		public String saved_schematic_name = "";
 		private Schematic schematic = null;
-		private Cuboid selected_cuboid = null;
-		private HashMap<Integer, BlockStore> storage = new HashMap<Integer, BlockStore>();
+		public Cuboid selected_cuboid = null;
 		
 		private Location pos1, pos2; //Pos1 und Pos2 sind die beiden diagonalen Ecken der Schematic Region
 		
@@ -129,7 +127,6 @@ public class SchematicManager implements Listener {
 		 * TODO: Gibt zurück, ob die Schematic bereit zum kopieren ist
 		 */
 		public boolean readyToCopy() {
-//			if(pos1 != null && pos2 != null) return false;
 			if(pos1 != null && pos2 != null) return true;
 			else return false;
 		}
@@ -193,13 +190,13 @@ public class SchematicManager implements Listener {
 		private int offsetX = 0; //Der Offset ist dazu da, um die Schematic perfekt mittig auf einem Punkt spawnen zu k§nnen
 		private int offsetY = 0;
 		private int offsetZ = 0;
-		private HashMap<Block, String> content = new HashMap<Block, String>();
+		private ConcurrentHashMap<Location, Block> content = new ConcurrentHashMap<Location, Block>();
+		private ConcurrentHashMap<Location, BlockProfile> postPlacing = new ConcurrentHashMap<Location, BlockProfile>();
 		private ArrayList<Material> blacklist = new ArrayList<Material>();
-		private ArrayList<String> postPlacing = new ArrayList<String>();
-		private Cuboid cuboid = null;
-		private Location locationWhereSchematicWillSpawn = null;
+		private ArrayList<Location> chests = new ArrayList<Location>();
 		private Location locationWherePlayerWillSpawn = null;
 		
+		@SuppressWarnings("deprecation")
 		public Schematic(SchematicProfile profile) {
 //			this.schematic_name = name;
 			this.profile = profile;
@@ -252,6 +249,47 @@ public class SchematicManager implements Listener {
 			blacklist.add(Material.LEGACY_WATER);
 			blacklist.add(Material.LAVA);
 			blacklist.add(Material.LEGACY_LAVA);
+			
+			blacklist.add(Material.ACACIA_FENCE);
+			blacklist.add(Material.ACACIA_FENCE_GATE);
+			blacklist.add(Material.BIRCH_FENCE);
+			blacklist.add(Material.BIRCH_FENCE_GATE);
+			blacklist.add(Material.DARK_OAK_FENCE);
+			blacklist.add(Material.DARK_OAK_FENCE_GATE);
+			blacklist.add(Material.JUNGLE_FENCE);
+			blacklist.add(Material.JUNGLE_FENCE_GATE);
+			blacklist.add(Material.LEGACY_ACACIA_FENCE);
+			blacklist.add(Material.LEGACY_ACACIA_FENCE_GATE);
+			blacklist.add(Material.LEGACY_BIRCH_FENCE);
+			blacklist.add(Material.LEGACY_BIRCH_FENCE_GATE);
+			blacklist.add(Material.LEGACY_DARK_OAK_FENCE);
+			blacklist.add(Material.LEGACY_DARK_OAK_FENCE_GATE);
+			blacklist.add(Material.LEGACY_FENCE);
+			blacklist.add(Material.LEGACY_FENCE_GATE);
+			blacklist.add(Material.LEGACY_IRON_FENCE);
+			blacklist.add(Material.LEGACY_JUNGLE_FENCE);
+			blacklist.add(Material.LEGACY_JUNGLE_FENCE_GATE);
+			blacklist.add(Material.LEGACY_NETHER_FENCE);
+			blacklist.add(Material.LEGACY_SPRUCE_FENCE);
+			blacklist.add(Material.LEGACY_SPRUCE_FENCE_GATE);
+			blacklist.add(Material.NETHER_BRICK_FENCE);
+			blacklist.add(Material.OAK_FENCE);
+			blacklist.add(Material.OAK_FENCE_GATE);
+			blacklist.add(Material.SPRUCE_FENCE);
+			blacklist.add(Material.SPRUCE_FENCE_GATE);
+			
+			blacklist.add(Material.CHEST);
+			blacklist.add(Material.CAMPFIRE);
+			blacklist.add(Material.LEGACY_CROPS);
+			blacklist.add(Material.LEGACY_WHEAT);
+			blacklist.add(Material.BEETROOT_SEEDS);
+			blacklist.add(Material.LEGACY_BEETROOT_SEEDS);
+			blacklist.add(Material.LEGACY_MELON_SEEDS);
+			blacklist.add(Material.LEGACY_PUMPKIN_SEEDS);
+			blacklist.add(Material.LEGACY_SEEDS);
+			blacklist.add(Material.MELON_SEEDS);
+			blacklist.add(Material.PUMPKIN_SEEDS);
+			blacklist.add(Material.WHEAT_SEEDS);
 		}
 		
 		/*
@@ -280,77 +318,7 @@ public class SchematicManager implements Listener {
 		 * TODO: Liest die Blöcke in der Welt in einem Bereich aus und speichert diese
 		 */
 		public boolean copy(boolean withAir) {
-			
-			boolean xPositive = false; //Gibt an, ob bei der .add(x,y,z) Methode negiert werden muss oder nicht
-			boolean yPositive = false; //Gibt an, ob bei der .add(x,y,z) Methode negiert werden muss oder nicht
-			boolean zPositive = false; //Gibt an, ob bei der .add(x,y,z) Methode negiert werden muss oder nicht
-			
-			double x1 = profile.getPos1().clone().getX();
-			double y1 = profile.getPos1().clone().getY();
-			double z1 = profile.getPos1().clone().getZ();
-			double x2 = profile.getPos2().clone().getX();
-			double y2 = profile.getPos2().clone().getY();
-			double z2 = profile.getPos2().clone().getZ();
-			
-			locationWhereSchematicWillSpawn = new Location(profile.getPos1().getWorld(), profile.getPos1().getX(), profile.getPos1().getY(), profile.getPos1().getZ());
-			Location l = new Location(locationWhereSchematicWillSpawn.clone().getWorld(),
-					locationWhereSchematicWillSpawn.clone().getX(),
-					locationWhereSchematicWillSpawn.clone().getY(),
-					locationWhereSchematicWillSpawn.clone().getZ());
-			
-			/* Detektion, ob negiert werden muss oder nicht */
-			if(x1 > x2) xPositive = false;
-			else xPositive = true;
-			
-			if(y1 > y2) yPositive = false;
-			else yPositive = true;
-			
-			if(z1 > z2) zPositive = false;
-			else zPositive = true;
-			/* -------------------------------------------- */
-			
-			int xDiff = profile.selected_cuboid.getXWidth()+1;
-			int yDiff = profile.selected_cuboid.getHeight()+1;
-			int zDiff = profile.selected_cuboid.getZWidth()+1;
-			
-			int tempX = 0;
-			int tempY = 0;
-			int tempZ = 0;
-			
-			int counter = 0;
-			
-			for(int i = 0; i != yDiff; i++) {
-				for(int ii = 0; ii != xDiff; ii++) {
-					for(int iii = 0; iii != zDiff; iii++) {
-						
-						
-						
-						if(yPositive) {tempY = i;}
-						else {tempY = -i;}
-						
-						if(xPositive) {tempX = ii;}
-						else {tempX = -ii;}
-						
-						if(zPositive) {tempZ = iii;}
-						else {tempZ = -iii;}
-						
-						Block b = l.clone().add(tempX, tempY, tempZ).getBlock();
-						if(withAir == false && (b.getType() != Material.AIR && b.getType() != Material.CAVE_AIR)) {
-							content.put(b, convertToOffsetString(tempX, tempY, tempZ));
-//							if(counter == 5000) break;							
-							counter++;
-						}else if(withAir == true){
-							content.put(b, convertToOffsetString(tempX, tempY, tempZ));
-//							if(counter == 5000) break;							
-							counter++;							
-						}
-					}
-//					if(counter == 5000) break;
-				}
-//				if(counter >= 5000) break;
-				l = locationWhereSchematicWillSpawn.clone();
-			}
-			
+			content = SchematicReaderAndWriter.copy(profile, profile.getPos1(), profile.getPos2(), withAir);
 			return true;
 		}
 		
@@ -359,46 +327,7 @@ public class SchematicManager implements Listener {
 		 *       falls dies gewünscht ist
 		 */
 		public boolean save(boolean overwrite) {
-			File file = new File(getSchematicPath()+profile.saved_schematic_name+".yml");
-			FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-			int counter = 0;
-			
-			int tempX = 0;
-			int tempY = 0;
-			int tempZ = 0;
-			
-			cfg.set("Schematic.Name", profile.saved_schematic_name);
-			cfg.set("Schematic.Total Of Blocks", counter);
-			cfg.set("Schematic.Sizing.xWidth", profile.selected_cuboid.getXWidth());
-			cfg.set("Schematic.Sizing.height", profile.selected_cuboid.getHeight());
-			cfg.set("Schematic.Sizing.zWidth", profile.selected_cuboid.getZWidth());
-			String code = "";
-			String[] a = null;
-			for(Block b : content.keySet()) {
-				
-				code = content.get(b);
-				a = code.split(":");
-				
-				tempX = Integer.parseInt(a[0]);
-				tempY = Integer.parseInt(a[1]);
-				tempZ = Integer.parseInt(a[2]);
-				
-				cfg.set("Schematic.Content.B-"+counter+".Location.xDiff", tempX);
-				cfg.set("Schematic.Content.B-"+counter+".Location.yDiff", tempY);
-				cfg.set("Schematic.Content.B-"+counter+".Location.zDiff", tempZ);
-				
-				cfg = writeBlockToCfg(cfg, counter, locationWhereSchematicWillSpawn.clone().add(tempX,tempY,tempZ).getBlock());
-				counter++;
-			}
-			cfg.set("Schematic.Total Of Blocks", counter);
-			
-			try {
-				cfg.save(file);
-				return true;
-			} catch (IOException e) {
-				e.printStackTrace();
-				return false;
-			}
+			return SchematicReaderAndWriter.save(profile, profile.saved_schematic_name, overwrite);
 		}
 		
 		public FileConfiguration writeBlockToCfg(FileConfiguration cfg, int counter, Block block) {
@@ -413,77 +342,14 @@ public class SchematicManager implements Listener {
 		}
 		
 		/*
-		 * TODO: paste() platziert die Schematic an Location origin
-		 */
-		public boolean paste(Player p, Location origin, String file_name) {
-			File file = new File(getSchematicPath()+file_name+".yml");
-			if(file.exists() == false) return false;
-			ArrayList<Chest> chests = new ArrayList<Chest>();
-			FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-			
-			BlockStore storage = new BlockStore(getProfile(p).storage.size()+1);
-			
-			int size = cfg.getInt("Schematic.Total Of Blocks");
-			
-			int tempX = 0;
-			int tempY = 0;
-			int tempZ = 0;
-			
-			int xWidth = cfg.getInt("Schematic.Sizing.xWidth");
-			int height = cfg.getInt("Schematic.Sizing.height");
-			int zWidth = cfg.getInt("Schematic.Sizing.zWidth");
-			p.sendMessage("XW, hei, zW: "+xWidth+", "+height+", "+zWidth);
-			origin.add(-(xWidth/2), -(height/2), -(zWidth/2));
-			
-			String mat = "";
-			Block b = null;
-			Material m = Material.AIR;
-			Biome bio = Biome.BADLANDS;
-			for(int i = 0; i != size; i++) {
-				tempX = cfg.getInt("Schematic.Content.B-"+i+".Location.xDiff");
-				tempY = cfg.getInt("Schematic.Content.B-"+i+".Location.yDiff");
-				tempZ = cfg.getInt("Schematic.Content.B-"+i+".Location.zDiff");
-				b = origin.clone().add(tempX, tempY, tempZ).getBlock();
-				
-				storage.addBlock(origin.clone().add(tempX, tempY, tempZ), b);
-				
-				mat = "LEGACY_"+cfg.getString("Schematic.Content.B-"+i+".type");
-//				Bukkit.broadcastMessage("Block#"+i+"Material:"+mat);
-				try{
-					m = Material.valueOf(mat);
-				}catch(IllegalArgumentException ex1) {
-					try{
-						m = Material.valueOf(mat.replace("LEGACY_", ""));
-					}catch(IllegalArgumentException ex2) {
-						m = Material.AIR;
-					}
-				}
-				bio = Biome.valueOf(cfg.getString("Schematic.Content.B-"+i+".biome"));
-				b.setType(m);
-				b.setBiome(bio);
-				origin.getWorld().spawnParticle(Particle.FLAME, origin.clone().add(tempX, tempY, tempZ), 10, 0.5d, 0.5d, 0.5d, 0);
-				if(b.getState() instanceof Chest) {
-					Chest c = (Chest) b.getState();
-					Inventory inv = ChestGenerator.readInventory("&aStarter_Kit");
-					if(inv.getContents() != null) c.getInventory().setContents(inv.getContents());
-				}
-//				Bukkit.broadcastMessage("Counter:"+i);
-			}
-						
-			if(p != null) {
-				getProfile(p).storage.put(storage.id, storage);
-				p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Schematic wurde platziert");
-			}
-			return true;
-		}
-		
-		/*
 		 * TODO: Füllt die Chests mit einem Kit
 		 */
-		public void fillChests(ArrayList<Chest> chests, String kit) {
-			Bukkit.broadcastMessage("Chests:"+chests.size());
-			for(Chest c : chests) {
-				c.getInventory().setContents(ChestGenerator.readInventory(kit).getContents());
+		public void fillChests(ArrayList<Location> chests, String kit) {
+			for(Location l : chests) {
+				if(l.getBlock().getState() instanceof Chest) {
+					Chest c = (Chest) l.getBlock().getState();
+					c.getInventory().setContents(ChestGenerator.readInventory(kit).getContents());
+				}
 			}
 		}
 		
@@ -491,7 +357,8 @@ public class SchematicManager implements Listener {
 		/*
 		 * TODO: pasteTimed() platziert eine Schematic Block für Block und nicht alles mit einmal
 		 */
-		public boolean pasteTimed(final CommandSender sender, final Location origin, String file_name, long delay, long period, final boolean isGameplay) {
+		private boolean postProcess = false;
+		public boolean pasteTimed(final CommandSender sender, final Location origin, final String file_name, long delay, long period, final boolean isGameplay) {
 			
 			if(timers.containsKey(this)) {
 				return false;
@@ -501,59 +368,96 @@ public class SchematicManager implements Listener {
 				if(file.exists() == false) {
 					return false;
 				}
+				FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+				final int xWidth = cfg.getInt("Schematic.Sizing.xWidth");
+				final int height = cfg.getInt("Schematic.Sizing.height");
+				final int zWidth = cfg.getInt("Schematic.Sizing.zWidth");
+				origin.add(-(xWidth/2), -(height / 2), -(zWidth / 2));
+				
+				if(isGameplay && sender instanceof Player) ((Player)sender).setGameMode(GameMode.SPECTATOR);
 				
 				timers.put(schematic, new BukkitRunnable() {
-					
-					FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-					
-					String mat = "";
-					Block b = null;
-					Material m = Material.AIR;
-					Biome bio = Biome.BADLANDS;
-					
-					boolean postProcess = false;
-//					ArrayList<Chest> chests = new ArrayList<Chest>();
-					
-					int step = 0; //step = der Schritt, in dem die Platzier Animation gerade ist
-					int size = cfg.getInt("Schematic.Total Of Blocks");
-					int tempX = 0;
-					int tempY = 0;
-					int tempZ = 0;
-					
-					int xWidth = cfg.getInt("Schematic.Sizing.xWidth");
-					int height = cfg.getInt("Schematic.Sizing.height");
-					int zWidth = cfg.getInt("Schematic.Sizing.zWidth");
-					
+					ConcurrentHashMap<Location, BlockProfile> content = SchematicReaderAndWriter.readSchematic(file_name);
+					Location l = null;
+					Material m = null;
+					BlockProfile bp = null;
+					Location player_spawn = null;
+					int finish_delay = 100;
+					boolean repeat = false;
 					@Override
 					public void run() {
-//						if((step+"").endsWith("0")) Bukkit.broadcastMessage("Step: "+step);
-						if(step == 0 && postProcess == false) {
-							origin.add(-(xWidth/2), (height/2), -(zWidth/2));
-							step++;
-						}else if(step != size) {
-							step = setBlock(sender, step, size, cfg, tempX, tempY, tempZ, mat, m, b, bio, origin, postProcess);
-						}else if(step == size) {
-							if(postProcess == false) {
-								postProcess = true;
-								step = 0;
-							}else {								
+						if(postProcess && postPlacing.size() != 0) {
+							if(postPlacing.size() != 0) {
+								for(Location lo : postPlacing.keySet()) {
+									l = lo.clone();
+									m = postPlacing.get(lo).mat;
+									lo = origin.clone().add(l.clone());
+																	
+									lo.getBlock().setType(m);
+									lo.getBlock().setBlockData(postPlacing.get(l).data);
+									if(isGameplay)origin.getWorld().spawnParticle(Particle.FLAME, lo.clone(), 10, 0.5d, 0.5d, 0.5d, 0);
+									if(isGameplay)origin.getWorld().playSound(lo.clone(), Sound.ENTITY_CHICKEN_EGG, 6f, -2f);
+									break;
+								}
+								postPlacing.remove(l);
+							}
+						}else {
+							if(content.size() != 0) {								
+								for(Location lo : content.keySet()) {
+									l = lo.clone();
+									m = content.get(lo).mat;
+									lo = origin.clone().add(l.clone());
+									
+									if(m == Material.EMERALD_BLOCK && isGameplay) {
+										player_spawn = lo.clone().add(0.5,0.5,0.5);
+										repeat = true;
+									}else if(blacklist.contains(m) == false) {
+										lo.getBlock().setType(m);
+										lo.getBlock().setBlockData(content.get(l).data);
+										if(m == Material.CHEST)chests.add(lo.clone());
+										if(isGameplay)origin.getWorld().spawnParticle(Particle.FLAME, lo.clone(), 10, 0.5d, 0.5d, 0.5d, 0);
+										if(isGameplay)origin.getWorld().playSound(lo.clone(), Sound.ENTITY_CHICKEN_EGG, 6f, 0f);
+									}else {
+										if(m == Material.CHEST)chests.add(lo.clone());
+										bp = content.get(l);
+										postPlacing.put(l.clone(), new BlockProfile(bp.mat, bp.location.clone(), bp.data));
+										repeat = true;
+									}
+									
+									
+									content.remove(l);
+									if(repeat==false)break;
+								}
+							}
+							repeat = false;
+						}
+						
+						if(content.size() == 0 && postProcess == true && postPlacing.size() == 0) {
+							
+							if(finish_delay == 0) {								
 								timers.get(schematic).cancel();
 								timers.remove(schematic);
+								fillChests(chests, "&aStarter_Kit");
 								if(sender != null) {
 									if(isGameplay && sender instanceof Player) {
 										Player p = (Player) sender;
-										if(getProfile(p).getSchematic().getPlayerSpawn() != null) {											
-											p.teleport(getProfile(p).getSchematic().getPlayerSpawn().add(0.5, 1.5, 0.5));
-										}else {
-											p.teleport(SkyFileManager.getLocationOfIsland(p).add(0.5, 1.5, 0.5));
+										if(player_spawn != null) {
+											profile.getSchematic().locationWherePlayerWillSpawn = player_spawn.clone();
+											p.teleport(player_spawn);
+											SkyFileManager.setSpawn(p, player_spawn);
 										}
 										SkyBlock.spawnFireworks(p.getLocation(), 1, true, false, Type.BURST, Color.LIME);
 										p.setGameMode(GameMode.SURVIVAL);
 										p.sendMessage(Prefixes.SERVER.getPrefix()+"Viel Spaß!");
+									}else {
+										sender.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Schematic wurde platziert");
 									}
 								}
-							}
+							}else finish_delay--;
+						}else if(content.size() == 0 && postProcess == false) {
+							postProcess = true;
 						}
+						
 					}
 				});
 				timers.get(schematic).runTaskTimer(SkyBlock.getInstance(), delay, period);
@@ -561,71 +465,73 @@ public class SchematicManager implements Listener {
 			
 			return true;
 		}
-		public int setBlock(CommandSender sender, int step, int size, FileConfiguration cfg, int tempX, int tempY, int tempZ, String mat, Material m, Block b, Biome bio, Location origin, boolean postProcess) {
-			boolean again = true;
-			while(again == true) {
-				if(postProcess) {
-					if(postPlacing.isEmpty()) {
-						step = size;
-						return step;
-					}else {
-						for(String s : postPlacing) {
-							step = Integer.valueOf(s);
-							postPlacing.remove(s);
-							break;
-						}
-					}
-				}
-				tempX = cfg.getInt("Schematic.Content.B-"+step+".Location.xDiff");
-				tempY = cfg.getInt("Schematic.Content.B-"+step+".Location.yDiff");
-				tempZ = cfg.getInt("Schematic.Content.B-"+step+".Location.zDiff");
-				b = origin.clone().add(tempX, tempY, tempZ).getBlock();
-				
-				
-				mat = cfg.getString("Schematic.Content.B-"+step+".type");
-				try{
-					m = Material.valueOf(mat);
-				}catch(IllegalArgumentException ex1) {
-					try{
-						m = Material.valueOf("LEGACY_"+mat);
-					}catch(IllegalArgumentException ex2) {
-						m = Material.AIR;
-					}
-				}
-				if(blacklist.contains(m) && postProcess == false) {
-					postPlacing.add(step+"");
-				}else if(m == Material.EMERALD_BLOCK){
-					locationWherePlayerWillSpawn = b.getLocation();
-					sender.sendMessage("Spawn gefunden");
-				} else {
-					if(m== Material.AIR || m == Material.CAVE_AIR) {
-						again = true;
-					}else {									
-						bio = Biome.valueOf(cfg.getString("Schematic.Content.B-"+step+".biome"));
-						b.setType(m);
-						if(m == Material.TALL_GRASS) b.setBlockData(m.createBlockData());
-						b.setBiome(bio);
-						origin.getWorld().spawnParticle(Particle.FLAME, origin.clone().add(tempX, tempY, tempZ), 10, 0.5d, 0.5d, 0.5d, 0);
-						origin.getWorld().playSound(((Player)sender).getLocation(), Sound.ENTITY_CHICKEN_EGG, 6f, 0f);
-						again = false;
-						if(b.getState() instanceof Chest) {
-							Chest c = (Chest) b.getState();
-							Inventory inv = ChestGenerator.readInventory("&aStarter_Kit");
-							if(inv.getContents() != null) c.getInventory().setContents(inv.getContents());
-						}
-					}
-				}
-				if(step == size) {
-					return step;
-				}else {
-					step++;
-					if(step == size) {
-						return step;
-					}
-				}
-			}
-			return step;
-		}
+//		public int setBlock(CommandSender sender, int step, int size, FileConfiguration cfg, int tempX, int tempY, int tempZ, String mat, Material m, Block b, Biome bio, Location origin, boolean postProcess, boolean isGameplay) {
+//			boolean again = true;
+//			while(again == true) {
+//				if(postProcess) {
+//					if(postPlacing.isEmpty()) {
+//						step = size;
+//						return step;
+//					}else {
+//						for(String s : postPlacing) {
+//							step = Integer.valueOf(s);
+//							postPlacing.remove(s);
+//							break;
+//						}
+//					}
+//				}
+//				tempX = cfg.getInt("Schematic.Content.B-"+step+".Location.xDiff");
+//				tempY = cfg.getInt("Schematic.Content.B-"+step+".Location.yDiff");
+//				tempZ = cfg.getInt("Schematic.Content.B-"+step+".Location.zDiff");
+//				b = origin.clone().add(tempX, tempY, tempZ).getBlock();
+//				
+//				
+//				mat = cfg.getString("Schematic.Content.B-"+step+".type");
+//				try{
+//					m = Material.valueOf(mat);
+//				}catch(IllegalArgumentException ex1) {
+//					try{
+//						m = Material.valueOf("LEGACY_"+mat);
+//					}catch(IllegalArgumentException ex2) {
+//						m = Material.AIR;
+//					}
+//				}
+//				if(blacklist.contains(m) && postProcess == false) {
+//					postPlacing.add(step+"");
+//				}else if(m == Material.EMERALD_BLOCK){
+//					locationWherePlayerWillSpawn = b.getLocation();
+//					sender.sendMessage("Spawn gefunden");
+//				} else {
+//					if(m== Material.AIR || m == Material.CAVE_AIR) {
+//						again = true;
+//					}else {
+//						bio = Biome.valueOf(cfg.getString("Schematic.Content.B-"+step+".biome"));
+//						b.setType(m);
+//						if(m == Material.TALL_GRASS) b.setBlockData(m.createBlockData());
+//						b.setBiome(bio);
+//						origin.getWorld().spawnParticle(Particle.FLAME, origin.clone().add(tempX, tempY, tempZ), 10, 0.5d, 0.5d, 0.5d, 0);
+//						origin.getWorld().playSound(((Player)sender).getLocation(), Sound.ENTITY_CHICKEN_EGG, 6f, 0f);
+//						again = false;
+//						if(isGameplay) {							
+//							if(b.getState() instanceof Chest) {
+//								Chest c = (Chest) b.getState();
+//								Inventory inv = ChestGenerator.readInventory("&aStarter_Kit");
+//								if(inv.getContents() != null) c.getInventory().setContents(inv.getContents());
+//							}
+//						}
+//					}
+//				}
+//				if(step == size) {
+//					return step;
+//				}else {
+//					step++;
+//					if(step == size) {
+//						return step;
+//					}
+//				}
+//			}
+//			return step;
+//		}
 		
 		/*
 		 * TODO: Gibt den Spawn des Spielers zurück

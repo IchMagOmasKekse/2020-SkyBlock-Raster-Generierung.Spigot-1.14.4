@@ -5,7 +5,6 @@ import org.bukkit.Color;
 import org.bukkit.FireworkEffect.Type;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import me.ichmagomaskekse.de.Prefixes;
@@ -17,9 +16,39 @@ import me.ichmagomaskekse.de.requests.Request;
 import me.ichmagomaskekse.de.requests.Request.RequestManager;
 import me.ichmagomaskekse.de.requests.VisitRequest;
 import me.ichmagomaskekse.de.schematics.SchematicManager;
-import me.ichmagomaskekse.de.schematics.SchematicManager.SchematicProfile;
 
 public class SkyBlockCommandFunction {
+	
+	/*
+	 * TODO: Kickt einen Spieler von deiner Insel. Dieser wird zum Spawn teleportiert
+	 */
+	public static boolean kickPlayer(Player kicker, String target_name) {
+		if(Bukkit.getPlayer(target_name) != null) {	
+			Player target = Bukkit.getPlayer(target_name);
+			if(target.getUniqueId().toString().equals(kicker.getUniqueId().toString())) {
+				kicker.sendMessage(Prefixes.SERVER.getPrefix()+"Du kannst dich nicht selber rausschmeißen!");
+				return false;
+			}else {
+				if(target.hasPermission("skyblock.admin")) {
+					kicker.sendMessage(Prefixes.SERVER.getPrefix()+"Du kannst keinen Server-Personal von deiner Insel werfen!");
+					return false;
+				}else {					
+					if(IslandManager.getProfile(kicker).isInIslandregion(target)) {
+						target.teleport(SkyBlock.spawn);
+						target.sendMessage(Prefixes.SERVER.getPrefix()+"§e"+kicker.getName()+" §7hat dich von seiner Insel geworfen!");
+						kicker.sendMessage(Prefixes.SERVER.getPrefix()+"Du hast §e"+target.getName()+" §7deiner Insel geworfen!");
+						return true;
+					}else {
+						kicker.sendMessage(Prefixes.SERVER.getPrefix()+"§e"+target_name+" §7ist nicht auf deiner Insel");				
+						return false;
+					}
+				}
+			}
+		}else {
+			kicker.sendMessage(Prefixes.SERVER.getPrefix()+"Dieser Spieler ist nicht online");
+			return false;
+		}
+	}
 	
 	/*
 	 * TODO: Nehme eine anfrage an
@@ -55,7 +84,7 @@ public class SkyBlockCommandFunction {
 	 */
 	public static boolean requestVisit(Player p, String[] args) {
 		if(args[1].equalsIgnoreCase(p.getName())) {
-			p.sendMessage(Prefixes.REQUEST.getPrefix()+"Nutze §7/is §bwenn du deine Insel besuchen m§chtest :)");
+			p.sendMessage(Prefixes.REQUEST.getPrefix()+"Nutze §7/is §bwenn du deine Insel besuchen möchtest :)");
 			return false;
 		}
 		if(RequestManager.hasSendRequest(p)) {
@@ -110,10 +139,11 @@ public class SkyBlockCommandFunction {
 	 * TODO: Teleportiert den Spieler zu seiner Insel oder erstellt ihm eine Insel, wenn er keine besitzt
 	 */
 	public static boolean teleportToIsland(Player p) {
-		if(SkyBlock.hasPermission(p, "skyblock.island.is")) {//Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
+		if(SkyBlock.hasPermission(p, "skyblock.island")) {//Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
 			if(SkyFileManager.hasIsland(p) && SkyFileManager.getLocationOfIsland(p) != null) {
 				IslandManager.loadProfile(p);
-				p.teleport(SkyFileManager.getLocationOfIsland(p).add(0.5,1.5,0.5));
+				p.teleport(SkyFileManager.getLocationOfIsland(p).add(0.5,0.5,0.5));
+				if(p.isOp() == false && p.hasPermission("skyblock.island.gamemode.bypass") == false) p.setGameMode(GameMode.SURVIVAL); 
 				SkyBlock.spawnFireworks(p.getLocation(), 1, true, false, Type.BURST, Color.LIME);
 			}else p.performCommand("is create");
 		}
@@ -132,7 +162,7 @@ public class SkyBlockCommandFunction {
 					SkyFileManager.getLocationZ(p.getUniqueId().toString()));
 			p.sendMessage(Prefixes.SERVER.getPrefix()+"Du besitzt bereits eine Insel");
 			p.sendMessage(Prefixes.SERVER.getPrefix()+"Du wurdest zu deiner Insel teleportiert");
-		}else {							
+		}else {
 			int id = SkyFileManager.getUnclaimedIslandID(false);
 			SkyFileManager.claimIsland(id, p);
 			p.sendMessage(Prefixes.SERVER.getPrefix()+"§aDeine Insel wurde erfolgreich erstellt");
@@ -145,7 +175,7 @@ public class SkyBlockCommandFunction {
 			SchematicManager.pasteSchematicAt(is_loc, p, "island_2", true);
 		}
 		IslandManager.loadProfile(p);
-		if(is_loc.getBlock().getType().isSolid() == false && is_loc.clone().add(0,-1,0).getBlock().getType().isSolid() == false) is_loc.getBlock().setType(Material.STONE);
+//		if(is_loc.getBlock().getType().isSolid() == false && is_loc.clone().add(0,-1,0).getBlock().getType().isSolid() == false) is_loc.getBlock().setType(Material.STONE);
 		p.setGameMode(GameMode.SPECTATOR);
 		p.teleport(is_loc);
 		return true;

@@ -25,7 +25,10 @@ public class PlayerRespawnAndDeathListener implements Listener {
 		if(e.getPlayer().getWorld().getName().equals(SkyBlockGenerator.skyworldName)) {
 			Location respawn_loc = SkyFileManager.getLocationOfIsland(e.getPlayer()).add(0,0.5,0);
 			e.setRespawnLocation(respawn_loc);
+		}else if(e.getPlayer().getWorld().getName().equals("Insel")) {
+			e.setRespawnLocation(SkyBlock.spawn.clone());
 		}
+		
 	}
 	
 	/*

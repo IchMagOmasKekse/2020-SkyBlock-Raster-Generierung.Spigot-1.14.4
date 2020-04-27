@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -16,6 +17,7 @@ import org.bukkit.entity.Player;
 import me.ichmagomaskekse.de.Prefixes;
 import me.ichmagomaskekse.de.SkyBlock;
 import me.ichmagomaskekse.de.SkyBlockGenerator;
+import me.ichmagomaskekse.de.profiles.IslandManager;
 
 public class SkyFileManager {
 	
@@ -25,12 +27,12 @@ public class SkyFileManager {
 
 	public SkyFileManager() {
 		if(island_index_File.exists() == false) {
-			//TODO: Es muss die Datei neugerneriert werden
+			SkyBlock.getInstance().saveResource("Insel-Index-File.yml", true);
 		}
 	}
 	
 	/*
-	 * TODO: Gibt die ID einer Insel zur§ck
+	 * TODO: Gibt die ID einer Insel zurück
 	 */
 	public static int getIslandID(String uuid) {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(getIslandFile(uuid));
@@ -38,11 +40,20 @@ public class SkyFileManager {
 	}
 	
 	/*
-	 * TODO: Gibt den Spawnpunkt einer Insel zur§ck
+	 * TODO: Gibt den Spawnpunkt einer Insel zurück
 	 */
-	public static Location getSpawnpoint(String uuid) {
-		Location spawnpoint = new Location(getWorld(uuid), getLocationX(uuid), SkyBlockGenerator.islandHeight, getLocationZ(uuid));
-		return spawnpoint;
+	public static Location getSpawn(String uuid) {
+		if(getIslandFile(uuid).exists()) {			
+			FileConfiguration cfg = YamlConfiguration.loadConfiguration(getIslandFile(uuid));
+			Location spawn = new Location(
+					Bukkit.getWorld(cfg.getString("Islands.Spawnpoint.World")),
+					cfg.getInt("Islands.Spawnpoint.LocX"),
+					cfg.getInt("Islands.Spawnpoint.LocY"),
+					cfg.getInt("Islands.Spawnpoint.LocZ"),
+					cfg.getInt("Islands.Spawnpoint.Yaw"),
+					cfg.getInt("Islands.Spawnpoint.Pitch"));
+			return spawn;
+		}else return null;
 	}
 	
 	/*
@@ -63,7 +74,8 @@ public class SkyFileManager {
 		getIslandFile(owner.getUniqueId().toString()).delete();
 		
 		try {
-			cfg2.save(island_index_File);			
+			cfg2.save(island_index_File);
+			IslandManager.clearIsland(owner);
 			owner.sendMessage(Prefixes.SERVER.getPrefix()+"§aDeine Insel wurde gelöscht");
 			return true;
 		} catch (IOException e) {
@@ -74,7 +86,7 @@ public class SkyFileManager {
 	}
 	
 	/*
-	 * TODO: Gibt die Location einer Insel zur§ck
+	 * TODO: Gibt die Location einer Insel zurück
 	 */
 	public static Location getLocationOfIsland(Player owner) {
 		Location loc = new Location(getWorld(owner.getUniqueId().toString()),
@@ -88,8 +100,32 @@ public class SkyFileManager {
 	 * TODO: Überpr§ft, ob ein Spieler eine Insel besitzt
 	 */
 	public static boolean hasIsland(Player owner) {
-		boolean hasClaimed = getIslandFile(owner.getUniqueId().toString()).exists();
+		return hasIsland(owner.getUniqueId());
+	}
+	public static boolean hasIsland(UUID owner) {
+		boolean hasClaimed = getIslandFile(owner.toString()).exists();
 		return hasClaimed;
+	}
+	
+	/*
+	 * TODO: Setzt den Spielerspawn neu
+	 */
+	public static boolean setSpawn(Player owner, Location loc) {
+		File f = getIslandFile(owner.getUniqueId().toString());
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(f);
+		cfg.set("Islands.Spawnpoint.World", loc.getWorld().getName());
+		cfg.set("Islands.Spawnpoint.LocX", loc.getX());
+		cfg.set("Islands.Spawnpoint.LocY", loc.getY());
+		cfg.set("Islands.Spawnpoint.LocZ", loc.getZ());
+		cfg.set("Islands.Spawnpoint.Yaw", loc.getYaw());
+		cfg.set("Islands.Spawnpoint.Pitch", loc.getPitch());
+		try {
+			cfg.save(f);
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 	
 	/*
@@ -107,7 +143,7 @@ public class SkyFileManager {
 			catch (IOException e) {
 				e.printStackTrace();
 				owner.sendMessage(Prefixes.SERVER.getPrefix()+"Deine Insel konnte nicht geclaimed werden");
-				}
+			}
 			
 			File is_file = getIslandFile(owner.getUniqueId().toString());
 			FileConfiguration cfg2 = YamlConfiguration.loadConfiguration(is_file);
@@ -142,7 +178,7 @@ public class SkyFileManager {
 		}else return false;
 	}
 	/*
-	 * TODO: Gibt die Weltenname, X und Z Werte einer Freien Insel aus der Island-Index-File zur§ck
+	 * TODO: Gibt die Weltenname, X und Z Werte einer Freien Insel aus der Island-Index-File zurück
 	 */
 	public static String getWorldNameOutOfIslandIndexFile(int island_id) {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(island_index_File);
@@ -158,7 +194,7 @@ public class SkyFileManager {
 	}
 	
 	/*
-	 * TODO: Gibt eine ArrayList mit allen Banned Players zur§ck
+	 * TODO: Gibt eine ArrayList mit allen Banned Players zurück
 	 */
 	public static int getUnclaimedIslandID(boolean random_pick) {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(island_index_File);
@@ -168,13 +204,19 @@ public class SkyFileManager {
 				unclaimed_id = ran.nextInt(cfg.getInt("Islands.Amount Generated"));
 			}
 		}else {
-			unclaimed_id = (cfg.getInt("Islands.Amount Claimed")+1);
+			int amount_of_generated = cfg.getInt("Islands.Amount Generated");
+			for(int i = 1; i != amount_of_generated; i++) {
+				if(cfg.getBoolean("Islands.ID-"+i+".Claimed") == false) {
+					unclaimed_id = i;
+					break;
+				}
+			}
 		}
 		return unclaimed_id;
 	}
 	
 	/*
-	 * TODO: Gibt eine ArrayList mit allen Banned Players zur§ck
+	 * TODO: Gibt eine ArrayList mit allen Banned Players zurück
 	 */
 	public static ArrayList<String> getBannedPlayers(String uuid) {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(getIslandFile(uuid));
@@ -183,7 +225,7 @@ public class SkyFileManager {
 	}
 	
 	/*
-	 * TODO: Gibt eine ArrayList mit allen Members zur§ck
+	 * TODO: Gibt eine ArrayList mit allen Members zurück
 	 */
 	public static ArrayList<String> getMembers(String uuid) {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(getIslandFile(uuid));
@@ -192,7 +234,7 @@ public class SkyFileManager {
 	}
 	
 	/*
-	 * TODO: Gibt eine HashMap mit allen Settings zur§ck
+	 * TODO: Gibt eine HashMap mit allen Settings zurück
 	 */
 	public static HashMap<String, Boolean> getSettings(String uuid) {
 		File is_file = getIslandFile(uuid);
@@ -209,7 +251,7 @@ public class SkyFileManager {
 	}
 	
 	/*
-	 * TODO: Gibt die ID der Insel B zur§ck, mit der sich die Insel A verbunden hat
+	 * TODO: Gibt die ID der Insel B zurück, mit der sich die Insel A verbunden hat
 	 */
 	public static int getCollaboratorIslandID(String uuid) {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(getIslandFile(uuid));
@@ -217,7 +259,7 @@ public class SkyFileManager {
 	}
 	
 	/*
-	 * TODO: Gibt die Z-Koordinate zur§ck, auf der sich die Insel befindet
+	 * TODO: Gibt die Z-Koordinate zurück, auf der sich die Insel befindet
 	 */
 	public static int getLocationZ(String uuid) {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(getIslandFile(uuid));
@@ -225,7 +267,7 @@ public class SkyFileManager {
 	}
 	
 	/*
-	 * TODO: Gibt die X-Koordinate zur§ck, auf der sich die Insel befindet
+	 * TODO: Gibt die X-Koordinate zurück, auf der sich die Insel befindet
 	 */
 	public static int getLocationX(String uuid) {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(getIslandFile(uuid));
@@ -233,7 +275,23 @@ public class SkyFileManager {
 	}
 	
 	/*
-	 * TODO: Gibt die Welt zur§ck, in der sich die Insel befindet
+	 * TODO: Gibt die Z-Koordinate zurück, auf der sich der Insel-Spielerspawn befindet
+	 */
+	public static int getSpawnZ(String uuid) {
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(getIslandFile(uuid));
+		return cfg.getInt("Islands.Spawnpoint.LocZ");
+	}
+	
+	/*
+	 * TODO: Gibt die X-Koordinate zurück, auf der sich der Insel-Spielerspawn befindet
+	 */
+	public static int getSpawnX(String uuid) {
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(getIslandFile(uuid));
+		return cfg.getInt("Islands.Spawnpoint.LocX");
+	}
+	
+	/*
+	 * TODO: Gibt die Welt zurück, in der sich die Insel befindet
 	 */
 	public static String getWorldName(String uuid) {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(getIslandFile(uuid));
@@ -241,17 +299,16 @@ public class SkyFileManager {
 	}
 	
 	/*
-	 * TODO: Gibt die Welt zur§ck, in der sich die Insel befindet
+	 * TODO: Gibt die Welt zurück, in der sich die Insel befindet
 	 */
 	public static World getWorld(String uuid) {
-		FileConfiguration cfg = YamlConfiguration.loadConfiguration(getIslandFile(uuid));
 		String world = SkyBlockGenerator.skyworldName;
 		if(Bukkit.getWorld(world) == null)  return null;
 		else return Bukkit.getWorld(world);
 	}
 	
 	/*
-	 * TODO: Gibt einen Boolean zur§ck, ob die Insel belegt oder frei ist
+	 * TODO: Gibt einen Boolean zurück, ob die Insel belegt oder frei ist
 	 */
 	public static boolean isClaimed(int island_id) {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(island_index_File);
@@ -259,7 +316,7 @@ public class SkyFileManager {
 	}
 	
 	/*
-	 * TODO: Gibt die Anzahl an freien Inseln zur§ck
+	 * TODO: Gibt die Anzahl an freien Inseln zurück
 	 */
 //	public static int getUnclaimedIslandsAmount() {
 //		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
@@ -267,7 +324,7 @@ public class SkyFileManager {
 //	}
 	
 	/*
-	 * TODO: Gibt die Anzahl an Belegten Inseln zur§ck
+	 * TODO: Gibt die Anzahl an Belegten Inseln zurück
 	 */
 //	public static int getClaimedIslandsAmount() {
 //		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
@@ -275,7 +332,7 @@ public class SkyFileManager {
 //	}
 	
 	/*
-	 * TODO: Gibt die Anzahl an Generierten Inseln zur§ck
+	 * TODO: Gibt die Anzahl an Generierten Inseln zurück
 	 */
 //	public static int getGeneratedIslandsAmount() {
 //		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
@@ -283,7 +340,7 @@ public class SkyFileManager {
 //	}
 	
 	/*
-	 * TODO: getIslandFile() gibt die Insel-Datei eines Spielers zur§ck 
+	 * TODO: getIslandFile() gibt die Insel-Datei eines Spielers zurück 
 	 */
 	public static File getIslandFile(String uuid) {
 		return new File("plugins/SkyBlock/Inseln/"+uuid+"-Insel.yml");
