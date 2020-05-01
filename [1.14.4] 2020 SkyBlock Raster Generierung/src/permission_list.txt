@@ -16,6 +16,7 @@ command:
   is delworld: skyblock.island.delworld
   is visit: skyblock.island.visit
   is kick: skyblock.island.kick
+  is generatefile: skyblock.*
 function:
   chatcolor: skyblock.chat.color
   accept: skyblock.accept

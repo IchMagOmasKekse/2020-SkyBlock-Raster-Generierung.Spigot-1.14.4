@@ -1,0 +1,35 @@
+#
+#
+# Allgemeine Replacer:
+# Tipp: Wird ein %-Zeichen vor einem Replacer gesetzt, wird der Replacer ignoriert und das %-Zeichen wird entfernt.
+# Beispiel: MOTD On Ping: 'Hallo, heute teste ich den %{USERNAME} replacer' würde so aussehen 'Hallo, heute teste ich den {USERNAME} replacer'
+#  {USERNAME} wird durch dem Spielernamen der jeweiligen Situation ersetzt
+#  {SERVER_PREFIX} wird durch dem Server Prefix ersetzt, welcher hier in der Config festgelegt wurde
+#  & -> § Colorcodes halt
+#
+#  'MOTD On Ping' ist die Nachricht die in der Server-Liste angezeigt wird
+MOTD On Ping: '&f-> -> -> &a&l{SERVER_PREFIX}&f <- <- <-\§dTest MOTD. '
+#  'MOTD On Join' ist die Nachricht, die jeder Spieler erhält, sobal er dem Server betritt
+MOTD On Join:
+  - 'Test Nachricht'
+  - 'Zeile 2'
+  - '&7Test: %{USERNAME}-Replacer Test: Dein Name ist &e{USERNAME} &7richtig?'
+#  'MOTD On Join Once' ist die Nachricht, die jeder Spieler bekommt, wenn er zum ersten Mal an einem Tag den Server betritt. Perfekt um einen Changelog mitzuteilen
+MOTD On Join Once:
+  - '&9Alle Neuerungen auf einem Blick'
+  - ' &7> &fAnpassbare Nachrichten wurden hinzugefügt'
+  - ' &7> &fSchön dass du bei uns gelandet bist!'
+  - ' &7> &bSchaue dir doch gerne das Tutorial zu unserem Server an um bestens Bescheid zu wissen!'
+#  'MOTD On Join First' ist die Nachricht, die jeder Spieler bekommt, wenn er zum ersten Mal auf den Server kommt
+MOTD On Join First:
+  - '&fZeile 1'
+  - '&7Zeile 2'
+  - '&8Zeile 3'
+#  'No Permission' ist die Nachricht, die ein Spieler erhält, wenn er keine Berechtigung für einen Command hat
+No Permission: '{SERVER_PREFIX} &cDu hast kein Recht dazu!'
+#  'Join Message' ist die Join-Nachricht
+Join Message: ''
+#  'Quit Message' ist die Quit-Nachricht
+Quit Message: ''
+#  'Death Message' ist die Death-Nachricht
+Death Message: ''
