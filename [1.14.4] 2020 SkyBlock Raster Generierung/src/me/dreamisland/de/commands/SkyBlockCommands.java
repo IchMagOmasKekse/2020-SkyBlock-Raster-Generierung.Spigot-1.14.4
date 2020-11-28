@@ -190,6 +190,7 @@ public class SkyBlockCommands implements CommandExecutor {
 		if(cmd.equalsIgnoreCase("is")) {
 			p.sendMessage("");
 			if(SkyBlock.hasPermission(p, "skyblock.island")) {
+				
 				p.sendMessage(" §7» §b/is §fTeleport zur Insel");
 				if(p.hasPermission("skyblock.island")) p.sendMessage(" §7» §b/is help §fHilfe zu SkyBlock Commands");
 				if(p.hasPermission("skyblock.island")) p.sendMessage(" §7» §b/is create §fInsel erstellen");

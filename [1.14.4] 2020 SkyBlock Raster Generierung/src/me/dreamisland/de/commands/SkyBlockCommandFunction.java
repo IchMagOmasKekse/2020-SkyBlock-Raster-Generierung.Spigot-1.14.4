@@ -7,6 +7,7 @@ import org.bukkit.Color;
 import org.bukkit.FireworkEffect.Type;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import me.dreamisland.de.Prefixes;
@@ -22,6 +23,7 @@ import me.dreamisland.de.schematics.SchematicManager;
 public class SkyBlockCommandFunction {
 	
 	public static ArrayList<Player> isCreating = new ArrayList<Player>();
+	public static String island_schematic_name = "island";
 	
 	/*
 	 * TODO: Kickt einen Spieler von deiner Insel. Dieser wird zum Spawn teleportiert
@@ -113,7 +115,7 @@ public class SkyBlockCommandFunction {
 			visitor.sendMessage(Prefixes.REQUEST.getPrefix()+"Dieser Spieler hat keine Insel");
 			return false;
 		}else {
-			visitor.teleport(SkyFileManager.getLocationOfIsland(target).add(0,0.5,0));
+			visitor.teleport(SkyFileManager.getLocationOfIsland(target).add(0.5,1.5,0.5));
 			return true;
 		}
 	}
@@ -125,7 +127,8 @@ public class SkyBlockCommandFunction {
 		if(isCreating.contains(p)) {
 			p.sendMessage(Prefixes.SERVER.getPrefix()+"Du kannst deine Insel noch nicht löschen");
 			return false;
-		}else {			
+		}else {
+			p.performCommand("spawn");
 			if(SkyFileManager.hasIsland(p)) return SkyFileManager.deleteIsland(p);
 			else {
 				p.sendMessage(Prefixes.SERVER.getPrefix()+"§cDu besitzt keine Insel");
@@ -152,7 +155,7 @@ public class SkyBlockCommandFunction {
 			if(SkyFileManager.hasIsland(p) && SkyFileManager.getLocationOfIsland(p) != null) {
 				IslandManager.loadProfile(p);
 				if(p.getGameMode() == GameMode.ADVENTURE) p.setGameMode(GameMode.SURVIVAL);
-				p.teleport(SkyFileManager.getLocationOfIsland(p).add(0.5,0.5,0.5));
+				p.teleport(SkyFileManager.getLocationOfIsland(p).add(0.5,1.5,0.5));
 				if(p.isOp() == false && p.hasPermission("skyblock.island.gamemode.bypass") == false) p.setGameMode(GameMode.SURVIVAL); 
 				SkyBlock.spawnFireworks(p.getLocation(), 1, true, false, Type.BURST, Color.LIME);
 			}else p.performCommand("is create");
@@ -182,17 +185,20 @@ public class SkyBlockCommandFunction {
 				SkyFileManager.claimIsland(id, p);
 				p.sendMessage(Prefixes.SERVER.getPrefix()+"§aDeine Insel wurde erfolgreich erstellt");
 				p.sendMessage(Prefixes.SERVER.getPrefix()+"Du hast die Insel Nummer §b"+id+"§7!");
+				
 				is_loc = new Location(SkyFileManager.getWorld(p.getUniqueId().toString()),
 						SkyFileManager.getLocationX(p.getUniqueId().toString()),
 						SkyBlockGenerator.islandHeight,
 						SkyFileManager.getLocationZ(p.getUniqueId().toString()));
+				
 				p.sendMessage(Prefixes.SERVER.getPrefix()+"§aInsel wird generiert...");
-				SchematicManager.pasteSchematicAt(is_loc, p, "island_2", true);
+				SchematicManager.pasteSchematicAt(is_loc, p, island_schematic_name, true);
 			}
 			IslandManager.loadProfile(p);
-//		if(is_loc.getBlock().getType().isSolid() == false && is_loc.clone().add(0,-1,0).getBlock().getType().isSolid() == false) is_loc.getBlock().setType(Material.STONE);
-			p.setGameMode(GameMode.SPECTATOR);
-			p.teleport(is_loc);
+			
+			if(is_loc.getBlock().getType().isSolid() == false && is_loc.clone().add(0,-1,0).getBlock().getType().isSolid() == false) is_loc.getBlock().setType(Material.STONE);
+//			p.setGameMode(GameMode.SPECTATOR);
+//			p.teleport(is_loc);
 		}
 		return true;
 	}

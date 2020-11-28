@@ -73,8 +73,14 @@ public class SchematicManager implements Listener {
 		return schem.pasteTimed(p, p.getLocation().clone(), name, 0l, 0l, isGameplay);
 	}
 	public static boolean pasteSchematicAt(Location loc, Player p, String name, boolean isGameplay) {
-		Schematic schem = new Schematic(getProfile(p));
-		return schem.pasteTimed(p, loc.clone(), name, 0l, 0l, isGameplay);
+//		Schematic schem = new Schematic(getProfile(p));
+//		return schem.pasteTimed(p, loc.clone(), name, 0l, 0l, isGameplay);
+//		if(isGameplay) p.setGameMode(GameMode.SPECTATOR);
+		boolean success = IslandPaster.pasteIsland(p, loc, isGameplay);
+		if(SkyBlockCommandFunction.isCreating.contains(p)) SkyBlockCommandFunction.isCreating.remove(p);
+		p.setGameMode(GameMode.SURVIVAL);
+		p.performCommand("is");
+		return success;
 	}
 	
 	@EventHandler

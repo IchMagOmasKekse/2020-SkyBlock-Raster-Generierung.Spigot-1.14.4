@@ -11,8 +11,8 @@ import org.bukkit.entity.Player;
 import me.dreamisland.de.Prefixes;
 import me.dreamisland.de.SkyBlock;
 import me.dreamisland.de.schematics.SchematicManager;
-import me.dreamisland.de.schematics.SkyRect;
 import me.dreamisland.de.schematics.SchematicManager.SchematicProfile;
+import me.dreamisland.de.schematics.SkyRect;
 
 public class SchematicCommands implements CommandExecutor {
 	

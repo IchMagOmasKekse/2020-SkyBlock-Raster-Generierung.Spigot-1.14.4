@@ -48,10 +48,18 @@ public class ChestGenerator implements Listener, CommandExecutor {
 			
 			ItemStack item = new ItemStack(Material.STONE);
 			ItemMeta meta = item.getItemMeta();
-			meta.getLore().clear();
-			meta.getLore().set(0, "Line 1");
-			meta.getLore().set(1, "Line 2");
-			meta.getLore().set(2, "Line 3");
+			ArrayList<String> lore = new ArrayList<String>();
+			if(meta.hasLore()) {
+				meta.getLore().clear();
+				meta.getLore().set(0, "Line 1");
+				meta.getLore().set(1, "Line 2");
+				meta.getLore().set(2, "Line 3");				
+			}else {
+				lore.add("Line 1");
+				lore.add("Line 2");
+				lore.add("Line 3");
+				meta.setLore(lore);
+			}
 			item.setAmount(10);
 			meta.setDisplayName("Displayname");
 			meta.setUnbreakable(false);

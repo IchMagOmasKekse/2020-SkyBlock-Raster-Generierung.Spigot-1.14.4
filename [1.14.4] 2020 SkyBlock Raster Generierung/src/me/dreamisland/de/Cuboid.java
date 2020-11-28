@@ -1,7 +1,6 @@
 package me.dreamisland.de;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 
 import org.bukkit.Location;
@@ -9,7 +8,6 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class Cuboid {
 

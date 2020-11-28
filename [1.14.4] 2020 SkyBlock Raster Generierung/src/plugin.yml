@@ -1,7 +1,7 @@
 name: SkyBlockSimulation
 author: TeamDream
-version: 1.0
-api-version: 1.15
+version: 1.0.0
+api-version: 1.16
 main: me.dreamisland.de.SkyBlock
 commands:
   simulate:

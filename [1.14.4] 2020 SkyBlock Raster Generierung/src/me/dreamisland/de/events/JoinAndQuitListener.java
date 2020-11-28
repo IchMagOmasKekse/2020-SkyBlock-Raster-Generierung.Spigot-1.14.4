@@ -34,7 +34,7 @@ public class JoinAndQuitListener implements Listener {
 				att.setPermission("mv.bypass.gamemode.*", true);
 			}
 		}
-		SkyBlock.sendChangelog(e.getPlayer());
+//		SkyBlock.sendChangelog(e.getPlayer());
 	}
 	
 	@EventHandler
