@@ -13,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFromToEvent;
 
 import me.dreamisland.de.SkyBlock;
+import me.dreamisland.de.SkyBlockGenerator;
 
 public class CobbleGenerator implements Listener {
 	
@@ -41,6 +42,7 @@ public class CobbleGenerator implements Listener {
 	@EventHandler
 	public void onCobble(BlockFromToEvent e) {
 	    Material type = e.getBlock().getType();
+	    if(e.getBlock().getWorld().getName().equals(SkyBlockGenerator.skyworldName))
 	    if(type == Material.WATER || type == Material.LAVA){
 	        Block b = e.getToBlock();
 	        if(b.getType() == Material.AIR){

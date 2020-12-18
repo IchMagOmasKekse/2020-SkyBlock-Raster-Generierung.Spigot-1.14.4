@@ -59,6 +59,12 @@ public class Camera {
 		y+=move_speed * direction;
 //		y+=SquareCraft.blocksize * direction;
 	}
+	public void addOffset(float offset) {
+		this.offset+=offset;
+	}
+	public void subtractOffset(float offset) {
+		this.offset-=offset;
+	}
 	
 	public float getOffset() {
 		return offset;

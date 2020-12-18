@@ -41,14 +41,14 @@ public class SchematicManager implements Listener {
 		SkyBlock.getInstance().getServer().getPluginManager().registerEvents(this, SkyBlock.getInstance());
 	}
 	/*
-	 * TODO: Gibt den Pfad der Gespeicherten Schematic-Files zurÃ¼ck
+	 * TODO: Gibt den Pfad der Gespeicherten Schematic-Files zurück
 	 */
 	public static String getSchematicPath() {
 		return "plugins/SkyBlock/Schematics/Saved/";
 	}
 	
 	/*
-	 * TODO: Gibt das Aktuelle Schematic Profil eines Spielers zurÃ¼ck
+	 * TODO: Gibt das Aktuelle Schematic Profil eines Spielers zurück
 	 */
 	public static SchematicProfile getProfile(Player p) {
 		if(profiles.containsKey(p)) return profiles.get(p);
@@ -56,7 +56,7 @@ public class SchematicManager implements Listener {
 	}
 	
 	/*
-	 * TODO: Registriert ein SchematicProfil und gibt dieses zurÃ¼ck
+	 * TODO: Registriert ein SchematicProfil und gibt dieses zurück
 	 */
 	public static SchematicProfile registerProfile(Player p) {
 		if(profiles.containsKey(p) == false) {
@@ -91,11 +91,11 @@ public class SchematicManager implements Listener {
 			if(e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 				e.setCancelled(true);
 				profile.setPos2(e.getClickedBlock().getLocation());
-				p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Position Â§72 Â§ewurde gesetzt");
+				p.sendMessage(Prefixes.SCHEMATIC.px()+"Position Â§72 Â§ewurde gesetzt");
 			}else if(e.getAction() == Action.LEFT_CLICK_BLOCK) {
 				e.setCancelled(true);
 				profile.setPos1(e.getClickedBlock().getLocation());
-				p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Position Â§71 Â§ewurde gesetzt");
+				p.sendMessage(Prefixes.SCHEMATIC.px()+"Position Â§71 Â§ewurde gesetzt");
 			}
 		}
 	}
@@ -116,14 +116,14 @@ public class SchematicManager implements Listener {
 		}
 		
 		/*
-		 * TODO: Gibt die Schematic zurÃ¼ck
+		 * TODO: Gibt die Schematic zurück
 		 */
 		public Schematic getSchematic() {
 			return schematic;
 		}
 		
 		/*
-		 * TODO: Gibt zurÃ¼ck, ob die Schematic bereit zum speichern ist
+		 * TODO: Gibt zurück, ob die Schematic bereit zum speichern ist
 		 */
 		public boolean readyToSave() {
 			return true;
@@ -132,7 +132,7 @@ public class SchematicManager implements Listener {
 		}
 		
 		/*
-		 * TODO: Gibt zurÃ¼ck, ob die Schematic bereit zum kopieren ist
+		 * TODO: Gibt zurück, ob die Schematic bereit zum kopieren ist
 		 */
 		public boolean readyToCopy() {
 			if(pos1 != null && pos2 != null) return true;
@@ -154,7 +154,7 @@ public class SchematicManager implements Listener {
 		}
 		
 		/*
-		 * TODO: Setzt und Gibt die Pos1 und Pos2 zurÃ¼ck
+		 * TODO: Setzt und Gibt die Pos1 und Pos2 zurück
 		 */
 		public Location getPos1() {
 			return pos1;
@@ -174,7 +174,7 @@ public class SchematicManager implements Listener {
 		}
 		
 		/*
-		 * TODO: Gibt den Spieler zurÃ¼ck
+		 * TODO: Gibt den Spieler zurück
 		 */
 		public Player getHost() {
 			return p;
@@ -301,7 +301,7 @@ public class SchematicManager implements Listener {
 		}
 		
 		/*
-		 * TODO: Setzt und Gibt die Offsets zurÃ¼ck
+		 * TODO: Setzt und Gibt die Offsets zurück
 		 */
 		public void setOffsetX(int offsetX) {
 			this.offsetX = offsetX;
@@ -323,7 +323,7 @@ public class SchematicManager implements Listener {
 		}
 		
 		/*
-		 * TODO: Liest die BlÃ¶cke in der Welt in einem Bereich aus und speichert diese
+		 * TODO: Liest die Blöcke in der Welt in einem Bereich aus und speichert diese
 		 */
 		public boolean copy(boolean withAir) {
 			content = SchematicReaderAndWriter.copy(profile, profile.getPos1(), profile.getPos2(), withAir);
@@ -331,8 +331,8 @@ public class SchematicManager implements Listener {
 		}
 		
 		/*
-		 * TODO: save(overwrite) soll die geladene Schematic speichern und die Datei Ã¼berschreiben,
-		 *       falls dies gewÃ¼nscht ist
+		 * TODO: save(overwrite) soll die geladene Schematic speichern und die Datei überschreiben,
+		 *       falls dies gewünscht ist
 		 */
 		public boolean save(boolean overwrite) {
 			return SchematicReaderAndWriter.save(profile, profile.saved_schematic_name, overwrite);
@@ -350,7 +350,7 @@ public class SchematicManager implements Listener {
 		}
 		
 		/*
-		 * TODO: FÃ¼llt die Chests mit einem Kit
+		 * TODO: Füllt die Chests mit einem Kit
 		 */
 		public void fillChests(ArrayList<Location> chests, String kit) {
 			for(Location l : chests) {
@@ -363,7 +363,7 @@ public class SchematicManager implements Listener {
 		
 		
 		/*
-		 * TODO: pasteTimed() platziert eine Schematic Block fÃ¼r Block und nicht alles mit einmal
+		 * TODO: pasteTimed() platziert eine Schematic Block für Block und nicht alles mit einmal
 		 */
 		private boolean postProcess = false;
 		public boolean pasteTimed(final CommandSender sender, final Location origin, final String file_name, long delay, long period, final boolean isGameplay) {
@@ -453,17 +453,17 @@ public class SchematicManager implements Listener {
 											profile.getSchematic().locationWherePlayerWillSpawn = player_spawn.clone();
 											if(p != null) {
 												p.teleport(player_spawn);												
-												SkyFileManager.setSpawn(p, player_spawn);
+												SkyFileManager.setPlayerDefinedIslandSpawn(p, player_spawn);
 											}
 										}
 										if(p != null) {
 											if(SkyBlockCommandFunction.isCreating.contains(p)) SkyBlockCommandFunction.isCreating.remove(p);
 											SkyBlock.spawnFireworks(p.getLocation(), 1, true, false, Type.BURST, Color.LIME);
 											p.setGameMode(GameMode.SURVIVAL);
-											p.sendMessage(Prefixes.SERVER.getPrefix()+"Viel SpaÃŸ!");
+											p.sendMessage(Prefixes.SERVER.px()+"Viel SpaÃŸ!");
 										}
 									}else {
-										sender.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Schematic wurde platziert");
+										sender.sendMessage(Prefixes.SCHEMATIC.px()+"Schematic wurde platziert");
 									}
 								}
 							}else finish_delay--;
@@ -547,7 +547,7 @@ public class SchematicManager implements Listener {
 //		}
 		
 		/*
-		 * TODO: Gibt den Spawn des Spielers zurÃ¼ck
+		 * TODO: Gibt den Spawn des Spielers zurück
 		 */
 		public Location getPlayerSpawn() {
 			return locationWherePlayerWillSpawn;
@@ -561,7 +561,7 @@ public class SchematicManager implements Listener {
 		}
 		
 		/*
-		 * TODO: Gibt die Anzahl an BlÃ¶cken der Schematic zurÃ¼ck
+		 * TODO: Gibt die Anzahl an Blöcken der Schematic zurück
 		 */
 		public int getBlockAmount() {
 			return content.size();
@@ -570,7 +570,7 @@ public class SchematicManager implements Listener {
 		public static class BlockStore {
 			
 			/*
-			 * TODO: BlockStore soll alle BlÃ¶cke einer Ã„nderung speichern, damit man /s undo machen kann
+			 * TODO: BlockStore soll alle Blöcke einer Ã„nderung speichern, damit man /s undo machen kann
 			 */
 			public HashMap<Location, Block> content = new HashMap<Location, Block>();
 			public int id = 0;
@@ -586,7 +586,7 @@ public class SchematicManager implements Listener {
 			}
 			
 			/*
-			 * TODO: Alle BlÃ¶cke werden wieder dort platziert, wo sie standen
+			 * TODO: Alle Blöcke werden wieder dort platziert, wo sie standen
 			 */
 			public boolean restore() {
 				for(Location l : content.keySet()) {

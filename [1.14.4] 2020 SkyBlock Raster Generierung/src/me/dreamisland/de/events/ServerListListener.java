@@ -15,7 +15,8 @@ public class ServerListListener implements Listener {
 	
 	@EventHandler
 	public void onPing(ServerListPingEvent e) {
-		e.setMotd("Â§cTesting, Testing und noch mehr Testing");
+		/* Ausgeschaltet, weil die MOTD vom Lobby System gesteuert werden soll */
+//		e.setMotd("§aSkyblock §6§l950% RELEASE BOOSTER!");
 	}
 	
 }

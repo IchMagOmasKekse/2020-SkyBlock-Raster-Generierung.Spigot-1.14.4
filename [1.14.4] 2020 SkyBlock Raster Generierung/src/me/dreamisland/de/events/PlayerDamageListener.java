@@ -14,8 +14,8 @@ public class PlayerDamageListener implements Listener {
 	}
 	
 	/*
-	 * TODO: onDamage() Soll gepr√ºft werden, ob der SPieler Schaden durch eine Rackete bekommen hat
-	 * Wenn ja, dann soll dieses Event Abgrebrochen werden, wenn diese Rackete 'SERVER' hei√üt
+	 * TODO: onDamage() Soll gepr¸ft werden, ob der Spieler Schaden durch eine Rackete bekommen hat
+	 * Wenn ja, dann soll dieses Event Abgrebrochen werden, wenn diese Rackete 'SERVER' heiﬂt
 	 */
 	@EventHandler
 	public void onDamage(EntityDamageByEntityEvent e) {

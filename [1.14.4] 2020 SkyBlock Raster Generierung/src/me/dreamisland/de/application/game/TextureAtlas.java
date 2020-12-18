@@ -26,7 +26,7 @@ public class TextureAtlas {
 		return image;
 	}
 	public static void reloadTextures() {
-		/* Lï¿½dt alle Texturen neu und fï¿½gt sie zum Atlas(textures(hashmap)) hinzu */
+		/* Lädt alle Texturen neu und fügt sie zum Atlas(textures(hashmap)) hinzu */
 		textures.clear();
 	}
 	

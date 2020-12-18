@@ -20,7 +20,7 @@ public class SkyWorldGenerator extends ChunkGenerator {
 	 * TODO: Kann als Post-ChunkGenerator verstanden werden
 	 *
 	 * - BlockPopulator werden dann eingesetzt, wenn die Chunks schon generiert sind,
-	 *   und nun noch eine ChunkÃ¼bergreifende Struktur geplaced werden muss(zum Beispiel Ein Dorf)
+	 *   und nun noch eine Chunkübergreifende Struktur geplaced werden muss(zum Beispiel Ein Dorf)
 	 *
 	 */
 	public List<BlockPopulator> getDefaultPopulators(World world) {

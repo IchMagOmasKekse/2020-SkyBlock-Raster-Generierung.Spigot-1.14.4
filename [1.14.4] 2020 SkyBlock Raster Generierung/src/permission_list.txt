@@ -1,5 +1,5 @@
 #Alle Permission von diesem Plugin
-admin permissions: (MÃ¼ssen noch in den Methoden hasPermission(Player p, String permission) implementiert werden!)
+admin permissions: (Müssen noch in den Methoden hasPermission(Player p, String permission) implementiert werden!)
   - *
   - skyblock.*
   - skyblock.island.*
@@ -23,10 +23,10 @@ function:
   deny: skyblock.deny
   schematic(set position): skyblock.schematic.useaxe
   inventar speichern: skyblock.chestsaver
-  am Spawn jeden GameMode nehmen kÃ¶nnen: skyblock.spawn.gamemode.bypass
-  Ã¼berall bauen: skyblock.modify.skyrects
-  Ã¼berall mit Entities interagieren: skyblock.interact.entity
-  Ã¼berall mit BlÃ¶cken interagieren: skyblock.interact.blocks
+  am Spawn jeden GameMode nehmen können: skyblock.spawn.gamemode.bypass
+  überall bauen: skyblock.modify.skyrects
+  überall mit Entities interagieren: skyblock.interact.entity
+  überall mit Blöcken interagieren: skyblock.interact.blocks
   
   
   

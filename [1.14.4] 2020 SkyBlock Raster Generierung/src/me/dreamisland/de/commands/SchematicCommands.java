@@ -73,31 +73,31 @@ public class SchematicCommands implements CommandExecutor {
 						
 					}else if(args[0].equalsIgnoreCase("list") && SkyBlock.hasPermission(p, "skyblock.schematics.list")) {
 						File fi = new File("plugins/SkyBlock/Schematics/Saved/");
-						p.sendMessage("Â§7Alle verfÃ¼gbaren Schematics:");
+						p.sendMessage("§7Alle verfügbaren Schematics:");
 						if(fi.listFiles().length == 0) {
-							p.sendMessage(" Â§cÂ§oKeine Schematics vorhanden!");							
+							p.sendMessage(" §c§oKeine Schematics vorhanden!");							
 						}else {							
 							for(File f : fi.listFiles()) {
 								if(f.getAbsoluteFile().getName().endsWith(".yml")) {
-									p.sendMessage(" Â§7- Â§6"+f.getAbsoluteFile().getName());
+									p.sendMessage(" §7- §6"+f.getAbsoluteFile().getName());
 								}
 							}
 						}
 					}if(args[0].equalsIgnoreCase("copy") && SkyBlock.hasPermission(p, "skyblock.schematics.copy")) {
 						SchematicProfile profile = SchematicManager.getProfile(p);
 						if(profile.readyToCopy()) {
-							p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Die Region wird kopiert..");
+							p.sendMessage(Prefixes.SCHEMATIC.px()+"Die Region wird kopiert..");
 							if(profile.getSchematic().copy(true)) {
-								p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Die Region wurde kopiert");
-							}else p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Â§cDie Region konnte nicht kopiert werden");
+								p.sendMessage(Prefixes.SCHEMATIC.px()+"Die Region wurde kopiert");
+							}else p.sendMessage(Prefixes.SCHEMATIC.px()+"§cDie Region konnte nicht kopiert werden");
 						}else {
-//							p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Ich habe die Copy Funktion erstmal deaktiviert. Sie bringt den Server zum Crashen hehe");
-							p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Du musst Â§7Â§n2Â§e Location auswÃ¤hlen");
+//							p.sendMessage(Prefixes.SCHEMATIC.px()+"Ich habe die Copy Funktion erstmal deaktiviert. Sie bringt den Server zum Crashen hehe");
+							p.sendMessage(Prefixes.SCHEMATIC.px()+"Du musst §7§n2§e Location auswählen");
 						}
 					}else if(args[0].equalsIgnoreCase("save") && SkyBlock.hasPermission(p, "skyblock.schematics.save")) {
-						p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"/s save <Dateiname> [-o]");
+						p.sendMessage(Prefixes.SCHEMATIC.px()+"/s save <Dateiname> [-o]");
 					}else if(args[0].equalsIgnoreCase("paste") && SkyBlock.hasPermission(p, "skyblock.schematics.paste")) {
-						p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"/s paste <Dateifile>");
+						p.sendMessage(Prefixes.SCHEMATIC.px()+"/s paste <Dateifile>");
 					}
 					break;
 				case 2:
@@ -105,28 +105,28 @@ public class SchematicCommands implements CommandExecutor {
 						if(args[1].equalsIgnoreCase("-a")) {							
 							SchematicProfile profile = SchematicManager.getProfile(p);
 							if(profile.readyToCopy()) {
-								p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Die Region wird kopiert..");
+								p.sendMessage(Prefixes.SCHEMATIC.px()+"Die Region wird kopiert..");
 								if(profile.getSchematic().copy(false)) {
-									p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Die Region wurde kopiert");
-								}else p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Â§cDie Region konnte nicht kopiert werden");
+									p.sendMessage(Prefixes.SCHEMATIC.px()+"Die Region wurde kopiert");
+								}else p.sendMessage(Prefixes.SCHEMATIC.px()+"§cDie Region konnte nicht kopiert werden");
 							}else {
-//								p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Ich habe die Copy Funktion erstmal deaktiviert. Sie bringt den Server zum Crashen hehe");
-								p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Du musst Â§7Â§n2Â§e Locations auswÃ¤hlen");
+//								p.sendMessage(Prefixes.SCHEMATIC.px()+"Ich habe die Copy Funktion erstmal deaktiviert. Sie bringt den Server zum Crashen hehe");
+								p.sendMessage(Prefixes.SCHEMATIC.px()+"Du musst §7§n2§e Locations auswählen");
 							}
 						}
 					}else if(args[0].equalsIgnoreCase("save") && SkyBlock.hasPermission(p, "skyblock.schematics.save")) {
 						SchematicProfile profile = SchematicManager.getProfile(p);
 						if(profile.readyToSave()) {
 							profile.setSavedSchematicName(args[1]);
-							p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"'Â§e"+args[1]+"Â§e' wird gespeichert...");
+							p.sendMessage(Prefixes.SCHEMATIC.px()+"'§e"+args[1]+"§e' wird gespeichert...");
 							if(profile.getSchematic().save(false)) {
-								p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Schematic 'Â§e"+args[1]+"Â§e'  wurde gespeichert");								
+								p.sendMessage(Prefixes.SCHEMATIC.px()+"Schematic '§e"+args[1]+"§e'  wurde gespeichert");								
 							}
-						}else p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Eine Schematic kann aktuell nicht gespeichert werden");
+						}else p.sendMessage(Prefixes.SCHEMATIC.px()+"Eine Schematic kann aktuell nicht gespeichert werden");
 					}else if(args[0].equalsIgnoreCase("paste") && SkyBlock.hasPermission(p, "skyblock.schematics.paste")) {
 						if(SchematicManager.pasteSchematic(p, args[1], false)) {
-							p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Schematic wird platziert...");
-						}else p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Die Schematic existiert nicht");
+							p.sendMessage(Prefixes.SCHEMATIC.px()+"Schematic wird platziert...");
+						}else p.sendMessage(Prefixes.SCHEMATIC.px()+"Die Schematic existiert nicht");
 					}
 					break;
 				case 3:
@@ -135,11 +135,11 @@ public class SchematicCommands implements CommandExecutor {
 							SchematicProfile profile = SchematicManager.getProfile(p);
 							if(profile.readyToSave()) {
 								profile.setSavedSchematicName(args[1]);
-								p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"'Â§e"+args[1]+"Â§e' wird gespeichert...");
+								p.sendMessage(Prefixes.SCHEMATIC.px()+"'§e"+args[1]+"§e' wird gespeichert...");
 								if(profile.getSchematic().save(true)) {
-									p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Schematic 'Â§e"+args[1]+"Â§e'  wurde gespeichert");								
+									p.sendMessage(Prefixes.SCHEMATIC.px()+"Schematic '§e"+args[1]+"§e'  wurde gespeichert");								
 								}
-							}else p.sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Eine Schematic kann aktuell nicht gespeichert werden");
+							}else p.sendMessage(Prefixes.SCHEMATIC.px()+"Eine Schematic kann aktuell nicht gespeichert werden");
 						}
 					}
 					break;
@@ -152,17 +152,17 @@ public class SchematicCommands implements CommandExecutor {
 	}
 	
 	/*
-	 * TODO: sendCommandInfo() sendet Information Ã¼ber einen command an einen Spieler
+	 * TODO: sendCommandInfo() sendet Information über einen command an einen Spieler
 	 */
 	public void sendCommandInfo(Player p, String cmd) {
 		if(cmd.equalsIgnoreCase("s")) {
 			p.sendMessage("");
-			p.sendMessage(" Â§6Info: Â§eMit der Gold Axt kann man die region markieren");
-			p.sendMessage(" Â§7Â» Â§6/s Â§fHilfe zum Schematic-System");
-			p.sendMessage(" Â§7Â» Â§6/s list Â§fListe aller Schematics");
-			p.sendMessage(" Â§7Â» Â§6/s save <Name> Â§fSpeichert ausgewÃ¤hlte Schematic");
-			p.sendMessage(" Â§7Â» Â§6/s copy [-a] Â§fKopiert Bereich zur Schematic");
-			p.sendMessage(" Â§7Â» Â§6/s paste <Name> Â§fPaste eine Schematic");
+			p.sendMessage(" §6Info: §eMit der Gold Axt kann man die region markieren");
+			p.sendMessage(" §7» §6/s §fHilfe zum Schematic-System");
+			p.sendMessage(" §7» §6/s list §fListe aller Schematics");
+			p.sendMessage(" §7» §6/s save <Name> §fSpeichert ausgewählte Schematic");
+			p.sendMessage(" §7» §6/s copy [-a] §fKopiert Bereich zur Schematic");
+			p.sendMessage(" §7» §6/s paste <Name> §fPaste eine Schematic");
 		}
 	}
 }

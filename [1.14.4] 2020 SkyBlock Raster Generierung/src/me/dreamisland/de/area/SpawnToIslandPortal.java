@@ -33,7 +33,7 @@ public class SpawnToIslandPortal implements Listener {
 	}
 	
 	/*
-	 * TODO: check() Ã¼berprÃ¼ft jeden Spieler, ob diese in dem Portal ist
+	 * TODO: check() überprüft jeden Spieler, ob diese in dem Portal ist
 	 */
 	public void check() {
 		for(Player p : Bukkit.getWorld("world").getPlayers()) {

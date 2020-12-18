@@ -56,10 +56,10 @@ public class IndexFileGenerator {
 			cury = 300;
 			int left = 1;
 			int round = 0;
-			int addx1 = 1; //←
-			int addy1 = 1; //↓
-			int addx2 = 2; //→
-			int addy2 = 0; //↑
+			int addx1 = 1; //â†�
+			int addy1 = 1; //â†“
+			int addx2 = 2; //â†’
+			int addy2 = 0; //â†‘
 			while(left < (amountOfIslands+1) || pause == true) {
 				
 				if(round==0) {
@@ -67,7 +67,7 @@ public class IndexFileGenerator {
 					left++;
 				}
 				
-				if(left < (amountOfIslands+1)) { //↑
+				if(left < (amountOfIslands+1)) { //â†‘
 					for(int a = 0; a != addy2; a++) {
 						if(left < (amountOfIslands+1)) {
 							cury-=(issize+spaceBetweenIslands);
@@ -77,7 +77,7 @@ public class IndexFileGenerator {
 					}
 				}
 				
-				if(left < (amountOfIslands+1)) { //←
+				if(left < (amountOfIslands+1)) { //â†�
 					for(int a = 0; a != addx1; a++) {
 						if(left < (amountOfIslands+1)) {						
 							curx-=(issize+spaceBetweenIslands);
@@ -87,7 +87,7 @@ public class IndexFileGenerator {
 					}			
 				}
 				
-				if(left < (amountOfIslands+1)) { //↓
+				if(left < (amountOfIslands+1)) { //â†“
 					for(int a = 0; a != addy1; a++) {
 						if(left < (amountOfIslands+1)) {						
 							cury+=(issize+spaceBetweenIslands);
@@ -97,7 +97,7 @@ public class IndexFileGenerator {
 					}	
 				}
 				
-				if(left < (amountOfIslands+1)) { //→
+				if(left < (amountOfIslands+1)) { //â†’
 					for(int a = 0; a != addx2; a++) {
 						if(left < (amountOfIslands+1)) {
 							curx+=(issize+spaceBetweenIslands);
@@ -106,16 +106,16 @@ public class IndexFileGenerator {
 						}else break;
 					}
 				}
-				addy2+=2; //↑
-				addx1+=2; //←
-				addy1+=2; //↓
-				addx2+=2; //→
+				addy2+=2; //â†‘
+				addx1+=2; //â†�
+				addy1+=2; //â†“
+				addx2+=2; //â†’
 				round++;
 			}
 			
 			if(generateDatabank) {			
 				/*
-				 * TODO: Exportieren der Island-Databank-File für Übernahme auf dem Server
+				 * TODO: Exportieren der Island-Databank-File fÃ¼r Ãœbernahme auf dem Server
 				 */
 				try { cfg.save(file); return true;} catch (IOException e) { e.printStackTrace(); return false;}
 			}else return true;
@@ -164,13 +164,20 @@ public class IndexFileGenerator {
 			else if(id >= 66 && id <= 101) c = Color.GREEN;
 		}
 		
-		public void render(Graphics g) {
-			g.setColor(c);
-			g.fillRect(x, y, issize, issize);
-			g.setColor(Color.BLACK);
-			g.drawString(id+"", x+10, y+10);
-			g.setColor(Color.WHITE);
-			g.drawString(id+"", x+12, y+11);
+		public boolean render(Graphics g) {
+			if((x+(int)(issize-SkyBlockAdminTool.getCamera().getX())) > 0 &&
+					(x+(int)(issize-SkyBlockAdminTool.getCamera().getX())) < SkyBlockAdminTool.getInstance().getWindow().frame.getWidth() &&
+					(y+(int)(issize-SkyBlockAdminTool.getCamera().getY())) > 0 &&
+					(y+(int)(issize-SkyBlockAdminTool.getCamera().getY())) < SkyBlockAdminTool.getInstance().getWindow().frame.getHeight()) {
+				g.setColor(c);
+				g.drawRect(x, y, (int)(issize-SkyBlockAdminTool.getCamera().getOffset()), (int)(issize-SkyBlockAdminTool.getCamera().getOffset()));
+				g.setColor(Color.BLACK);
+				g.drawString(id+"", x+((int)((issize-SkyBlockAdminTool.getCamera().getOffset())/2)), y+10);
+				g.setColor(Color.WHITE);
+				g.drawString(id+"", x+((int)((issize-SkyBlockAdminTool.getCamera().getOffset())/2))+2, y+11);
+				return true;
+			}
+			return false;
 		}
 		
 	}

@@ -13,7 +13,7 @@ MOTD On Ping: '&f-> -> -> &a&l{SERVER_PREFIX}&f <- <- <-\§dTest MOTD. '
 MOTD On Join:
   - 'Test Nachricht'
   - 'Zeile 2'
-  - '&7Test: %{USERNAME}-Replacer Test: Dein Name ist &e{USERNAME} &7richtig?'
+  - '&7Test: %{USERNAME}-Replacer Test: Dein Name ist &e{USERNAME}&7, richtig?'
 #  'MOTD On Join Once' ist die Nachricht, die jeder Spieler bekommt, wenn er zum ersten Mal an einem Tag den Server betritt. Perfekt um einen Changelog mitzuteilen
 MOTD On Join Once:
   - '&9Alle Neuerungen auf einem Blick'

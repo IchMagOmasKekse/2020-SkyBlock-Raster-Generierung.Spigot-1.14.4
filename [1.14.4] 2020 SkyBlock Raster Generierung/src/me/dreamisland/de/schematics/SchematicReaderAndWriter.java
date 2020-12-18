@@ -29,7 +29,7 @@ public class SchematicReaderAndWriter {
 	}
 
 	/*
-	 * TODO: read() lieÃŸt die BlÃ¶cke aus der Welt aus und speichert diese in eine ConcurrentHashMap<> die dann in die HashMap 'contents' hinzugefÃ¼gt wird.
+	 * TODO: read() ließt die Blöcke aus der Welt aus und speichert diese in eine ConcurrentHashMap<> die dann in die HashMap 'contents' hinzugefügt wird.
 	 *       Dies ist eine Art 'Session' die man immer wieder abrufen kann
 	 */
 	public static ConcurrentHashMap<Location, Block> copy(SchematicProfile profile, Location pos1, Location pos2, boolean withAir) {
@@ -72,18 +72,18 @@ public class SchematicReaderAndWriter {
 	}
 	
 	/*
-	 * TODO: save() speichert die BlÃ¶cke aus der Session in eine Datei
+	 * TODO: save() speichert die Blöcke aus der Session in eine Datei
 	 */
 	public static boolean save(SchematicProfile profile, String filename, boolean overwrite) {
 		File file = new File("plugins/SkyBlock/Schematics/Saved/"+filename+".yml");
 		if(file.exists()) {
 			if(overwrite == false) {
-				profile.getHost().sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Â§cDiese Schematic existiert bereits");
+				profile.getHost().sendMessage(Prefixes.SCHEMATIC.px()+"Â§cDiese Schematic existiert bereits");
 				return false;
 			}
 		}
 		if(contents.containsKey(profile) == false){
-			profile.getHost().sendMessage(Prefixes.SCHEMATIC.getPrefix()+"Â§cKein Bereich kopiert");
+			profile.getHost().sendMessage(Prefixes.SCHEMATIC.px()+"Â§cKein Bereich kopiert");
 			return false;
 		}else {
 			FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
@@ -123,7 +123,7 @@ public class SchematicReaderAndWriter {
 	}
 	
 	/*
-	 * TODO: readSchematic() liest eine Schematic aus und gibt eine HashMap mit dem Content zurÃ¼ck
+	 * TODO: readSchematic() liest eine Schematic aus und gibt eine HashMap mit dem Content zurück
 	 */
 	public static ConcurrentHashMap<Location, BlockProfile> readSchematic(String name) {
 		File file = new File("plugins/SkyBlock/Schematics/Saved/"+name+".yml");
@@ -160,7 +160,7 @@ public class SchematicReaderAndWriter {
 	}
 	
 	/*
-	 * TODO: writeBlockToFile() schreibt einen Block in eine Ã¼bergebene FileConfiguration
+	 * TODO: writeBlockToFile() schreibt einen Block in eine übergebene FileConfiguration
 	 */
 	public static FileConfiguration writeBlockToFile(FileConfiguration cfg, int x, int y, int z, Block b, int counter) {
 		cfg.set("Schematic.Content.B-"+counter+".Location.xDiff", x);

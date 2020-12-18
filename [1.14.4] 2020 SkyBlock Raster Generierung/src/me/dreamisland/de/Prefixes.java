@@ -12,7 +12,10 @@ public enum Prefixes {
 	QUIT("§c§l- §7"),
 	DEATH("§c§lTOD §8✖ §e"),
 	REQUEST("§3§lANFRAGE §8✖ §b"),
-	SCHEMATIC("§6§lSCHEMATIC §8✖ §e");
+	SCHEMATIC("§6§lSCHEMATIC §8✖ §e"),
+	DEVELOPER("§9§lDEV §8✖ §e"),
+	HOVERABLE("§a§lSKYBLOCK §8✖ §eⓘ §f"),
+	CLICKABLE("§a§lSKYBLOCK §8✖ §b➠ §f");
 	
 	
 	String prefix = "";
@@ -21,7 +24,7 @@ public enum Prefixes {
 		this.prefix = prefix;
 	}
 	
-	public String getPrefix() {
+	public String px() {
 		return prefix;
 	}
 	

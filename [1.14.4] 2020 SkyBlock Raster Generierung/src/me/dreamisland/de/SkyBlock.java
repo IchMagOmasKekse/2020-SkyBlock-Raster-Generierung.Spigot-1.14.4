@@ -2,6 +2,7 @@ package me.dreamisland.de;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -20,19 +21,21 @@ import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import me.dreamisland.de.Chat.MessageType;
 import me.dreamisland.de.application.game.SkyBlockAdminTool;
-import me.dreamisland.de.area.BuildProtection;
+import me.dreamisland.de.area.IslandProtection;
 import me.dreamisland.de.area.SpawnToIslandPortal;
 import me.dreamisland.de.commands.SchematicCommands;
 import me.dreamisland.de.commands.SkyBlockCommands;
 import me.dreamisland.de.events.AsyncChatListener;
+import me.dreamisland.de.events.BlockDetectorListener;
 import me.dreamisland.de.events.JoinAndQuitListener;
 import me.dreamisland.de.events.PlayerDamageListener;
-import me.dreamisland.de.events.PlayerRespawnAndDeathListener;
 import me.dreamisland.de.events.ServerListListener;
 import me.dreamisland.de.filemanagement.SkyFileManager;
-import me.dreamisland.de.generators.CobbleGenerator;
+import me.dreamisland.de.generators.CobbleGeneratorRenewed;
 import me.dreamisland.de.generators.SkyWorldGenerator;
+import me.dreamisland.de.inventory.ChestContent;
 import me.dreamisland.de.profiles.IslandManager;
 import me.dreamisland.de.requests.Request.RequestManager;
 import me.dreamisland.de.schematics.ChestGenerator;
@@ -42,7 +45,7 @@ import me.dreamisland.de.schematics.SchematicManager;
 public class SkyBlock extends JavaPlugin {
 	
 	private static SkyBlock instance = null;
-	public static SkyBlock getInstance() { return instance; } //Gebe die einzigartige Instanz der Main-Klasse zurück
+	public static SkyBlock getInstance() { return instance; } //Gebe die einzigartige Instanz der Main-Klasse zurck
 	public static Location spawn = null;
 	public boolean generateNewWorld = false;
 	public BukkitRunnable spawn_checker = null;
@@ -53,7 +56,7 @@ public class SkyBlock extends JavaPlugin {
 		instance = this;
 		preInit(); //Benötigte Inhalte werden geladen
 		init(); //Einstellungen werden getätigt
-		postInit(); //Listener, Commands, Craftingrezepte und weitere Additionen werden hinzugefügt
+		postInit(); //Listener, Commands, Craftingrezepte und weitere Additionen werden hinzugefgt
 		
 		for(Player p : Bukkit.getOnlinePlayers()) sendRunningVersion(p);
 	}
@@ -72,7 +75,7 @@ public class SkyBlock extends JavaPlugin {
 	 */
 	public void preInit() {
 //		spawn = Bukkit.getWorld("world").getSpawnLocation();
-		spawn = new Location(Bukkit.getWorld("world"), -38, 72, -9, -90, -32);
+		spawn = new Location(Bukkit.getWorld("world"), 24, 94, 162, 0, 0);
 	}
 	
 	/**
@@ -80,16 +83,23 @@ public class SkyBlock extends JavaPlugin {
 	 * @param
 	 */
 	public void init() {
-		if(Bukkit.getWorld("skyblockworld") == null) {
+		if(Bukkit.getWorld(SkyWorld.skyblockworld) == null) {
 			generateSkyBlockWorld();
 		}
 		
 		new SkyFileManager();
+		new SkyWorld();//MUSS VOR new SkyBlockgenerator() stehen!!
+		new SkyBlockGenerator();
+		
+		new PlayerAtlas(this);
+		
+		new ChestContent();
+		ChestContent.createDefaultChestContent();
 	}
 	
 	/**
 	 * TODO: Listener, Commands, Craftingrezepte und weite Additionen wie das Laden von
-	 * Spielerprofilen, Grundstücksprofilen oder Schematiken werden hinzugefügt bzw. durchgeführt
+	 * Spielerprofilen, Grundstcksprofilen oder Schematiken werden hinzugefgt bzw. durchgefhrt
 	 * 
 	 * @param
 	 */
@@ -104,14 +114,14 @@ public class SkyBlock extends JavaPlugin {
 		
 		//Registriere Events
 		new SchematicManager();
+		new BlockDetectorListener();
 		new JoinAndQuitListener();
 		new ServerListListener();
-		new PlayerRespawnAndDeathListener();
 		new AsyncChatListener();
 		new PlayerDamageListener();
 		new ChestGenerator();
-		new CobbleGenerator();
-		new BuildProtection();
+		new CobbleGeneratorRenewed();
+		new IslandProtection();
 		
 		/* Starte Manager und Handler */
 		new IslandManager();
@@ -217,7 +227,7 @@ public class SkyBlock extends JavaPlugin {
      */
     public void generateSkyBlockWorld() {
 		SkyWorldGenerator generator = new SkyWorldGenerator();
-		WorldCreator cr = new WorldCreator("skyblockworld");
+		WorldCreator cr = new WorldCreator(SkyWorld.skyblockworld);
 		cr.generator(generator);
 		cr.generateStructures(false);
 		for(Player p : Bukkit.getOnlinePlayers()) p.sendMessage("§eSkyWorld Wird generiert...");
@@ -228,17 +238,65 @@ public class SkyBlock extends JavaPlugin {
 		generateNewWorld = true;
     }
     
-    public static void sendOperatorMessage(String... strings) {
+    /**
+     * Sendet einen Title an ein Spieler, wenn er keine Permission zur getätigten Handlung hat
+     * @param p
+     */
+    public static void sendNoPermissionTitle(Player p) {
+    	p.sendTitle("", "§4§l✖", 2, 10, 1);
+    }
+    /**
+     * Sendet eine Nachricht mit Prefix an alle Operatoren
+     * @param strings
+     */
+    public static void sendOperatorMessage(MessageType type, String... strings) {
     	for(String msg : strings) {
     		for(Player p : Bukkit.getOnlinePlayers()) {
-    			if(p.isOp()) p.sendMessage(Prefixes.ALERT.getPrefix()+msg);
+    			if(p.isOp()) p.sendMessage(Prefixes.ALERT.px()+type.getPrefix()+type.getSuffix()+msg);
     		}
     	}
     }
-    public static void sendMessage(String... strings) {
+    /**
+     * Sendet eine Nachricht mit Prefix an alle Spieler(Broadcast)
+     * @param strings
+     */
+    public static void sendMessage(MessageType type, String... strings) {
     	for(String msg : strings) {
     		for(Player p : Bukkit.getOnlinePlayers()) {
-    			if(p.isOp()) p.sendMessage(Prefixes.INFO.getPrefix()+msg);
+//    			if(p.isOp()) p.sendMessage(Prefixes.SERVER.px()+msg);
+    			p.sendMessage(Prefixes.SERVER.px()+type.getPrefix()+type.getSuffix()+msg);
+    		}
+    	}
+    }
+    /**
+     * Sendet eine Nachricht mit Prefix an die Console
+     * @param strings
+     */
+    public static void sendConsoleMessage(MessageType type, String... strings) {
+    	for(String msg : strings) {
+//			if(p.isOp()) p.sendMessage(Prefixes.SERVER.px()+msg);
+			Bukkit.getConsoleSender().sendMessage(Prefixes.SERVER.px()+type.getPrefix()+type.getSuffix()+msg);
+    	}
+    }
+    /**
+     * Sendet eine Nachricht mit Prefix an einen Spieler
+     * @param p
+     * @param strings
+     */
+    public static void sendMessage(MessageType type, Player p, String... strings) {
+    	for(String msg : strings) {
+    		if(p.isOp()) p.sendMessage(Prefixes.SERVER.px()+type.getPrefix()+type.getSuffix()+msg);
+    	}
+    }
+    
+    /**
+     * Sendet eine Nachricht mit Prefix an Developer(Ariano)
+     * @param strings
+     */
+    public static void sendDeveloperMessage(MessageType type, String... strings) {
+    	for(String msg : strings) {
+    		for(Player p : Bukkit.getOnlinePlayers()) {
+    			if(p.getUniqueId().toString().equals("e93f14bb-71c1-4379-bcf8-6dcc0a409ed9")) p.sendMessage(Prefixes.DEVELOPER.px()+type.getPrefix()+type.getSuffix()+msg);
     		}
     	}
     }
@@ -253,7 +311,7 @@ public class SkyBlock extends JavaPlugin {
 	public static boolean hasPermission(Player p, String permission) {
 		if(p.hasPermission(permission)) return true;
 		else {
-			p.sendMessage(Prefixes.SERVER.getPrefix()+"§cDu hast kein Recht dazu!");
+			sendNoPermissionTitle(p);
 			return false;
 		}
 	}
@@ -262,7 +320,7 @@ public class SkyBlock extends JavaPlugin {
 		p.sendMessage(" §bALLE NEUERUNGEN AUF EINEM BLICK");
 		p.sendMessage(" §aAdded §7/s copy §bDer SchematicManager liest eine Region nun korrekt aus");
 		p.sendMessage(" §aAdded §7/s paste §bSchematiken werden nun an einer vom Plugin festgelegten Position gepastet oder an der aktuellen Position des Spieler");
-		p.sendMessage(" §aAdded §7/is create §bAnimation enthalten und automatische Überleitung vom Ausführen des Commands bis zum TP zu deiner Insel.");
+		p.sendMessage(" §aAdded §7/is create §bAnimation enthalten und automatische Überleitung vom Ausfhren des Commands bis zum TP zu deiner Insel.");
 		p.sendMessage(" §aAdded §7/is kick §bSpieler, die sich auf deiner Insel befinden, kannst du nun kicken. Diese werden dann zum Spawn teleportiert");
 		p.sendMessage(" §aAdded §7/is delete §bLöscht nun auch die gebauten Blöcke");
 		p.sendMessage(" §aAdded §7Chest Loader und Chest Saver wurden eingeführt. Bennen eine Chest um zu 'Chest Saver:<Inventar Name>' und klicke damit eine Kiste an, um den Inhalt zu speichern. Bennene eine Kiste um nach 'Chest Loader:<Inventar Name>' und platziere diese Kiste, um ihr Inventar zu laden");
@@ -272,7 +330,7 @@ public class SkyBlock extends JavaPlugin {
 	}
 	
 	public static int randomInteger(int min, int max) {
-		return (Math.abs(max + min)-min);
+		return ThreadLocalRandom.current().nextInt(min, max + 1);
 	}
 	
 	public static boolean generateNewIndexFile(boolean generate) {

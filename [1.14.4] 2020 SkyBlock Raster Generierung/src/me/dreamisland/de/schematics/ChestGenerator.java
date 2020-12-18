@@ -37,8 +37,46 @@ public class ChestGenerator implements Listener, CommandExecutor {
 		createItemPreset();
 	}
 	
-	/*
-	 * TODO: erstellt eine itemPresetfile
+	/**
+	 * Gibt ein Inventar zurück, welches die Inhalte der Standart-SkyBlock-Kisten beinhaltet
+	 * @return
+	 */
+	public static Inventory getDefaultChestInventory(boolean big_chest) {
+		Inventory inv = Bukkit.createInventory(null, 27 * (big_chest ? 2 : 1), "Chest-Inventory");
+		
+		ItemStack item = new ItemStack(Material.AIR);
+		ItemMeta meta = item.getItemMeta();
+		@SuppressWarnings("unused")
+		ArrayList<String> lore = new ArrayList<String>();
+		int slot = 0;
+		
+		item = new ItemStack(Material.ICE, 2);
+		meta = item.getItemMeta();
+		meta.setLore(getKitLore("default"));
+		item.setItemMeta(meta);
+		
+		inv.setItem(slot, item);slot++;
+		
+		item = new ItemStack(Material.LAVA_BUCKET);
+		meta = item.getItemMeta();
+		meta.setLore(getKitLore("default"));
+		item.setItemMeta(meta);
+		
+		inv.setItem(slot, item);slot++;
+		
+		item = new ItemStack(Material.APPLE, 16);
+		meta = item.getItemMeta();
+		meta.setLore(getKitLore("default"));
+		item.setItemMeta(meta);
+		
+		inv.setItem(slot, item);slot++;
+		
+		return inv;
+	}
+	
+	/**
+	 * Erstellt eine itemPresetfile
+	 * @param
 	 */
 	public void createItemPreset() {
 		File file = new File("plugins/SkyBlock/ChestGenerator/item_preset.yml");
@@ -79,7 +117,7 @@ public class ChestGenerator implements Listener, CommandExecutor {
 		}
 	}
 	/*
-	 * TODO: loadItem() lÃ¤dt ein Item, das in der Item-Preset Datei erstellt wurde und gibt diese zurÃ¼ck
+	 * TODO: loadItem() lädt ein Item, das in der Item-Preset Datei erstellt wurde und gibt diese zurück
 	 */
 	public ItemStack loadItemFromFile() {
 		File file = new File("plugins/SkyBlock/ChestGenerator/item_preset.yml");
@@ -90,7 +128,7 @@ public class ChestGenerator implements Listener, CommandExecutor {
 			ItemMeta meta = item.getItemMeta();
 			ArrayList<String> lore = new ArrayList<String>();
 			for(int i = meta.getLore().size()-1; i != 0; i--) {
-				lore.add(meta.getLore().get(i).replace("&", "Â§"));
+				lore.add(meta.getLore().get(i).replace("&", "§"));
 			}
 			item.setItemMeta(meta);
 			return item;
@@ -143,7 +181,7 @@ public class ChestGenerator implements Listener, CommandExecutor {
 	}
 	
 	/*
-	 * TODO: readInventory() liest ein Inventar aus einer Datei aus und gibt dieses zurÃ¼ck
+	 * TODO: readInventory() liest ein Inventar aus einer Datei aus und gibt dieses zurück
 	 */
 	public static Inventory readInventory(String name) {
 		File file = new File("plugins/SkyBlock/ChestGenerator/Chests/"+name+".yml");
@@ -170,11 +208,11 @@ public class ChestGenerator implements Listener, CommandExecutor {
 				String[] s = n.split(":");
 				Inventory inv = readInventory(s[1]);
 				if(inv == null) {
-					p.sendMessage(Prefixes.SERVER.getPrefix()+"Chest 'Â§e"+s[1]+"' Â§7existiert nicht");								
+					p.sendMessage(Prefixes.SERVER.px()+"Chest '§e"+s[1]+"' §7existiert nicht");								
 				}else {								
 					c.getInventory().setContents(inv.getContents());
-					c.setCustomName(s[1].replace("&", "Â§").replace("_", " ").replace("Chest Loader:", ""));
-					p.sendMessage(Prefixes.SERVER.getPrefix()+"Chest 'Â§e"+s[1]+"' Â§7wurde geladen");
+					c.setCustomName(s[1].replace("&", "§").replace("_", " ").replace("Chest Loader:", ""));
+					p.sendMessage(Prefixes.SERVER.px()+"Chest '§e"+s[1]+"' §7wurde geladen");
 				}
 			}
 		}
@@ -200,13 +238,30 @@ public class ChestGenerator implements Listener, CommandExecutor {
 								if(s[2].equals("overwrite")) overwrite = true;
 							}
 							if(saveInventory(c.getInventory(), s[1], overwrite)) {
-								p.sendMessage(Prefixes.SERVER.getPrefix()+"Chest 'Â§e"+s[1]+"' Â§7wurde gespeichert");
-							}else p.sendMessage(Prefixes.SERVER.getPrefix()+"Chest 'Â§e"+s[1]+"' Â§7konnte nicht gespeichert werden");
+								p.sendMessage(Prefixes.SERVER.px()+"Chest '§e"+s[1]+"' §7wurde gespeichert");
+							}else p.sendMessage(Prefixes.SERVER.px()+"Chest '§e"+s[1]+"' §7konnte nicht gespeichert werden");
 						}
 					}
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Gibt die Lore eines Kits zurück.
+	 * @param kitname
+	 * @return
+	 */
+	public static ArrayList<String> getKitLore(String kitname){
+		ArrayList<String> lore = new ArrayList<String>();
+		
+		if(kitname.equals("default")) {
+			lore.add("§a§oInhalt des Standart-Kits.");
+		}else {
+			//DEFAULT
+			return lore;
+		}
+		return lore;
 	}
 
 	@Override
@@ -216,12 +271,12 @@ public class ChestGenerator implements Listener, CommandExecutor {
 			if(cmd.getName().equalsIgnoreCase("loaditem")) {
 				if(SkyBlock.hasPermission(p, "skyblock.loaditem")) {
 					p.getInventory().addItem(loadItemFromFile());
-					p.sendMessage(Prefixes.SERVER.getPrefix()+"Das Item wurde deinem Inventar hinzugefÃ¼gt");
+					p.sendMessage(Prefixes.SERVER.px()+"Das Item wurde deinem Inventar hinzugefügt");
 				}
 			}else if(cmd.getName().equalsIgnoreCase("saveitem")) {
 				if(SkyBlock.hasPermission(p, "skyblock.saveitem")) {
 					saveItem(p.getInventory().getItemInMainHand());
-					p.sendMessage(Prefixes.SERVER.getPrefix()+"Das Item wurde gespeichert");
+					p.sendMessage(Prefixes.SERVER.px()+"Das Item wurde gespeichert");
 				}
 			}
 		}

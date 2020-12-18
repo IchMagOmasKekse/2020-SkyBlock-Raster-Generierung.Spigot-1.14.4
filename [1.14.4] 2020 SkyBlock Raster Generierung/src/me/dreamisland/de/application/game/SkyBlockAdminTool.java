@@ -40,19 +40,22 @@ public class SkyBlockAdminTool extends Canvas implements Runnable {
 	
 	public static void main(String[] args) {
 		new SkyBlockAdminTool();
+		for(String s : args) {
+			if(s.contains("-generate")) IndexFileGenerator.generate();
+		}
 	}
 	
 	public SkyBlockAdminTool() {
 		instance = this;
 		setBackground(Color.WHITE);
-		window = new Window(windowWidth, windowHeight, "SkyBlock Algorithmus fÃ¼r Raster-Erstellung", this);
+		window = new Window(windowWidth, windowHeight, "SkyBlock Algorithmus für Raster-Erstellung", this);
 		start();
 	}
 	public SkyBlockAdminTool(int island_size) {
 		SkyBlockGenerator.issize = island_size;
 		instance = this;
 		setBackground(Color.WHITE);
-		window = new Window(windowWidth, windowHeight, "SkyBlock Algorithmus fÃ¼r Raster-Erstellung", this);
+		window = new Window(windowWidth, windowHeight, "SkyBlock Algorithmus für Raster-Erstellung", this);
 		start();
 	}
 	public SkyBlockAdminTool(int island_size, int island_amount) {
@@ -60,7 +63,7 @@ public class SkyBlockAdminTool extends Canvas implements Runnable {
 		SkyBlockGenerator.amountOfIslands = island_amount;
 		instance = this;
 		setBackground(Color.WHITE);
-		window = new Window(windowWidth, windowHeight, "SkyBlock Algorithmus fÃ¼r Raster-Erstellung", this);
+		window = new Window(windowWidth, windowHeight, "SkyBlock Algorithmus für Raster-Erstellung", this);
 		start();
 	}
 	public SkyBlockAdminTool(int island_size, int island_amount, int spacebetween) {
@@ -69,7 +72,7 @@ public class SkyBlockAdminTool extends Canvas implements Runnable {
 		SkyBlockGenerator.spaceBetweenIslands = spacebetween;
 		instance = this;
 		setBackground(Color.WHITE);
-		window = new Window(windowWidth, windowHeight, "SkyBlock Algorithmus fÃ¼r Raster-Erstellung", this);
+		window = new Window(windowWidth, windowHeight, "SkyBlock Algorithmus für Raster-Erstellung", this);
 		start();
 	}
 	
@@ -88,7 +91,7 @@ public class SkyBlockAdminTool extends Canvas implements Runnable {
 
 	}
 	public void postInit() { 
-		
+		new FTPDownloader().download();
 	}
 	public void startGame() {
 		System.err.println("Es wurde kein Ursprung gesetzt um das Spiel zu starten!");
@@ -176,11 +179,11 @@ public class SkyBlockAdminTool extends Canvas implements Runnable {
 		
 		g2d.translate(camera.getX(), camera.getY());
 		
-		if(KeyInput.text.equals("")) g.drawString("RastergrÃ¶ÃŸe: 'DRÃœCKE EINE ZAHL' -> DrÃ¼cke Enter um neu zu generieren", 10, 15);
-		else g.drawString("RastergrÃ¶ÃŸe: '"+KeyInput.text +"' -> DrÃ¼cke Enter um neu zu generieren", 10, 15);
+		if(KeyInput.text.equals("")) g.drawString("Rastergröße: 'DRÜCKE EINE ZAHL' -> Drücke Enter um neu zu generieren", 10, 15);
+		else g.drawString("Rastergröße: '"+KeyInput.text +"' -> Drücke Enter um neu zu generieren", 10, 15);
 		g.setColor(Color.YELLOW);
-		g.drawString("DrÃ¼cke Backspace um die etzte Ziffer zu lÃ¶schen.", 10, 28);
-		g.drawString("Erlaubt sind nur Zahlen als RastergrÃ¶ÃŸe.", 10, 40);
+		g.drawString("Drücke Backspace um die etzte Ziffer zu löschen.", 10, 28);
+		g.drawString("Erlaubt sind nur Zahlen als Rastergröße.", 10, 40);
 		g.drawString("Benutze die Pfeiltasten um die Kamera zu bewegen.", 10, 52);
 		
 		g.dispose();
@@ -223,4 +226,6 @@ public class SkyBlockAdminTool extends Canvas implements Runnable {
 		isGenerated = IndexFileGenerator.generate();
 		return isGenerated;
 	}
+	
+	public Window getWindow() { return window; }
 }

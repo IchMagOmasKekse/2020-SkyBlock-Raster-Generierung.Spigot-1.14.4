@@ -26,7 +26,7 @@ public class JoinAndQuitListener implements Listener {
 	
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e) {
-		e.setJoinMessage(Prefixes.JOIN.getPrefix()+"Â§e"+e.getPlayer().getName()+" Â§7ist dem Server beigetreten");
+		e.setJoinMessage(Prefixes.JOIN.px()+"§e"+e.getPlayer().getName()+" §7ist dem Server beigetreten");
 		SkyBlock.spawnFireworks(e.getPlayer().getLocation().clone(), 1, true, true, Type.BALL_LARGE);
 		for(Player p : Bukkit.getOnlinePlayers()) {
 			if(p.isOp()) {
@@ -39,7 +39,7 @@ public class JoinAndQuitListener implements Listener {
 	
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
-		e.setQuitMessage(Prefixes.QUIT.getPrefix() + "Â§e"+e.getPlayer().getName()+" Â§7hat den Server verlassen");
+		e.setQuitMessage(Prefixes.QUIT.px() + "§e"+e.getPlayer().getName()+" §7hat den Server verlassen");
 		if(e.getPlayer().getWorld().getName().equals(SkyBlockGenerator.skyworldName))e.getPlayer().teleport(SkyBlock.spawn);
 		if(SkyFileManager.runs.containsKey(e.getPlayer())) {
 			e.getPlayer().teleport(SkyBlock.spawn);
@@ -51,7 +51,7 @@ public class JoinAndQuitListener implements Listener {
 	public void onLogin(PlayerLoginEvent e) {
 		if(e.getResult() == Result.KICK_WHITELIST) {
 			for(Player p : Bukkit.getOnlinePlayers()) {
-				if(p.isOp()) p.sendMessage("Â§e"+e.getPlayer().getName()+" Â§fhat versucht zu joinen. Abgelehnt wegen Whitelist");
+				if(p.isOp()) p.sendMessage("§e"+e.getPlayer().getName()+" §fhat versucht zu joinen. Abgelehnt wegen Whitelist");
 			}
 		}
 	}

@@ -12,13 +12,14 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import me.dreamisland.de.SkyBlock;
+import me.dreamisland.de.Chat.MessageType;
 
 public class SkyFileManagerOld {
 	
 	/*
-	 * Diese Klasse ist keine optimale LÃ¶sung.
+	 * Diese Klasse ist keine optimale Lösung.
 	 * Beim Abfragen gewissen Daten verursacht diese Klasse Laggs,
-	 * da es nur eine Datei gibt, wo alle drinnen steht und diese vo Speicher her zu groÃŸ ist.
+	 * da es nur eine Datei gibt, wo alle drinnen steht und diese vo Speicher her zu groß ist.
 	 */
 	
 	private static File file = new File("plugins/SkyBlock/Island-Databank.yml");
@@ -26,14 +27,14 @@ public class SkyFileManagerOld {
 	
 	public SkyFileManagerOld() {
 		if(file.exists() == false) {
-			SkyBlock.sendOperatorMessage("Die Island-Databank.yml im Ordner Â§f'Â§7/plugins/SkyBlock/Â§f'Â§c existiert nicht!",
-					                     "Gebe Â§nbitteÂ§c umgehend Â§7Â§nIchMagOmasKekseÂ§c Bescheid!");
+			SkyBlock.sendOperatorMessage(MessageType.ERROR, "Die Island-Databank.yml im Ordner §f'§7/plugins/SkyBlock/§f'§c existiert nicht!",
+					                     "Gebe §nbitte§c umgehend §7§nIchMagOmasKekse§c Bescheid!");
 		}
 	}
 	
 	
 	/*
-	 * TODO: Gibt eine ArrayList mit allen Banned Players zurÃ¼ck
+	 * TODO: Gibt eine ArrayList mit allen Banned Players zurück
 	 */
 	public static int getUnclaimedIslandID(boolean random_pick) {
 		int generated = 0;
@@ -62,7 +63,7 @@ public class SkyFileManagerOld {
 	}
 	
 	/*
-	 * TODO: Gibt eine ArrayList mit allen Banned Players zurÃ¼ck
+	 * TODO: Gibt eine ArrayList mit allen Banned Players zurück
 	 */
 	public static ArrayList<String> getBannedPlayers(int island_id) {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
@@ -71,7 +72,7 @@ public class SkyFileManagerOld {
 	}
 	
 	/*
-	 * TODO: Gibt eine ArrayList mit allen Members zurÃ¼ck
+	 * TODO: Gibt eine ArrayList mit allen Members zurück
 	 */
 	public static ArrayList<String> getMembers(int island_id) {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
@@ -80,7 +81,7 @@ public class SkyFileManagerOld {
 	}
 	
 	/*
-	 * TODO: Gibt eine HashMap mit allen Settings zurÃ¼ck
+	 * TODO: Gibt eine HashMap mit allen Settings zurück
 	 */
 	public static HashMap<String, Boolean> getSettings(int island_id) {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
@@ -96,7 +97,7 @@ public class SkyFileManagerOld {
 	}
 	
 	/*
-	 * TODO: Gibt die ID der Insel B zurÃ¼ck, mit der sich die Insel A verbunden hat
+	 * TODO: Gibt die ID der Insel B zurück, mit der sich die Insel A verbunden hat
 	 */
 	public static int getCollaboratorIslandID(int island_id) {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
@@ -104,7 +105,7 @@ public class SkyFileManagerOld {
 	}
 	
 	/*
-	 * TODO: Gibt die Z-Koordinate zurÃ¼ck, auf der sich die Insel befindet
+	 * TODO: Gibt die Z-Koordinate zurück, auf der sich die Insel befindet
 	 */
 	public static int getLocationZ(int island_id) {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
@@ -112,7 +113,7 @@ public class SkyFileManagerOld {
 	}
 	
 	/*
-	 * TODO: Gibt die X-Koordinate zurÃ¼ck, auf der sich die Insel befindet
+	 * TODO: Gibt die X-Koordinate zurück, auf der sich die Insel befindet
 	 */
 	public static int getLocationX(int island_id) {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
@@ -120,7 +121,7 @@ public class SkyFileManagerOld {
 	}
 	
 	/*
-	 * TODO: Gibt die Welt zurÃ¼ck, in der sich die Insel befindet
+	 * TODO: Gibt die Welt zurück, in der sich die Insel befindet
 	 */
 	public static String getWorldName(int island_id) {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
@@ -128,7 +129,7 @@ public class SkyFileManagerOld {
 	}
 	
 	/*
-	 * TODO: Gibt die Welt zurÃ¼ck, in der sich die Insel befindet
+	 * TODO: Gibt die Welt zurück, in der sich die Insel befindet
 	 */
 	public static World getWorld(int island_id) {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
@@ -138,7 +139,7 @@ public class SkyFileManagerOld {
 	}
 	
 	/*
-	 * TODO: Gibt die UUID des Insel-Besitzers zurÃ¼ck
+	 * TODO: Gibt die UUID des Insel-Besitzers zurück
 	 */
 	public static UUID getOwnerUUID(int island_id) {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
@@ -149,7 +150,7 @@ public class SkyFileManagerOld {
 	}
 	
 	/*
-	 * TODO: Gibt einen Boolean zurÃ¼ck, ob die Insel belegt oder frei ist
+	 * TODO: Gibt einen Boolean zurück, ob die Insel belegt oder frei ist
 	 */
 	public static boolean isClaimed(int island_id) {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
@@ -157,7 +158,7 @@ public class SkyFileManagerOld {
 	}
 	
 	/*
-	 * TODO: Gibt die Anzahl an freien Inseln zurÃ¼ck
+	 * TODO: Gibt die Anzahl an freien Inseln zurück
 	 */
 	public static int getUnclaimedIslandsAmount() {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
@@ -165,7 +166,7 @@ public class SkyFileManagerOld {
 	}
 	
 	/*
-	 * TODO: Gibt die Anzahl an Belegten Inseln zurÃ¼ck
+	 * TODO: Gibt die Anzahl an Belegten Inseln zurück
 	 */
 	public static int getClaimedIslandsAmount() {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
@@ -173,7 +174,7 @@ public class SkyFileManagerOld {
 	}
 	
 	/*
-	 * TODO: Gibt die Anzahl an Generierten Inseln zurÃ¼ck
+	 * TODO: Gibt die Anzahl an Generierten Inseln zurück
 	 */
 	public static int getGeneratedIslandsAmount() {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);

@@ -33,9 +33,9 @@ public class MouseInput extends MouseAdapter {
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		if (e.getWheelRotation() < 0) {
-			SkyBlockAdminTool.getCamera().addY(1);
+//			SkyBlockAdminTool.getCamera().addOffset(1f);
         } else {
-        	SkyBlockAdminTool.getCamera().addY(-1);
+//        	SkyBlockAdminTool.getCamera().subtractOffset(1f);
         }
 	}
 }

@@ -11,19 +11,22 @@ import org.bukkit.entity.Player;
 public class SkyBlockGenerator {
 	
 	private static ConcurrentLinkedQueue<Location> locs = new ConcurrentLinkedQueue<Location>();
-	public static int issize = 400; // Verhältnis 1:1 ; Angegeben in Blöcken
-	public static int amountOfIslands = 500;
-	public static int spaceBetweenIslands = 200; //Verhältnis 1:1 ; Angegeben in Blöcken
-	public static int default_issize = 400; // Verhältnis 1:1 ; Angegeben in Blöcken
-	public static int default_amountOfIslands = 500;
-	public static int default_spaceBetweenIslands = 200; //Verhältnis 1:1 ; Angegeben in Blöcken
+	public static int issize = 25; // Verhältnis 1:1 ; Angegeben in Blöcken
+	public static int amountOfIslands = 1023;
+	public static int spaceBetweenIslands = 25; //Verhältnis 1:1 ; Angegeben in Blöcken
+	public static int default_issize = 400; //NICHT VERÄNDERN! // Verhältnis 1:1 ; Angegeben in Blöcken
+	public static int default_amountOfIslands = 500; //NICHT VERÄNDERN!
+	public static int default_spaceBetweenIslands = 200; //NICHT VERÄNDERN!//Verhältnis 1:1 ; Angegeben in Blöcken
 	public static boolean pause = false;
 	static int curx = 0;
 	static int curz = 0;
 	public static int islandHeight = 72;
-	public static String skyworldName = "skyblockworld";
-	static Location curLoc = new Location(Bukkit.getWorld(skyworldName), curx, islandHeight, curz);
+	public static String skyworldName = SkyWorld.skyblockworld;
+	static Location curLoc = null;
 	
+	public SkyBlockGenerator() {
+		curLoc = new Location(Bukkit.getWorld(skyworldName), curx, islandHeight, curz);
+	}	
 	public static boolean generateIfReady(int amount, int islandsize, int spacebetween) {
 		default_amountOfIslands = amount;
 		default_issize = islandsize;

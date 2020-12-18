@@ -15,8 +15,8 @@ public abstract class Request {
 	protected int request_id = 0;
 	protected Request request = null;
 	protected Player sender = null; //Sender der Anfrage
-	protected Player receiver = null; //EmpfÂ§nger der Anfrage
-	protected RequestType type = RequestType.UNDEFINED; //Was fÂ§r eine Anfrage ist das?
+	protected Player receiver = null; //Empfänger der Anfrage
+	protected RequestType type = RequestType.UNDEFINED; //Was für eine Anfrage ist das?
 	protected boolean hasAccepted = false; //Wurde die Anfrage Akzeptiert?
 	protected boolean hasDenied = false; //Wurde die Anfrage abgelehnt?
 	protected boolean isExpired = false; //Ist die Anfrage abgelaufen?
@@ -49,10 +49,10 @@ public abstract class Request {
 		if(timeLeft == 0) {
 			isExpired = true;
 			sender.sendMessage("");
-			sender.sendMessage(Prefixes.REQUEST.getPrefix()+"Deine Anfrage an Â§e"+receiver.getName()+" Â§bist abgelaufen");
+			sender.sendMessage(Prefixes.REQUEST.px()+"Deine Anfrage an Â§e"+receiver.getName()+" Â§bist abgelaufen");
 			sender.sendMessage("");
 			receiver.sendMessage("");
-			receiver.sendMessage(Prefixes.REQUEST.getPrefix()+"Deine Anfrage von Â§e"+sender.getName()+" Â§bist abgelaufen");
+			receiver.sendMessage(Prefixes.REQUEST.px()+"Deine Anfrage von Â§e"+sender.getName()+" Â§bist abgelaufen");
 			receiver.sendMessage("");
 			RequestManager.removeRequest(request);
 		}else {
@@ -77,7 +77,7 @@ public abstract class Request {
 		}
 		
 		/*
-		 * TODO: FÂ§hrt den Manager herunter(LÂ§scht alle Anfragen und stoppt den Timer)
+		 * TODO: Fährt den Manager herunter(Löscht alle Anfragen und stoppt den Timer)
 		 */
 		public static boolean shutdown() {
 			requests.clear();
@@ -87,7 +87,7 @@ public abstract class Request {
 		
 		
 		/*
-		 * TODO: Gibt die erhaltene Anfrage zurÂ§ck
+		 * TODO: Gibt die erhaltene Anfrage zurück
 		 */
 		public static Request getSendRequest(Player p) {
 			return sender_requests.get(p);
@@ -104,7 +104,7 @@ public abstract class Request {
 		
 		
 		/*
-		 * TODO: Gibt zurÂ§ck, ob ein Spieler eine Anfrage gesendet hat
+		 * TODO: Gibt zurück, ob ein Spieler eine Anfrage gesendet hat
 		 */
 		public static boolean hasSendRequest(Player p) {
 			if(sender_requests.containsKey(p)) return true;
@@ -112,14 +112,14 @@ public abstract class Request {
 		}
 		
 		/*
-		 * TODO: Gibt die erhaltene Anfrage zurÂ§ck
+		 * TODO: Gibt die erhaltene Anfrage zurück
 		 */
 		public static Request getReceivedRequest(Player p) {
 			return receiver_requests.get(p);
 		}
 		
 		/*
-		 * TODO: Gibt zurÂ§ck, ob ein Spieler eine Anfrage erhalten hat
+		 * TODO: Gibt zurück, ob ein Spieler eine Anfrage erhalten hat
 		 */
 		public static boolean hasReceivedRequest(Player p) {
 			if(receiver_requests.containsKey(p)) return true;
@@ -127,7 +127,7 @@ public abstract class Request {
 		}
 		
 		/*
-		 * TODO: FÂ§gt eine Anfrage zur Warteschlange hinzu
+		 * TODO: Fügt eine Anfrage zur Warteschlange hinzu
 		 */
 		public static boolean registerRequest(Request request) {
 			if(requests.contains(request)) return false;
@@ -140,7 +140,7 @@ public abstract class Request {
 		}
 		
 		/*
-		 * TODO: LÂ§scht eine Anfrage aus der Warteschlange
+		 * TODO: Löscht eine Anfrage aus der Warteschlange
 		 */
 		public static boolean removeRequest(Request request) {
 			if(requests.contains(request)) {

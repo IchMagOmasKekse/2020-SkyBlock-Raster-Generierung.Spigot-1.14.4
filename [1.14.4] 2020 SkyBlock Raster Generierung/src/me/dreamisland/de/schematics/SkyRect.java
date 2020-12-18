@@ -36,7 +36,7 @@ public class SkyRect {
 	
 	
 	/*
-	 * TODO: isIn() gibt zurÃ¼ck, Ã¼ber eine Location sich innerhalb des SkyRects befindet
+	 * TODO: isIn() gibt zurück, über eine Location sich innerhalb des SkyRects befindet
 	 */
 	public boolean isIn(Location loc) {
 		if(loc.getWorld() == world) {

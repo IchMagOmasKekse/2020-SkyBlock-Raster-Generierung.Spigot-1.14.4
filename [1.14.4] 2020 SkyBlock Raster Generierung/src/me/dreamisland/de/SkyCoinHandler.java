@@ -7,9 +7,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 public class SkyCoinHandler implements Listener {
 	
 	
-	/* Der Wert der beschreibt, wie viel Diamanten man fÃ¼r einen Coin bekommt */
-	private static final double coin_equals_diamonds_amount = 0.3;
-	private static double coins_per_join = calcDiamondToCoins(50*coin_equals_diamonds_amount);
+	/* Der Wert der beschreibt, wie viel Diamanten man für einen Coin bekommt */
+	private static final double coin_equals_diamonds_amount = 3.15;
+	private static double coins_per_join = calcDiamondToCoins(50);
 	
 	public SkyCoinHandler() {
 		
@@ -23,11 +23,11 @@ public class SkyCoinHandler implements Listener {
 	 */
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e) {
-		e.getPlayer().sendMessage(Prefixes.SERVER.getPrefix()+"Du hÃ¤ttest Â§e"+coins_per_join+"C Â§7erhalten");
+		e.getPlayer().sendMessage(Prefixes.SERVER.px()+"Du hättest §e"+coins_per_join+"C §7erhalten");
 	}
 	
 	/**
-	 * Rechnet Coins in Diamanten um und gibt diese auch zurÃ¼ck.
+	 * Rechnet Coins in Diamanten um und gibt diese auch zurück.
 	 * @param coins
 	 * @return
 	 */
@@ -36,7 +36,7 @@ public class SkyCoinHandler implements Listener {
 	}
 	
 	/**
-	 * Gibt Eine Liste aller aktiven Booster zurÃ¼ck.
+	 * Gibt Eine Liste aller aktiven Booster zurück.
 	 * @return
 	 */
 	public static Booster getBoosters() {
@@ -44,12 +44,12 @@ public class SkyCoinHandler implements Listener {
 	}
 	
 	/**
-	 * Rechnet Diamanten in Coins um und gibt diese zurÃ¼ck.
+	 * Rechnet Diamanten in Coins um und gibt diese zurück.
 	 * @param diamonds
 	 * @return
 	 */
 	public static double calcDiamondToCoins(double diamonds) {
-		double coins = (diamonds / coin_equals_diamonds_amount);
+		double coins = (diamonds * coin_equals_diamonds_amount);
 		
 		double raw =  coins;
 		raw += (coins * getBoosters().getPercentage());
