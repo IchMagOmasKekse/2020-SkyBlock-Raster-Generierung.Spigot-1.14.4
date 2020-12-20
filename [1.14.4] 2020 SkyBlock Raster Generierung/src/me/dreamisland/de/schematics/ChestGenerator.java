@@ -31,9 +31,9 @@ public class ChestGenerator implements Listener, CommandExecutor {
 	
 	
 	public ChestGenerator() {
-		SkyBlock.getInstance().getCommand("loaditem").setExecutor(this);
-		SkyBlock.getInstance().getCommand("saveitem").setExecutor(this);
-		SkyBlock.getInstance().getServer().getPluginManager().registerEvents(this, SkyBlock.getInstance());
+		SkyBlock.getSB().getCommand("loaditem").setExecutor(this);
+		SkyBlock.getSB().getCommand("saveitem").setExecutor(this);
+		SkyBlock.getSB().getServer().getPluginManager().registerEvents(this, SkyBlock.getSB());
 		createItemPreset();
 	}
 	

@@ -33,3 +33,38 @@ Join Message: ''
 Quit Message: ''
 #  'Death Message' ist die Death-Nachricht
 Death Message: ''
+Economy:
+  Console:
+    Infinite Money: false
+    Max: 99999999
+    Min: -99999999
+  Money1:
+    Name: 'SkyCoins'
+    Shortcut: 'C'
+    Start: 100
+    Max: 100000
+    Min: -1000
+  Money2:
+    Name: ''
+    Shortcut: ''
+    Start: 0
+    Max: 100000
+    Min: -1000
+  Money3:
+    Name: ''
+    Shortcut: ''
+    Start: 0
+    Max: 100000
+    Min: -1000
+  Money4:
+    Name: ''
+    Shortcut: ''
+    Start: 0
+    Max: 100000
+    Min: -1000
+  Money5:
+    Name: ''
+    Shortcut: ''
+    Start: 0
+    Max: 100000
+    Min: -1000

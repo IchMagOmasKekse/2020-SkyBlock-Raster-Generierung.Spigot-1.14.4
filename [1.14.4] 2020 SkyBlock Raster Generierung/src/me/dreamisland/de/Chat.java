@@ -59,6 +59,20 @@ public class Chat {
 		target.spigot().sendMessage(message);
 		return true;
 	}
+	@SuppressWarnings("deprecation")
+	public static boolean sendHoverableCommandHelpMessage(Player target, String msg, String hovermsg, boolean bold, boolean italic) {
+		msg = prepareString(msg);
+		hovermsg = prepareString(hovermsg);
+		TextComponent message = new TextComponent(msg);
+		
+		message.setItalic(italic);
+		message.setBold(bold);
+		message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+				new ComponentBuilder(hovermsg).italic(italic).bold(bold).color(ChatColor.DARK_AQUA).create()));
+		
+		target.spigot().sendMessage(message);
+		return true;
+	}
 	
 	@SuppressWarnings("deprecation")
 	public static boolean sendCopyableMessage(Player target, String msg, String hovermsg, String copy, boolean bold, boolean italic) {

@@ -266,7 +266,7 @@ public class SkyBlockCommandFunction {
 		boolean noOne = true;
 		int amount = 0;
 		int amount_total = 0;
-		SkyBlock.sendMessage(MessageType.INFO, "Vergebene Inseln, Seite "+page+":");
+		SkyBlock.sendMessage(MessageType.INFO, p, "Vergebene Inseln, Seite "+page+":");
 		for(int i = page_amount; i != page_amount+Settings.getIslandsPerPage(); i++) {
 			if(i >= statuses.size()) break;
 			
@@ -282,7 +282,7 @@ public class SkyBlockCommandFunction {
 		if(noOne) {
 			Chat.sendHoverableMessage(p, "Auf dieser Seitenzahl gibt es keine vergebenen Inseln.", "Keine vergebene Insel vorhanden", false, true);
 		}else {
-			SkyBlock.sendMessage(MessageType.INFO, amount+" Insel*n vergeben auf dieser Seite(Alle Seiten zsm. beinhalten "+amount_total+")");
+			SkyBlock.sendMessage(MessageType.INFO, p, amount+" Insel*n vergeben auf dieser Seite(Alle Seiten zsm. beinhalten "+amount_total+")");
 			Chat.sendClickableMessage(p, "§aNächste Seite", "Klicke um die Nächste Seite zu öffnen", "/claimed "+(page+1), false, true);
 		}
 	}
@@ -297,7 +297,7 @@ public class SkyBlockCommandFunction {
 		boolean noOne = true;
 		int amount = 0;
 		int amount_total = 0;
-		SkyBlock.sendMessage(MessageType.INFO, "Verfügbare Inseln, Seite "+page+":");
+		SkyBlock.sendMessage(MessageType.INFO, p, "Verfügbare Inseln, Seite "+page+":");
 		for(int i = page_amount; i != page_amount+Settings.getIslandsPerPage(); i++) {
 			if(i >= statuses.size()) break;
 			
@@ -313,7 +313,7 @@ public class SkyBlockCommandFunction {
 		if(noOne) {
 			Chat.sendHoverableMessage(p, "Auf dieser Seitenzahl gibt es keine verfügbaren Inseln.", "Keine verfügbare Insel vorhanden", false, true);
 		}else {
-			SkyBlock.sendMessage(MessageType.INFO, amount+" Insel*n verfügbar auf dieser Seite(Alle Seiten zsm. beinhalten "+amount_total+")");
+			SkyBlock.sendMessage(MessageType.INFO, p, amount+" Insel*n verfügbar auf dieser Seite(Alle Seiten zsm. beinhalten "+amount_total+")");
 			Chat.sendClickableMessage(p, "§aNächste Seite", "Klicke um die Nächste Seite zu öffnen", "/unclaimed "+(page+1), false, true);
 		}
 	}

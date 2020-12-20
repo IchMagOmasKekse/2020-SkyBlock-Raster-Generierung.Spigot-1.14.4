@@ -19,7 +19,7 @@ public class Code {
 				if(random.nextBoolean()) {
 					//Buchstabe
 					if(random.nextBoolean()) {
-						//Gro√übuchstabe
+						//Groﬂbuchstabe
 						switch(random.nextInt(26)) {
 						case  0: link = link + "A"; break;
 						case  1: link = link + "B"; break;

@@ -1,6 +1,6 @@
 name: SkyBlock
 author: TeamDream
-version: 1.5.2
+version: 1.5.4
 api-version: 1.16
 main: me.dreamisland.de.SkyBlock
 commands:
@@ -28,21 +28,33 @@ commands:
     description: 'List all unclaimed Islands'
   release:
     description: 'Release an Island to be able to get claimed again'
+  coins:
+    description: 'SkyCoins Maincommand'
+  dailyreward:
+    description: 'Get your daily reward'
+  gui:
+    description: 'Open a GUI'
+  help:
+    description: 'Get a list of all for you available commands and some useful help on top'
 permissions:
   skyblock.*:
-    description: Alle Permissions for the SkyBlock plugin
+    description: All permissions for the SkyBlock plugin
     children:
       skyblock.admin: true
       skyblock.adminhelp: true
+      skyblock.commandhelp: true
       skyblock.unclaimed: true
       skyblock.claimed: true
       skyblock.chat.color: true
+      skyblock.coins.other: true
+      skyblock.coins: true
       skyblock.simulate: true
       skyblock.undo: true
       skyblock.release: true
-      skyblock.reloadcobble: true
+      skyblock.island.reloadcobble: true
       skyblock.island: true
       skyblock.island.help: true
+      skyblock.island.setspawn: true
       skyblock.island.cown: true
       skyblock.island.create: true
       skyblock.island.ban: true
@@ -55,11 +67,19 @@ permissions:
       skyblock.island.friends: true
       skyblock.island.tp: true
       skyblock.island.spy: true
+      skyblock.island.visit: true
       skyblock.island.gamemode.bypass: true
       skyblock.modify.islands: true
       skyblock.interact.entity: true
+      skyblock.coins: true
+      skyblock.dailyreward: true
+      skyblock.gui: true
   skyblock.admin:
     description: You cannot get kicked off of a Island by a player if you have this permission
+    skyblock.adminhelp:
+    description: See admin help for various admin processes
+  skyblock.commandhelp:
+    description: See help for all alvailable commands which you can use
   skyblock.release:
     description: Release an deleted Island
   skyblock.unclaimed:
@@ -72,14 +92,14 @@ permissions:
     description: HEAVY IMPACT TO SERVER PERFORMANCE! ONLY ARIANO IS ALLOWED TO IS THIS!
   skyblock.undo:
     description: Undo a simulation
-  skyblock.reloadcobble:
+  skyblock.island.reloadcobble:
     description: Reload the Cobblestone Generator settings file
   skyblock.island:
     description: Use the main Island command
   skyblock.island.help:
     description: See help for the island command
-  skyblock.adminhelp:
-    description: See admin help for various admin processes
+  skyblock.island.setspawn:
+    description: Set a new player spawn for your island
   skyblock.island.cown:
     description: Create your own Island, if you are membered on another one
   skyblock.island.create:
@@ -104,9 +124,19 @@ permissions:
     description: Teleport to a Island
   skyblock.island.spy:
     description: Spectate a Island for admin purposes for example
+  skyblock.island.visit:
+    description: Visit an Island of another Player
   skyblock.island.gamemode.bypass:
     description: Keep your GameMode after you have created a Island
   skyblock.modify.islands:
     description: Place and break blocks on other Islands
   skyblock.interact.entity:
     description: Interact with entities on other Islands
+  skyblock.coins:
+    description: Show your SkyCoins
+  skyblock.coins.other:
+    description: Show SkyCoins of another player
+  skyblock.dailyreward:
+    description: Get your daily reward
+  skyblock.gui:
+    description: Open a gui

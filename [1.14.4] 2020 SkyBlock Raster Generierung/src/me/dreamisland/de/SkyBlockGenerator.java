@@ -11,8 +11,8 @@ import org.bukkit.entity.Player;
 public class SkyBlockGenerator {
 	
 	private static ConcurrentLinkedQueue<Location> locs = new ConcurrentLinkedQueue<Location>();
-	public static int issize = 25; // Verhältnis 1:1 ; Angegeben in Blöcken
-	public static int amountOfIslands = 1023;
+	public static int issize = 200; // Verhältnis 1:1 ; Angegeben in Blöcken
+	public static int amountOfIslands = 500;
 	public static int spaceBetweenIslands = 25; //Verhältnis 1:1 ; Angegeben in Blöcken
 	public static int default_issize = 400; //NICHT VERÄNDERN! // Verhältnis 1:1 ; Angegeben in Blöcken
 	public static int default_amountOfIslands = 500; //NICHT VERÄNDERN!

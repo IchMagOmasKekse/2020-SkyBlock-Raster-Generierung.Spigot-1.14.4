@@ -11,8 +11,8 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import me.dreamisland.de.SkyBlock;
 import me.dreamisland.de.Chat.MessageType;
+import me.dreamisland.de.SkyBlock;
 
 public class SkyFileManagerOld {
 	

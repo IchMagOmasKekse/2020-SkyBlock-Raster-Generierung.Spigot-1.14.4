@@ -15,6 +15,7 @@ public class FTPDownloader {
 		long startTime = System.currentTimeMillis() ;
 		String pass = "ariano0105" ; // password of the ftp server
 		String ftpUrl = "ftp://IchMagOmasKekse.146843:ariano0105@/plugins/SkyBlock/Insel-Index-File.yml";//ftp://**username**:**password**@filePath ;
+		@SuppressWarnings("unused")
 		String file= "Insel-Index-File.yml" ; // name of the file which has to be download
 		String host = "node22.mc-host24.de" ; //ftp server
 		String user = "IchMagOmasKekse.146843" ; //user name of the ftp server

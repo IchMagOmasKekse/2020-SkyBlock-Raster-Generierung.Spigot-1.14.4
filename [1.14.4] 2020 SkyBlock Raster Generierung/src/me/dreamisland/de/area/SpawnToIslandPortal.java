@@ -28,8 +28,8 @@ public class SpawnToIslandPortal implements Listener {
 				check();
 			}
 		};
-		checker.runTaskTimer(SkyBlock.getInstance(), 0l, 2l);
-		SkyBlock.getInstance().getServer().getPluginManager().registerEvents(this,  SkyBlock.getInstance());
+		checker.runTaskTimer(SkyBlock.getSB(), 0l, 2l);
+		SkyBlock.getSB().getServer().getPluginManager().registerEvents(this,  SkyBlock.getSB());
 	}
 	
 	/*

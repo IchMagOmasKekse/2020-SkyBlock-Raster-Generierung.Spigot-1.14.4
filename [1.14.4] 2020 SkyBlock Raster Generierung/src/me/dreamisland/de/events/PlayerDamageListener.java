@@ -10,7 +10,7 @@ import me.dreamisland.de.SkyBlock;
 public class PlayerDamageListener implements Listener {
 	
 	public PlayerDamageListener() {
-		SkyBlock.getInstance().getServer().getPluginManager().registerEvents(this, SkyBlock.getInstance());
+		SkyBlock.getSB().getServer().getPluginManager().registerEvents(this, SkyBlock.getSB());
 	}
 	
 	/*

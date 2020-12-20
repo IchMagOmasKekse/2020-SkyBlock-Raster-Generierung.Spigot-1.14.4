@@ -9,7 +9,7 @@ import me.dreamisland.de.SkyBlock;
 public class ServerListListener implements Listener {
 	
 	public ServerListListener() {
-		SkyBlock.getInstance().getServer().getPluginManager().registerEvents(this, SkyBlock.getInstance());
+		SkyBlock.getSB().getServer().getPluginManager().registerEvents(this, SkyBlock.getSB());
 	}
 	
 	

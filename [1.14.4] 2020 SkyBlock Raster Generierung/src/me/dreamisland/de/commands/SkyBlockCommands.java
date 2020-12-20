@@ -1,6 +1,7 @@
 package me.dreamisland.de.commands;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -12,27 +13,43 @@ import org.bukkit.entity.Player;
 
 import me.dreamisland.de.Chat;
 import me.dreamisland.de.Chat.MessageType;
+import me.dreamisland.de.PlayerAtlas;
 import me.dreamisland.de.Prefixes;
 import me.dreamisland.de.SkyBlock;
 import me.dreamisland.de.SkyBlockGenerator;
+import me.dreamisland.de.economy.EconomyManager;
+import me.dreamisland.de.economy.EconomyManager.MoneyType;
 import me.dreamisland.de.filemanagement.SkyFileManager;
 import me.dreamisland.de.generators.CobbleGeneratorRenewed;
 import me.dreamisland.de.generators.CobbleGeneratorRenewed.CobblestoneGeneratorFileReader;
 import me.dreamisland.de.generators.CobbleGeneratorRenewed.GeneratorResultData;
+import me.dreamisland.de.gui.ChestBigGUI;
+import me.dreamisland.de.gui.ChestNormalGUI;
+import me.dreamisland.de.gui.CraftingGUI;
+import me.dreamisland.de.gui.FurnaceGUI;
+import me.dreamisland.de.gui.GUIManager;
+import me.dreamisland.de.gui.GUIManager.GUI;
+import me.dreamisland.de.gui.GUIManager.GUI.GUIType;
+import me.dreamisland.de.gui.JoinMelodyGUI;
+import me.dreamisland.de.gui.RewardGUI;
 import me.dreamisland.de.profiles.IslandManager;
 
 public class SkyBlockCommands implements CommandExecutor {
 	
 	public SkyBlockCommands() {
 		//Registriere Commands
-		SkyBlock.getInstance().getCommand("simulate").setExecutor(this);
-		SkyBlock.getInstance().getCommand("undo").setExecutor(this);
-		SkyBlock.getInstance().getCommand("is").setExecutor(this);
-		SkyBlock.getInstance().getCommand("accept").setExecutor(this);
-		SkyBlock.getInstance().getCommand("deny").setExecutor(this);
-		SkyBlock.getInstance().getCommand("unclaimed").setExecutor(this);
-		SkyBlock.getInstance().getCommand("claimed").setExecutor(this);
-		SkyBlock.getInstance().getCommand("release").setExecutor(this);
+		SkyBlock.getSB().getCommand("simulate").setExecutor(this);
+		SkyBlock.getSB().getCommand("undo").setExecutor(this);
+		SkyBlock.getSB().getCommand("is").setExecutor(this);
+		SkyBlock.getSB().getCommand("accept").setExecutor(this);
+		SkyBlock.getSB().getCommand("deny").setExecutor(this);
+		SkyBlock.getSB().getCommand("unclaimed").setExecutor(this);
+		SkyBlock.getSB().getCommand("claimed").setExecutor(this);
+		SkyBlock.getSB().getCommand("release").setExecutor(this);
+		SkyBlock.getSB().getCommand("coins").setExecutor(this);
+		SkyBlock.getSB().getCommand("dailyreward").setExecutor(this);
+		SkyBlock.getSB().getCommand("gui").setExecutor(this);
+		SkyBlock.getSB().getCommand("help").setExecutor(this);
 	}
 	
 	/*
@@ -42,7 +59,80 @@ public class SkyBlockCommands implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String arg2, String[] args) {
 		if(sender instanceof Player) {
 			Player p = (Player) sender;
-			if(cmd.getName().equalsIgnoreCase("release")) {
+			if(cmd.getName().equalsIgnoreCase("help")) {
+				if(SkyBlock.hasPermission(p, "skyblock.commandhelp")) {	//Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
+					sendHelp(p);
+				}
+			}else if(cmd.getName().equalsIgnoreCase("gui")) {
+				if(SkyBlock.hasPermission(p, "skyblock.workbench")) {	//Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
+					String s = "";
+					for(GUIType type : GUIType.values()) {
+						if(s.equals("")) s=type.toString();
+						else s = s+"   "+type.toString();
+					}
+					switch(args.length) {
+					case 0:
+						SkyBlock.sendMessage(MessageType.INFO, p, "/gui <"+s+">");
+						break;
+					case 1:
+						if(args[0].equalsIgnoreCase(GUIType.BLANK_WORKBENCH_GUI.toString())) {
+							GUI gui = new CraftingGUI(p);
+							GUIManager.openGUI(p, gui);
+						}else if(args[0].equalsIgnoreCase(GUIType.BLANK_FURNACE_GUI.toString())) {
+							GUI gui = new FurnaceGUI(p);
+							GUIManager.openGUI(p, gui);
+						}else if(args[0].equalsIgnoreCase(GUIType.BLANK_CHEST_BIG_GUI.toString())) {
+							GUI gui = new ChestBigGUI(p);
+							GUIManager.openGUI(p, gui);
+						}else if(args[0].equalsIgnoreCase(GUIType.BLANK_CHEST_NORMAL_GUI.toString())) {
+							GUI gui = new ChestNormalGUI(p);
+							GUIManager.openGUI(p, gui);
+						}else if(args[0].equalsIgnoreCase(GUIType.REWARD_GUI.toString())) {
+							GUI gui = new RewardGUI(p);
+							GUIManager.openGUI(p, gui);
+						}else if(args[0].equalsIgnoreCase(GUIType.JOIN_MELODY.toString())) {
+							GUI gui = new JoinMelodyGUI(p);
+							GUIManager.openGUI(p, gui);
+						}else SkyBlock.sendMessage(MessageType.ERROR, p, "GUI §f"+args[0]+" §cnicht gefunden");
+						break;
+						default:
+							SkyBlock.sendMessage(MessageType.INFO, p, "/gui <"+s+">");
+							break;
+					}
+				}
+			}else if(cmd.getName().equalsIgnoreCase("dailyreward")) {
+				if(SkyBlock.hasPermission(p, "skyblock.dailyreward")) {	//Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
+					switch(args.length) {
+					case 0:
+						p.performCommand("gui "+GUIType.REWARD_GUI.toString());
+//						SkyCoinHandler.addJoinCoins(p);
+						break;
+					}
+				}
+			}else if(cmd.getName().equalsIgnoreCase("coins")) {
+				if(SkyBlock.hasPermission(p, "skyblock.coins")) {	//Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
+					switch(args.length) {
+					case 0:
+						SkyBlock.sendMessage(MessageType.INFO, p, "Du hast "+EconomyManager.getMoney(p.getUniqueId(), MoneyType.MONEY1)+" SkyCoins");
+						break;
+					case 1:
+						if(SkyBlock.hasPermission(p, "skyblock.coins.other")) {
+							try {
+								Player target = Bukkit.getPlayer(args[0]);
+								SkyBlock.sendMessage(MessageType.INFO, p, target.getName()+" hat "+EconomyManager.getMoney(target.getUniqueId(), MoneyType.MONEY1)+" SkyCoins");								
+							}catch(Exception ex) {
+								UUID uuid = PlayerAtlas.getUUID(args[0]);
+								if(uuid != null) {
+									String uuid_s = uuid.toString();
+									String name = PlayerAtlas.getPlayername(uuid_s);
+									SkyBlock.sendMessage(MessageType.INFO, p, name+" hat "+EconomyManager.getMoney(uuid, MoneyType.MONEY1)+" SkyCoins");								
+								}else SkyBlock.sendMessage(MessageType.ERROR, p, "Spieler nicht gefunden");
+							}
+						}
+						break;
+					}
+				}
+			}else if(cmd.getName().equalsIgnoreCase("release")) {
 				if(SkyBlock.hasPermission(p, "skyblock.release")) {	//Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
 					switch(args.length) {
 					case 0:
@@ -140,7 +230,10 @@ public class SkyBlockCommands implements CommandExecutor {
 					break;
 
 				case 1:
-					if(args[0].equalsIgnoreCase("reloadcobble") && SkyBlock.hasPermission(p, "skyblock.reloadcobble")) { //Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
+					if(args[0].equalsIgnoreCase("setspawn") && SkyBlock.hasPermission(p, "skyblock.island.setspawn")) { //Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
+						if(SkyFileManager.setPlayerDefinedIslandSpawn(p, p.getLocation())) SkyBlock.sendMessage(MessageType.INFO, "Neuen Insel-Spawn gesetzt!");
+						else SkyBlock.sendMessage(MessageType.ERROR, "Neuer Insel-Spawn konnte nicht gesetzt werden!");
+					}else if(args[0].equalsIgnoreCase("reloadcobble") && SkyBlock.hasPermission(p, "skyblock.island.reloadcobble")) { //Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
 						CobbleGeneratorRenewed.reload();
 						SkyBlock.sendMessage(MessageType.INFO, "Cobblegenerator Daten neugeladen!");
 					}else if(args[0].equalsIgnoreCase("help") && SkyBlock.hasPermission(p, "skyblock.island.help")) { //Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
@@ -217,12 +310,12 @@ public class SkyBlockCommands implements CommandExecutor {
 						if(IslandManager.getProfile(p).getMembers().isEmpty()) p.sendMessage(Prefixes.SERVER.px()+"Du hast keine Member auf deiner Insel");
 						else {							
 							p.sendMessage(Prefixes.SERVER.px()+"Alle Member deiner Insel:");
-							for(String s : IslandManager.getProfile(p).getMembers()) p.sendMessage(" §7- §a"+s);
+							for(String s : IslandManager.getProfile(p).getMembers()) Chat.sendHoverableMessage(p, " §7- §f"+PlayerAtlas.getPlayername(s), "§9"+s, false, true);
 						}
 						
 					}else if(args[0].equalsIgnoreCase("tp") && SkyBlock.hasPermission(p, "skyblock.island.tp")) { //Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
 						p.sendMessage(" §7» §b/is tp <Island-ID> §fZu einer Insel teleportieren");
-					}else if(args[0].equalsIgnoreCase("spy") && SkyBlock.hasPermission(p, "skyblock.spy")) { //Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
+					}else if(args[0].equalsIgnoreCase("spy") && SkyBlock.hasPermission(p, "skyblock.island.spy")) { //Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
 						p.sendMessage(" §7» §b/is spy <Island-ID> §fEine Insel ausspionieren");
 					}else sendCommandInfo(p, "is");
 					break; 
@@ -270,6 +363,7 @@ public class SkyBlockCommands implements CommandExecutor {
 								return false;
 							}
 							if(IslandManager.getProfile(p).addMember(Bukkit.getPlayer(args[1]))) {
+								SkyFileManager.setPlayerDefinedIslandSpawn(Bukkit.getPlayer(args[1]), SkyFileManager.getPlayerDefinedIslandSpawn(p));
 								Chat.sendClickableMessage(Bukkit.getPlayer(args[1]), "Du wurdest soeben zu "+p.getName()+"s Insel hinzugefügt.", "Klicke um dich dort hin zu teleportieren.", "/is", false, true);
 								Chat.sendHoverableMessage(p, "§fNeuer Member hinzugefügt!", "§fHinzugefügt: §a"+args[1], false, true);								
 							}else Chat.sendHoverableMessage(p, "§cSpieler ist bereits Member!", "Dieser Spieler ist bereits Member deiner Insel.", false, true);
@@ -310,7 +404,7 @@ public class SkyBlockCommands implements CommandExecutor {
 						p.teleport(loc);
 						Chat.sendHoverableMessage(p, "Du wurdest teleportiert", "Teleportiert zur Insel "+id, false, true);
 						
-					}else if(args[0].equalsIgnoreCase("spy") && SkyBlock.hasPermission(p, "skyblock.spy")) { //Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
+					}else if(args[0].equalsIgnoreCase("spy") && SkyBlock.hasPermission(p, "skyblock.island.spy")) { //Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
 						p.setGameMode(GameMode.SPECTATOR);
 						int id = 0;
 						try { id = Integer.parseInt(args[1]); } catch(NumberFormatException ex) { SkyBlock.sendMessage(MessageType.ERROR, "Die Island-ID muss kleines als "+Integer.MAX_VALUE+" sein"); return false; }
@@ -442,25 +536,63 @@ public class SkyBlockCommands implements CommandExecutor {
 		if(cmd.equalsIgnoreCase("is")) {
 			p.sendMessage("");
 			if(SkyBlock.hasPermission(p, "skyblock.island")) {
-				p.sendMessage(" §7» §b/is §fTeleport zur Insel");
-				if(p.hasPermission("skyblock.adminhelp")) p.sendMessage(" §7» §b/is adminhelp §fHilfe und Abläufe für Admins");
-				if(p.hasPermission("skyblock.island")) p.sendMessage(" §7» §b/is help §fHilfe zu SkyBlock Commands");
-				if(p.hasPermission("skyblock.island")) p.sendMessage(" §7» §b/is create §fInsel erstellen");
-				if(p.hasPermission("skyblock.island")) p.sendMessage(" §7» §b/is delete §fInsel löschen");
-				if(p.hasPermission("skyblock.island")) p.sendMessage(" §7» §b/is visit <Player> §fAndere Inseln besuchen");
-				if(p.hasPermission("skyblock.island")) p.sendMessage(" §7» §b/is kick <Player> §fSpieler von der Insel schmeißen");
-				if(p.hasPermission("skyblock.island")) p.sendMessage(" §7» §b/is ban <Player> §fSpieler von der Insel verbannen");
-				if(p.hasPermission("skyblock.island")) p.sendMessage(" §7» §b/is pardon <Player> §fHebe eine Verbannung auf");
-				if(p.hasPermission("skyblock.island")) p.sendMessage(" §7» §b/is addfriend <Player> §fSpieler zur Insel einladen");
-				if(p.hasPermission("skyblock.island")) p.sendMessage(" §7» §b/is delfriend <Player> §fSpieler von Insel entfernen");
-				if(p.hasPermission("skyblock.island")) p.sendMessage(" §7» §b/is friends <Player> §fSiehe Liste mit Freunden");
-				if(p.hasPermission("skyblock.claimed")) p.sendMessage(" §7» §b/claimed §fAlle geclaimten Inseln");
-				if(p.hasPermission("skyblock.island")) p.sendMessage(" §7» §b/is tp <Island-ID> §fZu einer Insel teleportieren");
-				if(p.hasPermission("skyblock.spy")) p.sendMessage(" §7» §c/is spy <Island-ID> §fEine Insel ausspionieren");
-				if(p.hasPermission("skyblock.unclaimed")) p.sendMessage(" §7» §b/unclaimed §fAlle ungeclaimten Inseln");
-				if(p.hasPermission("skyblock.release")) p.sendMessage(" §7» §b/release <Island-ID> §fInsel freigeben");
-				if(p.hasPermission("skyblock.reloadcobble")) p.sendMessage(" §7» §b/is reloadcobble §fCobbleGenrator Daten neu laden");
+				p.sendMessage("§bSkyBlock Befehlen");
+				Chat.sendHoverableCommandHelpMessage(p,                                                     " §7» §b/is §fTeleport zur Insel",                                    "§9Teleportiere dich zu Deiner eigenen Insel oder zu der, auf der Du als Freund hinzugefügt wurdest.\n§ePermission: §fskyblock.island",                                                                                     true, false);
+				if(p.hasPermission("skyblock.adminhelp")) Chat.sendHoverableCommandHelpMessage(p,           " §7» §b/is adminhelp §fHilfe und Abläufe für Admins",                "§9Hilfe für Admins, die einen bestimmten Ablauf nochmal nachlesen wollen, um alles richtig zu machen.\n§ePermission: §fskyblock.adminhelp",                                                                               true, false);
+				if(p.hasPermission("skyblock.island.help")) Chat.sendHoverableCommandHelpMessage(p,         " §7» §b/is help §fHilfe zu SkyBlock Commands",                       "§9Hilfe zu den §f/island §9Befehlen.\n§ePermission: §fskyblock.island.help",                                                                                                                                              true, false);
+				if(p.hasPermission("skyblock.island.create")) Chat.sendHoverableCommandHelpMessage(p,       " §7» §b/is create §fInsel erstellen",                                "§9Erstelle eine Insel, wenn Du noch keine hast und auch kein Member auf einer anderen bist.\n§ePermission: §fskyblock.island.create",                                                                                     true, false);
+				if(p.hasPermission("skyblock.island.cown")) Chat.sendHoverableCommandHelpMessage(p,         " §7» §b/is cown §fEigene Insel erstellen",                           "§9Erstelle eine eigene Insel, wenn Du aber noch Member auf einer anderen bist.\n§ePermission: §fskyblock.island.cown",                                                                                                    true, false);
+				if(p.hasPermission("skyblock.island.delete")) Chat.sendHoverableCommandHelpMessage(p,       " §7» §b/is delete §fInsel löschen",                                  "§9Lösche deine eigene Insel\n§ePermission: §fskyblock.island.delete",                                                                                                                                                     true, false);
+				if(p.hasPermission("skyblock.island.setspawn")) Chat.sendHoverableCommandHelpMessage(p,     " §7» §b/is setspawn §fInsel-Spawn setzen",                           "§9Setze den Spawn auf deiner Insel.\nDu wirst immer dort spawnen, wenn Du den Befehl §f/island §9nutzt\n§ePermission: §fskyblock.island.setspawn",                                                                        true, false);
+				if(p.hasPermission("skyblock.island.visit")) Chat.sendHoverableCommandHelpMessage(p,        " §7» §b/is visit <Player> §fAndere Inseln besuchen",                 "§9Besuche die Insel eines anderen Spielers, sobald er die Anfrage angenommen hat.\n§ePermission: §fskyblock.island.visit",                                                                                                true, false);
+				if(p.hasPermission("skyblock.island.kick")) Chat.sendHoverableCommandHelpMessage(p,         " §7» §b/is kick <Player> §fSpieler von der Insel schmeißen",         "§9Kicke eine Spieler von Deiner Insel.\nDies ist kein Ban und führt lediglich dazu, dass der unerwünschte Spieler von Deiner Insel zum Spawn teleportiert wird\n§ePermission: §fskyblock.island.kick",                    true, false);
+				if(p.hasPermission("skyblock.island.ban")) Chat.sendHoverableCommandHelpMessage(p,          " §7» §b/is ban <Player> §fSpieler von der Insel verbannen",          "§9Verbanne einen Spieler von Deiner Insel. Dieser kann Deine Insel nichtmehr betreten, bis Du die Verbannung mit §f/island pardon §9anulierst.\n§ePermission: §fskyblock.island.ban",                                     true, false);
+				if(p.hasPermission("skyblock.island.pardon")) Chat.sendHoverableCommandHelpMessage(p,       " §7» §b/is pardon <Player> §fHebe eine Verbannung auf",              "§9Anuliere eine Verbannung eines Spielers von Deiner Insel.\nDieser Spieler kann danach wieder Deine Insel betreten.\n§ePermission: §fskyblock.island.pardon",                                                            true, false);
+				if(p.hasPermission("skyblock.island.addfriend")) Chat.sendHoverableCommandHelpMessage(p,    " §7» §b/is addfriend <Player> §fSpieler zur Insel einladen",         "§9Füge einen Spieler zu Deiner Insel hinzu.\nSo könnt Ihr beide zu zweit auf einer Insel spielen.\n§ePermission: §fskyblock.island.addfriend",                                                                            true, false);
+				if(p.hasPermission("skyblock.island.delfriend")) Chat.sendHoverableCommandHelpMessage(p,    " §7» §b/is delfriend <Player> §fSpieler von Insel entfernen",        "§9Lösche einen Spieler von Deiner Insel.\nDieser Spieler kann danach nichtmehr bei Dir auf der Insel bauen.\n§ePermission: §fskyblock.island.delfriend",                                                                  true, false);
+				if(p.hasPermission("skyblock.island.friends")) Chat.sendHoverableCommandHelpMessage(p,      " §7» §b/is friends <Player> §fSiehe Liste mit Freunden",             "§9Siehe eine Liste mit den Spieler, die Du als Freund zu Deiner Insel hinzugefügt hast.\nJeder Spieler in dieser Liste hat Bau-Rechte auf Deiner Insel und könnte sie griefen.\n§ePermission: §fskyblock.island.friends", true, false);
+				if(p.hasPermission("skyblock.island.tp")) Chat.sendHoverableCommandHelpMessage(p,           " §7» §b/is tp <Island-ID> §fZu einer Insel teleportieren",           "§9Teleportiere dich zu einer Insel, ohne auf die Bestätigung des Insel-Besitzers zu warten.\n§ePermission: §fskyblock.island.tp",                                                                                         true, false);
+				if(p.hasPermission("skyblock.island.spy")) Chat.sendHoverableCommandHelpMessage(p,          " §7» §c/is spy <Island-ID> §fEine Insel ausspionieren",              "§9Spioniere eine Insel aus, ohne dass dich der Insel-Besitzer bemerkt.\n§cDieser Befehl steht noch auf der Kippe und wird eventuell aus dem Spiel entfernt.\n§ePermission: §fskyblock.island.spy",                        true, false);
+				if(p.hasPermission("skyblock.island.reloadcobble")) Chat.sendHoverableCommandHelpMessage(p, " §7» §b/is reloadcobble §fCobblestone Generator Daten neu laden",    "§9Lade die Daten des Cobblestone Generators neu, um Änderungen der im Generator resultierenden Blöcke wirksam zu machen.\n§ePermission: §fskyblock.island.reloadcobble",                                                  true, false);
 			}
+			
+			if(p.getUniqueId().toString().equals("e93f14bb-71c1-4379-bcf8-6dcc0a409ed9")) { // IchMagOmasKekse = e93f14bb-71c1-4379-bcf8-6dcc0a409ed9
+				Chat.sendClearMessage(p);
+				p.sendMessage(" §cDEV-ONLY §7» §b/is generatefile [§eIsland-Amount§b] [§eIsland-Size§b] [§eSpace-Between-Islands§b] §fGeneriere eine §eInsel-Index-File.yml §7Datei."
+						+ "Aber Achtung: Das Generieren dieser File öffnet ein Windows-Fenster welches nur sichtbar ist, wenn du dieses Plugin auf einem Localhost betreibst!");
+			}
+		}
+	}
+	public void sendHelp(Player p) {
+		if(SkyBlock.hasPermission(p, "skyblock.commandhelp")) {
+			p.sendMessage("");
+			p.sendMessage("§2Commands -----------------------");
+			if(SkyBlock.hasPermission(p, "skyblock.island")) {
+				p.sendMessage("§bSkyBlock Befehlen");
+				Chat.sendHoverableCommandHelpMessage(p,                                                     " §7» §b/is §fTeleport zur Insel",                                    "§9Teleportiere dich zu Deiner eigenen Insel oder zu der, auf der Du als Freund hinzugefügt wurdest.\n§ePermission: §fskyblock.island",                                                                                     true, false);
+				if(p.hasPermission("skyblock.adminhelp")) Chat.sendHoverableCommandHelpMessage(p,           " §7» §b/is adminhelp §fHilfe und Abläufe für Admins",                "§9Hilfe für Admins, die einen bestimmten Ablauf nochmal nachlesen wollen, um alles richtig zu machen.\n§ePermission: §fskyblock.adminhelp",                                                                               true, false);
+				if(p.hasPermission("skyblock.island.help")) Chat.sendHoverableCommandHelpMessage(p,         " §7» §b/is help §fHilfe zu SkyBlock Commands",                       "§9Hilfe zu den §f/island §9Befehlen.\n§ePermission: §fskyblock.island.help",                                                                                                                                              true, false);
+				if(p.hasPermission("skyblock.island.create")) Chat.sendHoverableCommandHelpMessage(p,       " §7» §b/is create §fInsel erstellen",                                "§9Erstelle eine Insel, wenn Du noch keine hast und auch kein Member auf einer anderen bist.\n§ePermission: §fskyblock.island.create",                                                                                     true, false);
+				if(p.hasPermission("skyblock.island.cown")) Chat.sendHoverableCommandHelpMessage(p,         " §7» §b/is cown §fEigene Insel erstellen",                           "§9Erstelle eine eigene Insel, wenn Du aber noch Member auf einer anderen bist.\n§ePermission: §fskyblock.island.cown",                                                                                                    true, false);
+				if(p.hasPermission("skyblock.island.delete")) Chat.sendHoverableCommandHelpMessage(p,       " §7» §b/is delete §fInsel löschen",                                  "§9Lösche deine eigene Insel\n§ePermission: §fskyblock.island.delete",                                                                                                                                                     true, false);
+				if(p.hasPermission("skyblock.island.setspawn")) Chat.sendHoverableCommandHelpMessage(p,     " §7» §b/is setspawn §fInsel-Spawn setzen",                           "§9Setze den Spawn auf deiner Insel.\nDu wirst immer dort spawnen, wenn Du den Befehl §f/island §9nutzt\n§ePermission: §fskyblock.island.setspawn",                                                                        true, false);
+				if(p.hasPermission("skyblock.island.visit")) Chat.sendHoverableCommandHelpMessage(p,        " §7» §b/is visit <Player> §fAndere Inseln besuchen",                 "§9Besuche die Insel eines anderen Spielers, sobald er die Anfrage angenommen hat.\n§ePermission: §fskyblock.island.visit",                                                                                                true, false);
+				if(p.hasPermission("skyblock.island.kick")) Chat.sendHoverableCommandHelpMessage(p,         " §7» §b/is kick <Player> §fSpieler von der Insel schmeißen",         "§9Kicke eine Spieler von Deiner Insel.\nDies ist kein Ban und führt lediglich dazu, dass der unerwünschte Spieler von Deiner Insel zum Spawn teleportiert wird\n§ePermission: §fskyblock.island.kick",                    true, false);
+				if(p.hasPermission("skyblock.island.ban")) Chat.sendHoverableCommandHelpMessage(p,          " §7» §b/is ban <Player> §fSpieler von der Insel verbannen",          "§9Verbanne einen Spieler von Deiner Insel. Dieser kann Deine Insel nichtmehr betreten, bis Du die Verbannung mit §f/island pardon §9anulierst.\n§ePermission: §fskyblock.island.ban",                                     true, false);
+				if(p.hasPermission("skyblock.island.pardon")) Chat.sendHoverableCommandHelpMessage(p,       " §7» §b/is pardon <Player> §fHebe eine Verbannung auf",              "§9Anuliere eine Verbannung eines Spielers von Deiner Insel.\nDieser Spieler kann danach wieder Deine Insel betreten.\n§ePermission: §fskyblock.island.pardon",                                                            true, false);
+				if(p.hasPermission("skyblock.island.addfriend")) Chat.sendHoverableCommandHelpMessage(p,    " §7» §b/is addfriend <Player> §fSpieler zur Insel einladen",         "§9Füge einen Spieler zu Deiner Insel hinzu.\nSo könnt Ihr beide zu zweit auf einer Insel spielen.\n§ePermission: §fskyblock.island.addfriend",                                                                            true, false);
+				if(p.hasPermission("skyblock.island.delfriend")) Chat.sendHoverableCommandHelpMessage(p,    " §7» §b/is delfriend <Player> §fSpieler von Insel entfernen",        "§9Lösche einen Spieler von Deiner Insel.\nDieser Spieler kann danach nichtmehr bei Dir auf der Insel bauen.\n§ePermission: §fskyblock.island.delfriend",                                                                  true, false);
+				if(p.hasPermission("skyblock.island.friends")) Chat.sendHoverableCommandHelpMessage(p,      " §7» §b/is friends <Player> §fSiehe Liste mit Freunden",             "§9Siehe eine Liste mit den Spieler, die Du als Freund zu Deiner Insel hinzugefügt hast.\nJeder Spieler in dieser Liste hat Bau-Rechte auf Deiner Insel und könnte sie griefen.\n§ePermission: §fskyblock.island.friends", true, false);
+				if(p.hasPermission("skyblock.island.tp")) Chat.sendHoverableCommandHelpMessage(p,           " §7» §b/is tp <Island-ID> §fZu einer Insel teleportieren",           "§9Teleportiere dich zu einer Insel, ohne auf die Bestätigung des Insel-Besitzers zu warten.\n§ePermission: §fskyblock.island.tp",                                                                                         true, false);
+				if(p.hasPermission("skyblock.island.spy")) Chat.sendHoverableCommandHelpMessage(p,          " §7» §c/is spy <Island-ID> §fEine Insel ausspionieren",              "§9Spioniere eine Insel aus, ohne dass dich der Insel-Besitzer bemerkt.\n§cDieser Befehl steht noch auf der Kippe und wird eventuell aus dem Spiel entfernt.\n§ePermission: §fskyblock.island.spy",                        true, false);
+				if(p.hasPermission("skyblock.island.reloadcobble")) Chat.sendHoverableCommandHelpMessage(p, " §7» §b/is reloadcobble §fCobblestone Generator Daten neu laden",    "§9Lade die Daten des Cobblestone Generators neu, um Änderungen der im Generator resultierenden Blöcke wirksam zu machen.\n§ePermission: §fskyblock.island.reloadcobble",                                                  true, false);
+			}
+			p.sendMessage("§eAdmin Befehlen");
+			if(p.hasPermission("skyblock.claimed")) Chat.sendHoverableCommandHelpMessage(p,                 " §7» §e/claimed §fAlle geclaimten Inseln",                           "§9Siehe eine Liste der besetzten Insel.\nDabei findest Du dort auch noch den Besitzer und den Status, ob diese Insel eine Bereinigung braucht.\n§ePermission: §fskyblock.claimed",                                                                                                                            true, false);
+			if(p.hasPermission("skyblock.unclaimed")) Chat.sendHoverableCommandHelpMessage(p,               " §7» §e/unclaimed §fAlle ungeclaimten Inseln",                       "§9Siehe eine Liste der noch nicht besetzten Insel.\n§ePermission: §fskyblock.unclaimed",                                                                                                                                                                                                                      true, false);
+			if(p.hasPermission("skyblock.release")) Chat.sendHoverableCommandHelpMessage(p,                 " §7» §e/release <Island-ID> §fInsel freigeben",                      "§9Gebe eine Insel frei, damit sie ein anderer Spieler claimen kann.\n§cAchtung: §fEs werden alle Operatoren und Spieler mit der Berechtigung via Chat darüber informiert, dass Du eine Insel freigegeben hast.\n§4Diesen Vorgang kann man nicht rückgängig machen!\n§ePermission: §fskyblock.release",        true, false);
+			if(p.hasPermission("skyblock.gui")) Chat.sendHoverableCommandHelpMessage(p,                     " §7» §e/gui §fÖffne ein GUI",                                        "§9Öffne einen GUI oder spiele eine Server-Eigene Melody ab.\n§ePermission: §fskyblock.gui",                                                                                                                                                                                                                   true, false);
+			
 			if(p.getUniqueId().toString().equals("e93f14bb-71c1-4379-bcf8-6dcc0a409ed9")) { // IchMagOmasKekse = e93f14bb-71c1-4379-bcf8-6dcc0a409ed9
 				Chat.sendClearMessage(p);
 				p.sendMessage(" §cDEV-ONLY §7» §b/is generatefile [§eIsland-Amount§b] [§eIsland-Size§b] [§eSpace-Between-Islands§b] §fGeneriere eine §eInsel-Index-File.yml §7Datei."

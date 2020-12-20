@@ -17,7 +17,7 @@ import me.dreamisland.de.schematics.SkyRect;
 public class SchematicCommands implements CommandExecutor {
 	
 	public SchematicCommands() {
-		SkyBlock.getInstance().getCommand("s").setExecutor(this);
+		SkyBlock.getSB().getCommand("s").setExecutor(this);
 	}
 	
 	@Override

@@ -1,0 +1,9 @@
+#Hier sind alle Kontostände der Spieler festgehalten
+console:
+  account:
+    exists: true
+    money1: 10000
+    money2: 10000
+    money3: 10000
+    money4: 10000
+    money5: 10000

@@ -18,7 +18,7 @@ import me.dreamisland.de.profiles.IslandManager;
 public class IslandProtection implements Listener {
 	
 	public IslandProtection() {
-		SkyBlock.getInstance().getServer().getPluginManager().registerEvents(this, SkyBlock.getInstance());
+		SkyBlock.getSB().getServer().getPluginManager().registerEvents(this, SkyBlock.getSB());
 	}
 	
 	@EventHandler
@@ -72,6 +72,8 @@ public class IslandProtection implements Listener {
 					e.setCancelled(true);
 				}
 			}
+		}else {
+			
 		}
 	}
 	@EventHandler

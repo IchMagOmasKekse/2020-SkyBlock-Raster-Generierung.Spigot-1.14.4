@@ -29,8 +29,8 @@ public class SkyFileManager {
 	private static ArrayList<String> emptylist = new ArrayList<String>();
 
 	public SkyFileManager() {
-		SkyBlock.getInstance().saveResource("Insel-Index-File.yml", false);
-		SkyBlock.getInstance().saveResource("config.yml", false);
+		SkyBlock.getSB().saveResource("Insel-Index-File.yml", false);
+		SkyBlock.getSB().saveResource("config.yml", false);
 	}
 
 	
@@ -407,9 +407,9 @@ public class SkyFileManager {
 	 * @param spawn
 	 * @return
 	 */
-	public static void setPlayerDefinedIslandSpawn(Player owner, Location spawn) {
+	public static boolean setPlayerDefinedIslandSpawn(Player owner, Location spawn) {
 		File file = new File("plugins/SkyBlock/Inseln/"+owner.getUniqueId().toString()+"-Insel.yml");
-		if(file.exists() == false) return;
+		if(file.exists() == false) return false;
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 		cfg.set("Islands.Spawnpoint.World", spawn.getWorld().getName());
 		cfg.set("Islands.Spawnpoint.LocX", spawn.getX());
@@ -419,8 +419,10 @@ public class SkyFileManager {
 		cfg.set("Islands.Spawnpoint.Pitch", spawn.getPitch());
 		try {
 			cfg.save(file);
+			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
+			return false;
 		}
 	}
 	

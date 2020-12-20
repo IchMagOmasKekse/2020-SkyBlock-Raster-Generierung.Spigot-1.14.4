@@ -27,7 +27,7 @@ public class CobbleGeneratorRenewed implements Listener {
 	public static ConcurrentLinkedQueue<GeneratorResultData> results = new ConcurrentLinkedQueue<GeneratorResultData>();
 	
 	public CobbleGeneratorRenewed() {
-		SkyBlock.getInstance().getServer().getPluginManager().registerEvents(this, SkyBlock.getInstance());
+		SkyBlock.getSB().getServer().getPluginManager().registerEvents(this, SkyBlock.getSB());
 		ArrayList<GeneratorResultData> datas = CobblestoneGeneratorFileReader.getCobbleResultData();
 		
 		for(GeneratorResultData data : datas) {
@@ -111,7 +111,7 @@ public class CobbleGeneratorRenewed implements Listener {
 			//Die WHile Schleife geeht unendlich lange
 			while(pick > (((GeneratorResultData) results.toArray()[i]).getPercentage() * 0.01d)) {
 				i = r.nextInt(results.size());
-				pick = r.nextInt(100) * 0.01d;
+				pick = r.nextInt(1000) * 0.001d;
 			}		
 			if(pick < ((GeneratorResultData) results.toArray()[i]).getPercentage()) mat = ((GeneratorResultData) results.toArray()[i]).getResult();
 			
@@ -119,7 +119,10 @@ public class CobbleGeneratorRenewed implements Listener {
 				location.getBlock().setType(mat);
 				if(location != null) {
 					Chest chest = (Chest) location.getBlock().getState();
-					chest.getInventory().setContents(ChestContent.getContent(((GeneratorResultData) results.toArray()[i]).getArg1()).getContents());
+					String content_name = ((GeneratorResultData) results.toArray()[i]).getArg1();
+//					chest.setCustomName(content_name);
+//					chest.update();
+					chest.getInventory().setContents(ChestContent.getRandomContent(content_name));
 				}
 			}
 			
@@ -136,7 +139,7 @@ public class CobbleGeneratorRenewed implements Listener {
 		}
 		
 		/**
-		 * Gibt eine ArrayList mit den Resultaten eines Cobblegenerators zurÃ¼ck
+		 * Gibt eine ArrayList mit den Resultaten eines Cobblegenerators zurück
 		 * @param kit
 		 * @return
 		 */
@@ -145,7 +148,7 @@ public class CobbleGeneratorRenewed implements Listener {
 			
 			File file = new File("plugins/SkyBlock/cobble_results.yml");
 			if(file.exists()==false) {
-				SkyBlock.getInstance().saveResource("cobble_results.yml", false);
+				SkyBlock.getSB().saveResource("cobble_results.yml", false);
 				file = new File("plugins/SkyBlock/cobble_results.yml");
 			}
 			FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);

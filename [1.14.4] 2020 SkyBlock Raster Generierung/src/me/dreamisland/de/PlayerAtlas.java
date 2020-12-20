@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+
 public class PlayerAtlas {
 	
 	private static String atlas_path = "plugins/SkyBlock/player_atlas.yml";

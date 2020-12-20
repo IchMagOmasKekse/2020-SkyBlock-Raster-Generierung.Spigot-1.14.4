@@ -27,6 +27,7 @@ import me.dreamisland.de.area.IslandProtection;
 import me.dreamisland.de.area.SpawnToIslandPortal;
 import me.dreamisland.de.commands.SchematicCommands;
 import me.dreamisland.de.commands.SkyBlockCommands;
+import me.dreamisland.de.economy.SkyCoinHandler;
 import me.dreamisland.de.events.AsyncChatListener;
 import me.dreamisland.de.events.BlockDetectorListener;
 import me.dreamisland.de.events.JoinAndQuitListener;
@@ -35,6 +36,8 @@ import me.dreamisland.de.events.ServerListListener;
 import me.dreamisland.de.filemanagement.SkyFileManager;
 import me.dreamisland.de.generators.CobbleGeneratorRenewed;
 import me.dreamisland.de.generators.SkyWorldGenerator;
+import me.dreamisland.de.gui.GUIClicker;
+import me.dreamisland.de.gui.GUIManager;
 import me.dreamisland.de.inventory.ChestContent;
 import me.dreamisland.de.profiles.IslandManager;
 import me.dreamisland.de.requests.Request.RequestManager;
@@ -45,7 +48,7 @@ import me.dreamisland.de.schematics.SchematicManager;
 public class SkyBlock extends JavaPlugin {
 	
 	private static SkyBlock instance = null;
-	public static SkyBlock getInstance() { return instance; } //Gebe die einzigartige Instanz der Main-Klasse zurck
+	public static SkyBlock getSB() { return instance; } //Gebe die einzigartige Instanz der Main-Klasse zurck
 	public static Location spawn = null;
 	public boolean generateNewWorld = false;
 	public BukkitRunnable spawn_checker = null;
@@ -68,6 +71,7 @@ public class SkyBlock extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		if(spawn_checker != null) spawn_checker.cancel();
+		GUIManager.closeAll();
 	}
 	
 	/*
@@ -120,6 +124,7 @@ public class SkyBlock extends JavaPlugin {
 		new AsyncChatListener();
 		new PlayerDamageListener();
 		new ChestGenerator();
+		new ChestContent();
 		new CobbleGeneratorRenewed();
 		new IslandProtection();
 		
@@ -131,6 +136,10 @@ public class SkyBlock extends JavaPlugin {
 		//Erstelle Portale
 		new SpawnToIslandPortal();
 		
+		//Guis
+		new GUIManager();
+		new GUIClicker();
+		
 		//Erstelle SkyBock Welt
 		if(generateNewWorld && new File("plugins/SkyBlock/Islands-Databank.yml").exists() == false) {
 			for(Player p : Bukkit.getOnlinePlayers()) p.sendMessage("§eBenutze Algorithmus...");
@@ -139,7 +148,7 @@ public class SkyBlock extends JavaPlugin {
 		
 		for(Player p : Bukkit.getOnlinePlayers()) {
 			if(p.isOp()) {
-				PermissionAttachment att = p.addAttachment(SkyBlock.getInstance());
+				PermissionAttachment att = p.addAttachment(SkyBlock.getSB());
 				att.setPermission("mv.bypass.gamemode.*", true);
 			}
 		}
@@ -157,12 +166,12 @@ public class SkyBlock extends JavaPlugin {
 				}
 			}
 		};
-		spawn_checker.runTaskTimer(getInstance(), 0, 20l);
+		spawn_checker.runTaskTimer(getSB(), 0, 20l);
 		
 	}
 	
 	public static void sendRunningVersion(CommandSender sender) {
-		sender.sendMessage("§aSkyBlock Version §f"+getInstance().getDescription().getVersion()+" §awird betrieben.");
+		sender.sendMessage("§aSkyBlock Version §f"+getSB().getDescription().getVersion()+" §awird betrieben.");
 	}
 	
 	/**
@@ -285,7 +294,8 @@ public class SkyBlock extends JavaPlugin {
      */
     public static void sendMessage(MessageType type, Player p, String... strings) {
     	for(String msg : strings) {
-    		if(p.isOp()) p.sendMessage(Prefixes.SERVER.px()+type.getPrefix()+type.getSuffix()+msg);
+//    		if(p.isOp()) p.sendMessage(Prefixes.SERVER.px()+type.getPrefix()+type.getSuffix()+msg);
+    		p.sendMessage(Prefixes.SERVER.px()+type.getPrefix()+type.getSuffix()+msg);
     	}
     }
     

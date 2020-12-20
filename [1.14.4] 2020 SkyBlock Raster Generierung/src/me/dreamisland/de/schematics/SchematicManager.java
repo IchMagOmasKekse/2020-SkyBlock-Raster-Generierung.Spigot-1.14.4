@@ -38,7 +38,7 @@ public class SchematicManager implements Listener {
 	private static HashMap<Schematic, BukkitRunnable> timers = new HashMap<Schematic, BukkitRunnable>();
 	
 	public SchematicManager() {
-		SkyBlock.getInstance().getServer().getPluginManager().registerEvents(this, SkyBlock.getInstance());
+		SkyBlock.getSB().getServer().getPluginManager().registerEvents(this, SkyBlock.getSB());
 	}
 	/*
 	 * TODO: Gibt den Pfad der Gespeicherten Schematic-Files zurück
@@ -473,7 +473,7 @@ public class SchematicManager implements Listener {
 						
 					}
 				});
-				timers.get(schematic).runTaskTimer(SkyBlock.getInstance(), delay, period);
+				timers.get(schematic).runTaskTimer(SkyBlock.getSB(), delay, period);
 			}
 			
 			return true;

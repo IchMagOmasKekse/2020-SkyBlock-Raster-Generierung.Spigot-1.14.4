@@ -16,7 +16,7 @@ public class BlockDetectorListener implements Listener {
 	
 	public BlockDetectorListener() {
 		//Registriere alle Envents in dieser Klasse
-		SkyBlock.getInstance().getServer().getPluginManager().registerEvents(this, SkyBlock.getInstance());
+		SkyBlock.getSB().getServer().getPluginManager().registerEvents(this, SkyBlock.getSB());
 	}
 	
 	

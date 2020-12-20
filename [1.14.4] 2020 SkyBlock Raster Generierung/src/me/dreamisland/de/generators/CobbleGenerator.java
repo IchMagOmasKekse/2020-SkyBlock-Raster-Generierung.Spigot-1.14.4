@@ -21,7 +21,7 @@ public class CobbleGenerator implements Listener {
 	private ConcurrentHashMap<Material, Double> results = new ConcurrentHashMap<Material, Double>();
 	
 	public CobbleGenerator() {
-		SkyBlock.getInstance().getServer().getPluginManager().registerEvents(this, SkyBlock.getInstance());
+		SkyBlock.getSB().getServer().getPluginManager().registerEvents(this, SkyBlock.getSB());
 //		results.put(Material.STONE, 20d);
 //		results.put(Material.COAL_ORE, (12d));
 //		results.put(Material.SAND, 10d);

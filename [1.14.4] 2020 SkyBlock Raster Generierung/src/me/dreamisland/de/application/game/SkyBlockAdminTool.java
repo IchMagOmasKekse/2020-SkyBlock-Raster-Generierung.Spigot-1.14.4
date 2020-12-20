@@ -91,7 +91,7 @@ public class SkyBlockAdminTool extends Canvas implements Runnable {
 
 	}
 	public void postInit() { 
-		new FTPDownloader().download();
+//		new FTPDownloader().download();
 	}
 	public void startGame() {
 		System.err.println("Es wurde kein Ursprung gesetzt um das Spiel zu starten!");

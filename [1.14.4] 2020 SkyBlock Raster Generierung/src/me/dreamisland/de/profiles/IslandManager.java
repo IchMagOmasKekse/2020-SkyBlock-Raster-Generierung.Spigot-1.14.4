@@ -111,7 +111,7 @@ public class IslandManager {
 		
 		MessageType type = MessageType.WARNING;
 		SkyBlock.sendConsoleMessage(type, "Die Insel mit der ID ßf"+island_id+type.getSuffix()+" wurde vom Besitzer befreit.",
-				"Diese Insel kann dennoch nicht neu geclaimt werden, weil sie noch von einem Admin gereinigt und anschlieﬂend mit ßf/claimable "+island_id+type.getSuffix()+" freigegeben werden muss.");
+				"Diese Insel kann dennoch nicht neu geclaimt werden, weil sie noch von einem Admin gereinigt und anschlieﬂend mit ßf/release "+island_id+type.getSuffix()+" freigegeben werden muss.");
 		
 //		IslandPaster.removeLiquidAndTileEntities(getProfile(p).cuboid);
 //		SkyFileManager.saveIslandRemover(island_id);

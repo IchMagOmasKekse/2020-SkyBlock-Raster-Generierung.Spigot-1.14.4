@@ -73,7 +73,7 @@ public abstract class Request {
 		
 		public RequestManager() {
 			man = this;
-			this.runTaskTimer(SkyBlock.getInstance(), 0,20);
+			this.runTaskTimer(SkyBlock.getSB(), 0,20);
 		}
 		
 		/*
