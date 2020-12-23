@@ -1,8 +1,8 @@
 name: SkyBlock
-author: TeamDream
+author: TeamSkytale
 version: 1.5.4
 api-version: 1.16
-main: me.dreamisland.de.SkyBlock
+main: me.skytale.de.SkyBlock
 commands:
   simulate:
     description: 'Start a skyblock raster simulation'
@@ -36,6 +36,9 @@ commands:
     description: 'Open a GUI'
   help:
     description: 'Get a list of all for you available commands and some useful help on top'
+  broadcaster:
+    description: 'Main command for the broadcaster'
+    aliases: [bc, bcaster, rundruf]
 permissions:
   skyblock.*:
     description: All permissions for the SkyBlock plugin
@@ -74,6 +77,7 @@ permissions:
       skyblock.coins: true
       skyblock.dailyreward: true
       skyblock.gui: true
+      skyblock.broadcaster: true
   skyblock.admin:
     description: You cannot get kicked off of a Island by a player if you have this permission
     skyblock.adminhelp:
@@ -140,3 +144,5 @@ permissions:
     description: Get your daily reward
   skyblock.gui:
     description: Open a gui
+  skyblock.broadcaster:
+    description: Prepare the broadcaster

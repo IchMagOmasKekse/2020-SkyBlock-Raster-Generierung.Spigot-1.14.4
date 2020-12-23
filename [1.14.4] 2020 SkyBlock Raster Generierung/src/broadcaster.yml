@@ -1,0 +1,18 @@
+Broadcaster:
+  enabled: true
+#auto enable gibt an, ob der Broadcaster sich automatisch nach einem Reload aktivieren soll
+  pick random message: false
+  delay:
+    seconds: 0
+    minutes: 7
+    hours: 0
+  messages:
+#
+#  :;: Sind Spacer, die das Plugin nutz, um zu erkennen, ob es eine Hover-Nachricht ist oder eine normale
+#
+#     HOVER:;:<Message>:;: -> Sendet eine Hoverable Message
+#Format: TYPE:;:Chat-Nachricht:;:Hover-Nachricht:;:Command/Zu_kopierenden_ext
+    - HOVER:;:&cDieser Server wurde von 4 Leute erstellt.:;:&aMade by Neki, Justin, Benny & Ari
+    - CLICK:;:&aWillst zum Spawn?:;:&aKlicke um zum Spawn zu gelangen:;:/spawn
+    - COPY:;:Klicke hier um den Link zur Website zu kopieren:;:Website-Link?:;:www.suchtpotenzial.com
+    - NORMAL:;:&eSuchtpotenzial.eu
