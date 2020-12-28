@@ -2,7 +2,7 @@ name: SkyBlock
 author: TeamSkytale
 version: 1.5.4
 api-version: 1.16
-main: me.skytale.de.SkyBlock
+main: me.crafttale.de.SkyBlock
 commands:
   simulate:
     description: 'Start a skyblock raster simulation'
@@ -55,13 +55,17 @@ permissions:
       skyblock.undo: true
       skyblock.release: true
       skyblock.island.reloadcobble: true
+      skyblock.island.reloadshop: true
+      skyblock.island.reload: true
       skyblock.island: true
       skyblock.island.help: true
+      skyblock.island.info: true
       skyblock.island.setspawn: true
       skyblock.island.cown: true
       skyblock.island.create: true
       skyblock.island.ban: true
       skyblock.island.pardon: true
+      skyblock.island.properties: true
       skyblock.island.delworld: true
       skyblock.island.delete: true
       skyblock.island.kick: true
@@ -98,10 +102,16 @@ permissions:
     description: Undo a simulation
   skyblock.island.reloadcobble:
     description: Reload the Cobblestone Generator settings file
+  skyblock.island.reloadshop:
+    description: Reload the ShopItems
+  skyblock.island.reload:
+    description: Reload parts of plugin settings
   skyblock.island:
     description: Use the main Island command
   skyblock.island.help:
     description: See help for the island command
+  skyblock.island.info:
+    description: See information about an island
   skyblock.island.setspawn:
     description: Set a new player spawn for your island
   skyblock.island.cown:
@@ -112,6 +122,8 @@ permissions:
     description: Ban a player from your Island
   skyblock.island.pardon:
     description: Undo a ban
+  skyblock.island.properties:
+    description: Edit the properties of your Island
   skyblock.island.delworld:
     description: ONLY ARIANO IS ALLOWED TO USE THIS! Delete the SkyBlockWorld
   skyblock.island.delete:
@@ -146,3 +158,21 @@ permissions:
     description: Open a gui
   skyblock.broadcaster:
     description: Prepare the broadcaster
+  skyblock.tablist.developer:
+    description: Get Developer Rank in tablist
+  skyblock.tablist.admin:
+    description: Get Admin Rank in tablist
+  skyblock.tablist.supporter:
+    description: Get Supporter Rank in tablist
+  skyblock.tablist.default:
+    description: Get Default Rank in tablist
+  skyblock.tablist.donor1:
+    description: Get Donor1 Rank in tablist
+  skyblock.tablist.donor2:
+    description: Get Donor2 Rank in tablist
+  skyblock.tablist.donor3:
+    description: Get Donor3 Rank in tablist
+  skyblock.tablist.donor4:
+    description: Get Donor4 Rank in tablist
+  skyblock.tablist.epic:
+    description: Get EPIC Rank in tablist

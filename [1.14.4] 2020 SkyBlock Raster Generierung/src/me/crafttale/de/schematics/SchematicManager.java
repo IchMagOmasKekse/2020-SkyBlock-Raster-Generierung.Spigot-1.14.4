@@ -85,17 +85,19 @@ public class SchematicManager implements Listener {
 	
 	@EventHandler
 	public void onClick(PlayerInteractEvent e) {
-		Player p = e.getPlayer();
-		SchematicProfile profile = SchematicManager.getProfile(p);
-		if(e.getItem() != null && e.getItem().getType() == Material.GOLDEN_AXE && p.hasPermission("skyblock.schematic.useaxe")) {			
-			if(e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-				e.setCancelled(true);
-				profile.setPos2(e.getClickedBlock().getLocation());
-				p.sendMessage(Prefixes.SCHEMATIC.px()+"Position Â§72 Â§ewurde gesetzt");
-			}else if(e.getAction() == Action.LEFT_CLICK_BLOCK) {
-				e.setCancelled(true);
-				profile.setPos1(e.getClickedBlock().getLocation());
-				p.sendMessage(Prefixes.SCHEMATIC.px()+"Position Â§71 Â§ewurde gesetzt");
+		if(e.getPlayer().getGameMode() == GameMode.CREATIVE) {			
+			Player p = e.getPlayer();
+			SchematicProfile profile = SchematicManager.getProfile(p);
+			if(e.getItem() != null && e.getItem().getType() == Material.GOLDEN_AXE && p.hasPermission("skyblock.schematic.useaxe")) {			
+				if(e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+					e.setCancelled(true);
+					profile.setPos2(e.getClickedBlock().getLocation());
+					p.sendMessage(Prefixes.SCHEMATIC.px()+"Position §72 §ewurde gesetzt");
+				}else if(e.getAction() == Action.LEFT_CLICK_BLOCK) {
+					e.setCancelled(true);
+					profile.setPos1(e.getClickedBlock().getLocation());
+					p.sendMessage(Prefixes.SCHEMATIC.px()+"Position §71 §ewurde gesetzt");
+				}
 			}
 		}
 	}
@@ -195,7 +197,7 @@ public class SchematicManager implements Listener {
 //		private String schematic_name = "";
 
 		private SchematicProfile profile;
-		private int offsetX = 0; //Der Offset ist dazu da, um die Schematic perfekt mittig auf einem Punkt spawnen zu kÂ§nnen
+		private int offsetX = 0; //Der Offset ist dazu da, um die Schematic perfekt mittig auf einem Punkt spawnen zu k§nnen
 		private int offsetY = 0;
 		private int offsetZ = 0;
 		private ConcurrentHashMap<Location, Block> content = new ConcurrentHashMap<Location, Block>();

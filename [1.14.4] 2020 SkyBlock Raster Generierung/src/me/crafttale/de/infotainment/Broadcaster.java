@@ -10,8 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import me.crafttale.de.Chat;
-import me.crafttale.de.SkyBlock;
 import me.crafttale.de.Chat.MessageType;
+import me.crafttale.de.SkyBlock;
 import net.md_5.bungee.api.ChatColor;
 
 public class Broadcaster {

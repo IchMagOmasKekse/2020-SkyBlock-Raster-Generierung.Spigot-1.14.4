@@ -9,20 +9,24 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import me.crafttale.de.Chat;
+import me.crafttale.de.PlayerAtlas;
+import me.crafttale.de.Chat.MessageType;
 import me.crafttale.de.Prefixes;
 import me.crafttale.de.Settings;
 import me.crafttale.de.SkyBlock;
 import me.crafttale.de.SkyBlockGenerator;
-import me.crafttale.de.Chat.MessageType;
 import me.crafttale.de.filemanagement.SkyFileManager;
 import me.crafttale.de.filemanagement.SkyFileManager.IslandStatus;
+import me.crafttale.de.gui.GUIManager;
+import me.crafttale.de.gui.defaults.LoadingAnimaGUI;
 import me.crafttale.de.profiles.IslandManager;
 import me.crafttale.de.profiles.PlayerProfiler;
 import me.crafttale.de.requests.Request;
-import me.crafttale.de.requests.VisitRequest;
 import me.crafttale.de.requests.Request.RequestManager;
+import me.crafttale.de.requests.VisitRequest;
 import me.crafttale.de.schematics.SchematicManager;
 
 public class SkyBlockCommandFunction {
@@ -44,7 +48,7 @@ public class SkyBlockCommandFunction {
 				return false;
 			}else {
 				if(target.hasPermission("skyblock.admin")) {
-					kicker.sendMessage(Prefixes.SERVER.px()+"Du kannst keinen Server-Personal von deiner Insel werfen!");
+					kicker.sendMessage(Prefixes.SERVER.px()+"Du kannst kein Server-Personal von deiner Insel werfen!");
 					return false;
 				}else {					
 					if(IslandManager.getProfile(kicker).isInIslandregion(target)) {
@@ -62,6 +66,18 @@ public class SkyBlockCommandFunction {
 			kicker.sendMessage(Prefixes.SERVER.px()+"Dieser Spieler ist nicht online");
 			return false;
 		}
+	}
+	/**
+	 * Kickt einen Spieler von deiner Insel. Dieser wird zum Spawn teleportiert.
+	 * @param target_name
+	 * @return
+	 */
+	public static boolean kickPlayer(String target_name) {
+		if(Bukkit.getPlayer(target_name) != null) {
+			Player target = Bukkit.getPlayer(target_name);
+			target.teleport(SkyBlock.spawn);
+			return true;
+		}else return false;
 	}
 	
 	/**
@@ -262,30 +278,38 @@ public class SkyBlockCommandFunction {
 	 * @param p
 	 */
 	public static void sendAllClaimedIsland(Player p, int page) {
-		ArrayList<IslandStatus> statuses = SkyFileManager.getIslandsWithStatus();
-		int page_amount = page*Settings.getIslandsPerPage();
-		boolean noOne = true;
-		int amount = 0;
-		int amount_total = 0;
-		SkyBlock.sendMessage(MessageType.INFO, p, "Vergebene Inseln, Seite "+page+":");
-		for(int i = page_amount; i != page_amount+Settings.getIslandsPerPage(); i++) {
-			if(i >= statuses.size()) break;
+		GUIManager.openGUI(p, new LoadingAnimaGUI(p));
+		new BukkitRunnable() {
 			
-			if(statuses.get(i).isClaimed()) {
-				Chat.sendClickableMessage(p, "- §c"+statuses.get(i).getId()+(statuses.get(i).needRelease() == true ? " (§fBraucht Bereinigung§c)" : "")+"", "Braucht Bereinigung: "+(statuses.get(i).needRelease() == true ? "§cJa" : "§fNein")+"\n§aBesitzer: §f"+(statuses.get(i).getOwnerUUID().equals("none") ? "Keinen" : statuses.get(i).getOwnerUUID())+"\n§aKlicke um dich zur Insel §f"+statuses.get(i).getId()+"§a zu teleportieren", "/is tp "+statuses.get(i).getId(), false, false);
-				amount++;
-				noOne = false;
-			}else page_amount+=1;
-		}
-		
-		for(IslandStatus st : statuses) if(st.isClaimed())amount_total++;
-		
-		if(noOne) {
-			Chat.sendHoverableMessage(p, "Auf dieser Seitenzahl gibt es keine vergebenen Inseln.", "Keine vergebene Insel vorhanden", false, true);
-		}else {
-			SkyBlock.sendMessage(MessageType.INFO, p, amount+" Insel*n vergeben auf dieser Seite(Alle Seiten zsm. beinhalten "+amount_total+")");
-			Chat.sendClickableMessage(p, "§aNächste Seite", "Klicke um die Nächste Seite zu öffnen", "/claimed "+(page+1), false, true);
-		}
+			@Override
+			public void run() {
+				ArrayList<IslandStatus> statuses = SkyFileManager.getIslandsWithStatus();
+				int page_amount = page*Settings.getIslandsPerPage();
+				boolean noOne = true;
+				int amount = 0;
+				int amount_total = 0;
+				SkyBlock.sendMessage(MessageType.INFO, p, "Vergebene Inseln, Seite "+page+":");
+				for(int i = page_amount; i != page_amount+Settings.getIslandsPerPage(); i++) {
+					if(i >= statuses.size()) break;
+					
+					if(statuses.get(i).isClaimed()) {
+						Chat.sendClickableMessage(p, "- §c"+statuses.get(i).getId()+(statuses.get(i).needRelease() == true ? " (§fBraucht Bereinigung§c)" : "")+"", "Braucht Bereinigung: "+(statuses.get(i).needRelease() == true ? "§cJa" : "§fNein")+"\n§aBesitzer: §f"+(statuses.get(i).getOwnerUUID().equals("none") ? "Keinen" : PlayerAtlas.getPlayername(statuses.get(i).getOwnerUUID()))+"\n§aKlicke um dich zur Insel §f"+statuses.get(i).getId()+"§a zu teleportieren", "/is tp "+statuses.get(i).getId(), false, false);
+						amount++;
+						noOne = false;
+					}else page_amount+=1;
+				}
+				
+				for(IslandStatus st : statuses) if(st.isClaimed())amount_total++;
+				
+				if(noOne) {
+					Chat.sendHoverableMessage(p, "Auf dieser Seitenzahl gibt es keine vergebenen Inseln.", "Keine vergebene Insel vorhanden", false, true);
+				}else {
+					SkyBlock.sendMessage(MessageType.INFO, p, amount+" Insel*n vergeben auf dieser Seite(Alle Seiten zsm. beinhalten "+amount_total+")");
+					Chat.sendClickableMessage(p, "§aNächste Seite", "Klicke um die Nächste Seite zu öffnen", "/claimed "+(page+1), false, true);
+				}
+				new BukkitRunnable() { @Override public void run() { GUIManager.closeGUI(p); } }.runTask(SkyBlock.getSB());
+			}
+		}.runTaskAsynchronously(SkyBlock.getSB());
 	}
 	
 	/**
@@ -293,30 +317,38 @@ public class SkyBlockCommandFunction {
 	 * @param p
 	 */
 	public static void sendAllUnclaimedIsland(Player p, int page) {
-		ArrayList<IslandStatus> statuses = SkyFileManager.getIslandsWithStatus();
-		int page_amount = page*Settings.getIslandsPerPage();
-		boolean noOne = true;
-		int amount = 0;
-		int amount_total = 0;
-		SkyBlock.sendMessage(MessageType.INFO, p, "Verfügbare Inseln, Seite "+page+":");
-		for(int i = page_amount; i != page_amount+Settings.getIslandsPerPage(); i++) {
-			if(i >= statuses.size()) break;
+		GUIManager.openGUI(p, new LoadingAnimaGUI(p));
+		new BukkitRunnable() {
 			
-			if(statuses.get(i).isClaimed() == false) {
-				Chat.sendClickableMessage(p, "- §3"+statuses.get(i).getId(), "Klicke um dich zur Insel §f"+statuses.get(i).getId()+"§a zu teleportieren", "/is tp "+statuses.get(i).getId(), false, false);
-				amount++;
-				noOne = false;
-			}else page_amount+=1;
-		}
-		
-		for(IslandStatus st : statuses) if(st.isClaimed() == false)amount_total++;
-		
-		if(noOne) {
-			Chat.sendHoverableMessage(p, "Auf dieser Seitenzahl gibt es keine verfügbaren Inseln.", "Keine verfügbare Insel vorhanden", false, true);
-		}else {
-			SkyBlock.sendMessage(MessageType.INFO, p, amount+" Insel*n verfügbar auf dieser Seite(Alle Seiten zsm. beinhalten "+amount_total+")");
-			Chat.sendClickableMessage(p, "§aNächste Seite", "Klicke um die Nächste Seite zu öffnen", "/unclaimed "+(page+1), false, true);
-		}
+			@Override
+			public void run() {
+				ArrayList<IslandStatus> statuses = SkyFileManager.getIslandsWithStatus();
+				int page_amount = page*Settings.getIslandsPerPage();
+				boolean noOne = true;
+				int amount = 0;
+				int amount_total = 0;
+				SkyBlock.sendMessage(MessageType.INFO, p, "Verfügbare Inseln, Seite "+page+":");
+				for(int i = page_amount; i != page_amount+Settings.getIslandsPerPage(); i++) {
+					if(i >= statuses.size()) break;
+					
+					if(statuses.get(i).isClaimed() == false) {
+						Chat.sendClickableMessage(p, "- §3"+statuses.get(i).getId(), "Klicke um dich zur Insel §f"+statuses.get(i).getId()+"§a zu teleportieren", "/is tp "+statuses.get(i).getId(), false, false);
+						amount++;
+						noOne = false;
+					}else page_amount+=1;
+				}
+				
+				for(IslandStatus st : statuses) if(st.isClaimed() == false)amount_total++;
+				
+				if(noOne) {
+					Chat.sendHoverableMessage(p, "Auf dieser Seitenzahl gibt es keine verfügbaren Inseln.", "Keine verfügbare Insel vorhanden", false, true);
+				}else {
+					SkyBlock.sendMessage(MessageType.INFO, p, amount+" Insel*n verfügbar auf dieser Seite(Alle Seiten zsm. beinhalten "+amount_total+")");
+					Chat.sendClickableMessage(p, "§aNächste Seite", "Klicke um die Nächste Seite zu öffnen", "/unclaimed "+(page+1), false, true);
+				}
+				new BukkitRunnable() { @Override public void run() { GUIManager.closeGUI(p); } }.runTask(SkyBlock.getSB());
+			}
+		}.runTaskAsynchronously(SkyBlock.getSB());
 	}
 	
 }

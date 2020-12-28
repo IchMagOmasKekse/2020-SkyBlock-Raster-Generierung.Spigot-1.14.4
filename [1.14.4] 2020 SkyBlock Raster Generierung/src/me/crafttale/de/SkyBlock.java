@@ -1,6 +1,8 @@
 package me.crafttale.de;
 
 import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -39,20 +41,25 @@ import me.crafttale.de.events.ServerListListener;
 import me.crafttale.de.filemanagement.SkyFileManager;
 import me.crafttale.de.generators.CobbleGeneratorRenewed;
 import me.crafttale.de.generators.SkyWorldGenerator;
+import me.crafttale.de.gui.GUIClicker;
+import me.crafttale.de.gui.GUIManager;
 import me.crafttale.de.infotainment.Broadcaster;
 import me.crafttale.de.inventory.ChestContent;
 import me.crafttale.de.profiles.IslandManager;
 import me.crafttale.de.profiles.PlayerProfiler;
 import me.crafttale.de.requests.Request.RequestManager;
+import me.crafttale.de.reward.DailyRewardManager;
 import me.crafttale.de.schematics.ChestGenerator;
 import me.crafttale.de.schematics.IslandPaster;
 import me.crafttale.de.schematics.SchematicManager;
+import me.crafttale.de.tablist.TablistManager;
 
 public class SkyBlock extends JavaPlugin {
 	
 	private static SkyBlock instance = null;
 	public static SkyBlock getSB() { return instance; } //Gebe die einzigartige Instanz der Main-Klasse zurck
 	public static Location spawn = null;
+	public static Cuboid spawnCuboid = null;
 	public boolean generateNewWorld = false;
 	public BukkitRunnable spawn_checker = null;
 	public static SkyBlockAdminTool admintool = null;
@@ -78,12 +85,16 @@ public class SkyBlock extends JavaPlugin {
 		if(spawn_checker != null) spawn_checker.cancel();
 		if(broadcaster!= null) broadcaster.stop();
 		PlayerProfiler.unregisterAll();
+		IslandManager.unloadAll();
+		DailyRewardManager.stop();
+		TablistManager.unset();
 	}
 	
 	/*
 	 * TODO: Benötigte Inhalte werden geladen und zum Starten des Plugins breitgestellt
 	 */
 	public void preInit() {
+		new SkyFileManager();
 //		spawn = Bukkit.getWorld("world").getSpawnLocation();
 		spawn = new Location(Bukkit.getWorld("world"), 24, 94, 162, 0, 0);
 	}
@@ -97,7 +108,8 @@ public class SkyBlock extends JavaPlugin {
 			generateSkyBlockWorld();
 		}
 		
-		new SkyFileManager();
+		Settings.reloadSettings();
+		
 		new SkyWorld();//MUSS VOR new SkyBlockgenerator() stehen!!
 		new SkyBlockGenerator();
 		
@@ -114,6 +126,12 @@ public class SkyBlock extends JavaPlugin {
 	 * @param
 	 */
 	public void postInit() {
+		
+		//Tablist Setzten
+		new TablistManager();
+		
+		//DailyRewardManager starten
+		new DailyRewardManager();
 		
 		//Starte den RequestManager
 		new RequestManager();
@@ -136,12 +154,18 @@ public class SkyBlock extends JavaPlugin {
 		new IslandProtection();
 		
 		/* Starte Manager und Handler */
+		spawnCuboid = SkyFileManager.getSpawnCuboid();
 		new IslandManager();
+		IslandManager.loadAllIslandData();
 		new IslandPaster();
 		new SkyCoinHandler();
 		
 		//Erstelle Portale
 		new SpawnToIslandPortal();
+		
+		//GUIs laden
+		new GUIManager();
+		new GUIClicker();
 		
 		//Shop
 		new ShopOpenListener();
@@ -153,6 +177,7 @@ public class SkyBlock extends JavaPlugin {
 		}
 		
 		for(Player p : Bukkit.getOnlinePlayers()) {
+			TablistManager.editTablist(p);
 			if(p.isOp()) {
 				PermissionAttachment att = p.addAttachment(SkyBlock.getSB());
 				att.setPermission("mv.bypass.gamemode.*", true);
@@ -251,6 +276,7 @@ public class SkyBlock extends JavaPlugin {
      * TODO: Generiert die SkyBlock Welt, in der die Inseln gespawnt werden
      */
     public void generateSkyBlockWorld() {
+    	if(Bukkit.getWorld(SkyWorld.skyblockworld) != null) return;
 		SkyWorldGenerator generator = new SkyWorldGenerator();
 		WorldCreator cr = new WorldCreator(SkyWorld.skyblockworld);
 		cr.generator(generator);
@@ -390,6 +416,41 @@ public class SkyBlock extends JavaPlugin {
 			admintool = new SkyBlockAdminTool(size, amount, space);
 		}
 		return SkyBlockAdminTool.isGenerated;
+	}
+	
+	/**
+	 * Gibt die Aktuelle Uhrzeit in einem String zurück
+	 * @return
+	 */
+	public static String getCurrentTime() {
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
+		LocalDateTime now = LocalDateTime.now();
+		return dtf.format(now);
+	}
+	public static String getCurrentSeconds() {
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("ss");
+		LocalDateTime now = LocalDateTime.now();
+		return dtf.format(now);
+	}
+	public static String getCurrentMinutes() {
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("mm");
+		LocalDateTime now = LocalDateTime.now();
+		return dtf.format(now);
+	}
+	public static String getCurrentHours() {
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH");
+		LocalDateTime now = LocalDateTime.now();
+		return dtf.format(now);
+	}
+	
+	/**
+	 * Gibt das Aktuelle Datum in einem String zurück
+	 * @return
+	 */
+	public static String getCurrentDate() {
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+		LocalDateTime now = LocalDateTime.now();
+		return dtf.format(now);
 	}
 	
 }

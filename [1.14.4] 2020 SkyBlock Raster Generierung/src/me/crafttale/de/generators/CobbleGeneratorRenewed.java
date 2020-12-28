@@ -17,8 +17,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFromToEvent;
 
-import me.crafttale.de.SkyBlock;
 import me.crafttale.de.Chat.MessageType;
+import me.crafttale.de.SkyBlock;
 import me.crafttale.de.inventory.ChestContent;
 
 public class CobbleGeneratorRenewed implements Listener {

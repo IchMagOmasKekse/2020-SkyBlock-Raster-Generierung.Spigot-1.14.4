@@ -6,8 +6,8 @@ import java.util.HashMap;
 import org.bukkit.entity.Player;
 
 import me.crafttale.de.Chat;
-import me.crafttale.de.SkyBlock;
 import me.crafttale.de.Chat.MessageType;
+import me.crafttale.de.SkyBlock;
 import me.crafttale.de.economy.EconomyManager.EditOperation;
 import me.crafttale.de.economy.EconomyManager.MoneyType;
 import me.crafttale.de.profiles.PlayerProfiler;
@@ -74,7 +74,7 @@ public class SkyCoinHandler {
 	 * @param p
 	 */
 	public static void listBoosters(Player p) {
-		SkyBlock.sendMessage(MessageType.INFO, p, "Aktive Booster:");
+		SkyBlock.sendMessage(MessageType.INFO, p, "Aktive SkyCoin-Booster:");
 		for(String s : boosters.keySet()) {
 			p.sendMessage("- §b"+s+MessageType.INFO.getSuffix()+"-> §a"+(boosters.get(s).getPercentage()*100)+"%");
 		}

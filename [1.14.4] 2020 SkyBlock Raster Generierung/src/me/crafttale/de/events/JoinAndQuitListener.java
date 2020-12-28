@@ -22,12 +22,16 @@ import me.crafttale.de.SkyBlockGenerator;
 import me.crafttale.de.economy.EconomyManager;
 import me.crafttale.de.economy.SkyCoinHandler;
 import me.crafttale.de.filemanagement.SkyFileManager;
+import me.crafttale.de.gui.GUI.GUIType;
+import me.crafttale.de.gui.GUIManager;
+import me.crafttale.de.gui.reward.RewardGUI;
 import me.crafttale.de.profiles.PlayerProfiler;
-import me.ichmagomaskekse.de.GUI.GUIType;
+import me.crafttale.de.reward.DailyRewardManager;
+import me.crafttale.de.tablist.TablistManager;
 
 public class JoinAndQuitListener implements Listener {
 	
-	private HashMap<Player, BukkitRunnable> runnables = new HashMap<Player, BukkitRunnable>();
+	private HashMap<String, BukkitRunnable> runnables = new HashMap<String, BukkitRunnable>();
 	
 	public JoinAndQuitListener() {
 		//Registriere alle Envents in dieser Klasse
@@ -35,24 +39,29 @@ public class JoinAndQuitListener implements Listener {
 	}
 	
 	@EventHandler
-	public void asyncPreLogin(PlayerLoginEvent e) {
-		
-		runnables.put(e.getPlayer(), new BukkitRunnable() {
+	public void onLogin(PlayerLoginEvent e) {
+		if(e.getResult() == Result.KICK_WHITELIST) {
+			for(Player p : Bukkit.getOnlinePlayers()) {
+				if(p.isOp()) p.sendMessage("§e"+e.getPlayer().getName()+" §fhat versucht zu joinen. Abgelehnt wegen Whitelist");
+			}
+		}		
+		runnables.put(e.getPlayer().getName()+"1", new BukkitRunnable() {
 			
 			@Override
-			public void run() {				
+			public void run() {
 				PlayerProfiler.registerPlayer(e.getPlayer());
 				PlayerAtlas.savePlayer(e.getPlayer());
+				runnables.remove(e.getPlayer().getName()+"1");
 			}
 		});
-		runnables.get(e.getPlayer()).runTaskAsynchronously(SkyBlock.getSB());
+		runnables.get(e.getPlayer().getName()+"1").runTaskAsynchronously(SkyBlock.getSB());
 		
 	}
 	
 	@EventHandler
 	public void onJoin(final PlayerJoinEvent e) {
-		
-		e.setJoinMessage(Prefixes.JOIN.px()+"§e"+e.getPlayer().getName()+" §7ist dem Server beigetreten");
+		Player player = e.getPlayer();
+		e.setJoinMessage(Prefixes.JOIN.px()+"§e"+player.getName()+" §7ist dem Server beigetreten");
 		
 		for(Player p : Bukkit.getOnlinePlayers()) {
 			if(p.isOp()) {
@@ -64,20 +73,39 @@ public class JoinAndQuitListener implements Listener {
 		 * Neukömmlings Ablauf --------------------------------------------------------------------------------------------------------
 		 * 
 		 * */
-//		PlayerProfiler.registerPlayer(e.getPlayer());
-//		PlayerAtlas.savePlayer(e.getPlayer());
-		if(EconomyManager.hasAccount(PlayerProfiler.getUUID(e.getPlayer())) == false) EconomyManager.createAccount(PlayerProfiler.getUUID(e.getPlayer()));
-		SkyCoinHandler.listBoosters(e.getPlayer());		
-		long time = (System.currentTimeMillis() - e.getPlayer().getLastPlayed());
-		if(time >= 86400000l) { /*86400000l = 1 Tag(86400000 Millisekunden)*/
-			Chat.sendClickableMessage(e.getPlayer(), "§6Klicke hier um deine Tägliche Belohnung abzuholen", "! FREE ITEMS ! YEAH !", "/dailyreward", true, true);
+//		PlayerProfiler.registerPlayer(player);
+//		PlayerAtlas.savePlayer(player);
+		if(EconomyManager.hasAccount(PlayerProfiler.getUUID(player)) == false) EconomyManager.createAccount(PlayerProfiler.getUUID(player));
+		SkyCoinHandler.listBoosters(player);		
+		if(DailyRewardManager.hasGotDailyReward(player) == false) {
+			runnables.put(player.getName()+"2", new BukkitRunnable() {
+				Player p = player;
+				@Override
+				public void run() {					
+					GUIManager.openGUI(p, new RewardGUI(p));
+					runnables.remove(p.getName()+"2");
+				}
+			});
+			runnables.get(player.getName()+"2").runTaskLater(SkyBlock.getSB(), 20l);
+			
+			Chat.sendClickableMessage(player, "§6Klicke hier um deine Tägliche Belohnung abzuholen", "! FREE ITEMS ! YEAH !", "/dailyreward", true, true);
+		}else {
+			runnables.put(player.getName()+"2", new BukkitRunnable() {
+				@Override
+				public void run() {
+					Bukkit.dispatchCommand(player, "gui "+GUIType.JOIN_MELODY.toString());
+					runnables.remove(player.getName()+"2");
+				}
+			});
+			runnables.get(player.getName()+"2").runTaskLater(SkyBlock.getSB(), 15l);
 		}
+		TablistManager.editTablist(player);
+		
 		
 		
 		/* Join Effects */
-//		SkyBlock.spawnFireworks(e.getPlayer().getLocation().clone(), 1, true, true, Type.BALL_LARGE);
-		Bukkit.dispatchCommand(e.getPlayer(), "gui "+GUIType.JOIN_MELODY.toString());
-//		GUIManager.openGUI(e.getPlayer(), new JoinMelodyGUI(e.getPlayer()));
+//		SkyBlock.spawnFireworks(player.getLocation().clone(), 1, true, true, Type.BALL_LARGE);
+//		GUIManager.openGUI(player, new JoinMelodyGUI(player));
 	}
 	
 	@EventHandler
@@ -91,15 +119,6 @@ public class JoinAndQuitListener implements Listener {
 		}
 		
 		PlayerProfiler.unregisterPlayer(e.getPlayer());
-	}
-	
-	@EventHandler
-	public void onLogin(PlayerLoginEvent e) {
-		if(e.getResult() == Result.KICK_WHITELIST) {
-			for(Player p : Bukkit.getOnlinePlayers()) {
-				if(p.isOp()) p.sendMessage("§e"+e.getPlayer().getName()+" §fhat versucht zu joinen. Abgelehnt wegen Whitelist");
-			}
-		}
 	}
 
 }

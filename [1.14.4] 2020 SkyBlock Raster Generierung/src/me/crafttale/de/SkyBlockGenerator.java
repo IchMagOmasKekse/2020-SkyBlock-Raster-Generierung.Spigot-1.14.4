@@ -12,7 +12,7 @@ public class SkyBlockGenerator {
 	
 	private static ConcurrentLinkedQueue<Location> locs = new ConcurrentLinkedQueue<Location>();
 	public static int issize = 200; // Verhältnis 1:1 ; Angegeben in Blöcken
-	public static int amountOfIslands = 500;
+	public static int amountOfIslands = 1500;
 	public static int spaceBetweenIslands = 25; //Verhältnis 1:1 ; Angegeben in Blöcken
 	public static int default_issize = 400; //NICHT VERÄNDERN! // Verhältnis 1:1 ; Angegeben in Blöcken
 	public static int default_amountOfIslands = 500; //NICHT VERÄNDERN!
@@ -45,6 +45,11 @@ public class SkyBlockGenerator {
 		return generateIfReady();
 	}
 	
+	
+	/**
+	 * Generiert die Insel-Index-File.yml
+	 * @return
+	 */
 	public static boolean generateIfReady() {
 		World world = Bukkit.getWorld(skyworldName);
 		if(world == null) {
@@ -121,13 +126,7 @@ public class SkyBlockGenerator {
 		curLoc.setX(x);
 		curLoc.setZ(z);
 		
-		curLoc.getBlock().setType(Material.BEDROCK);
 		locs.add(curLoc.clone());
-		Location l = curLoc.clone();
-		l.add(1, 0, 0).getBlock().setType(Material.COBBLESTONE);locs.add(l.clone());
-		l.add(-2, 0, 0).getBlock().setType(Material.COBBLESTONE);locs.add(l.clone());
-		l.add(1, 0, 1).getBlock().setType(Material.COBBLESTONE);locs.add(l.clone());
-		l.add(0, 0, -2).getBlock().setType(Material.COBBLESTONE);locs.add(l.clone());
 	}
 	
 	public static void undo() {

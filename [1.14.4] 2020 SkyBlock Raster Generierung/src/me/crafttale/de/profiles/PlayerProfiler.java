@@ -7,6 +7,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import me.crafttale.de.UUIDFetcher;
+import me.crafttale.de.profiles.IslandManager.IslandData;
+import me.crafttale.de.profiles.IslandManager.Standort;
+import me.crafttale.de.tablist.TablistManager;
 
 public class PlayerProfiler {
 	
@@ -48,7 +51,9 @@ public class PlayerProfiler {
 	 * @return
 	 */
 	public static PlayerProfile getProfile(UUID uuid) {
-		for(Player p : profiles.keySet()) if(profiles.get(p).getUUID().toString().equals(uuid.toString())) return profiles.get(p);
+		for(Player p : profiles.keySet()) {
+			if(profiles.get(p).getUUID().toString().equals(uuid.toString())) return profiles.get(p);
+		}
 		return null;
 	}
 	
@@ -73,6 +78,7 @@ public class PlayerProfiler {
 		else if(isRegistered(p)) unregisterPlayer(p);
 		profiles.put(p, new PlayerProfile(p));
 		players.put(getUUID(p), p);
+		TablistManager.setTablist(p);
 		return true;
 	}
 	
@@ -83,6 +89,14 @@ public class PlayerProfiler {
 	 */
 	public static boolean isRegistered(Player p) {
 		return profiles.containsKey(p);
+	}
+	/**
+	 * Gibt an, ob ein Spieler bereits mit dessen Spielerprofile registriert ist.
+	 * @param p
+	 * @return
+	 */
+	public static boolean isRegistered(UUID uuid) {
+		return players.containsKey(uuid);
 	}
 	
 	/**
@@ -121,11 +135,28 @@ public class PlayerProfiler {
 		private Player player = null;
 		private UUID uuid = null;
 		private String current_username = "";
+		private Standort standort = null;
 		
 		public PlayerProfile(Player player) {
 			this.player = player;
 			this.uuid = UUIDFetcher.getUUID(player.getName());
 			this.current_username = UUIDFetcher.getPlayerName(uuid);
+//			this.standort = new Standort();
+		}
+		
+		public void registerStandort(IslandData data) {
+			if(standort == null) standort = new me.crafttale.de.profiles.IslandManager.Standort(data);
+		}
+		public void registerStandort() {
+			if(standort == null) standort = new me.crafttale.de.profiles.IslandManager.Standort();
+		}
+		
+		/**
+		 * Gibt den Standort des Spielers zurück
+		 * @return
+		 */
+		public Standort getStandort() {
+			return standort;
 		}
 		
 		/**

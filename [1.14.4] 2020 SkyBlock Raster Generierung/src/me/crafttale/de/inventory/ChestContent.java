@@ -12,8 +12,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import me.crafttale.de.SkyBlock;
 import me.crafttale.de.Chat.MessageType;
+import me.crafttale.de.SkyBlock;
 
 public class ChestContent {
 	
@@ -21,6 +21,7 @@ public class ChestContent {
 	
 	public ChestContent() {
 		File file = new File("plugins/SkyBlock/ChestGenerator/Contents/");
+		if(file.length() == 0) return;
 		if(file.listFiles().length > 0) {
 			File[] files = file.listFiles();
 			for(File f : files) {

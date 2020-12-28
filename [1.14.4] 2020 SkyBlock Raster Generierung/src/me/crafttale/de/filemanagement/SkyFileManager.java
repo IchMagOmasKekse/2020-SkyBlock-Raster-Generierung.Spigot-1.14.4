@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -17,6 +18,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import me.crafttale.de.Chat;
+import me.crafttale.de.Cuboid;
+import me.crafttale.de.PlayerAtlas;
 import me.crafttale.de.Prefixes;
 import me.crafttale.de.Settings;
 import me.crafttale.de.SkyBlock;
@@ -91,6 +94,18 @@ public class SkyFileManager {
 		return ids;
 	}
 	/**
+	 * Gibt den IslandStatus zurück
+	 * @return
+	 */
+	public static IslandStatus getIslandStatus(int island_id) {
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(new File("plugins/SkyBlock/Insel-Index-File.yml"));	
+		IslandStatus status = new IslandStatus(island_id, cfg.getBoolean("Islands.ID-"+island_id+".Claimed"),
+				((cfg.getString("Islands.ID-"+island_id+".Owner UUID") == null || cfg.getString("Islands.ID-"+island_id+".Owner UUID").equals("none")) ? true : false), cfg.getString("Islands.ID-"+island_id+".Owner UUID"));
+
+		
+		return status;
+	}
+	/**
 	 * Gibt eine ArrayList<Intger> mit den IDs aller geclaimten Inseln zurück.
 	 * @return
 	 */
@@ -147,7 +162,7 @@ public class SkyFileManager {
 	 * @param uuid
 	 * @return
 	 */
-	public static int getIslandWhereHeIsMemberOf(UUID uuid) {
+	public static int getIslandIDWhereHeIsMemberOf(UUID uuid) {
 		if(isMemberOfAnIsland(uuid)) {			
 			File file = new File("plugins/SkyBlock/Inseln/"+uuid+"-Insel.yml");
 			FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
@@ -240,6 +255,39 @@ public class SkyFileManager {
 	}
 	
 	/**
+	 * Gibt die Zentrierte Location des SkyBlockSpawn zurück.
+	 * @return
+	 */
+	public static Location getSkyBlockCenteredSpawnLocation() {
+		File file = new File("plugins/SkyBlock/config.yml");
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+				
+		Location l = new Location(Bukkit.getWorld(cfg.getString("Spawn.Location.World")),
+				cfg.getDouble("Spawn.Location.X"),
+				cfg.getDouble("Spawn.Location.Y"),
+				cfg.getDouble("Spawn.Location.Z"),
+			(float)cfg.getInt("Spawn.Location.Yaw"), 
+			(float)cfg.getInt("Spawn.Location.Pitch"));
+		
+		return l.clone();
+	}
+	
+	/**
+	 * Gibt den Cuboid des Spawn zurück
+	 * @return
+	 */
+	public static Cuboid getSpawnCuboid() {
+		File file = new File("plugins/SkyBlock/config.yml");
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+		
+		int radius = cfg.getInt("Spawn.Radius");
+		int offsetY = cfg.getInt("Spawn.OffsetY");
+		Location center = getSkyBlockCenteredSpawnLocation();
+		
+		return new Cuboid(center.clone().add(-radius,-offsetY,-radius), center.clone().add(radius,offsetY,radius));
+	}
+	
+	/**
 	 * Gibt die Welt zurück, in der sich die Insel befindet
 	 * @param uuid
 	 * @return
@@ -321,6 +369,18 @@ public class SkyFileManager {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(getIslandFile(uuid));
 		ArrayList<String> members = (ArrayList<String>) cfg.getStringList("Islands.Members");
 		return members;
+	}
+	/**
+	 * Gibt einen String zurück, der die Namen aller Mitglieder einer Insel beinhaltet.
+	 * @param uuid
+	 * @return
+	 */
+	public static String getStringListOfMembers(String uuid) {
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(getIslandFile(uuid));
+		ArrayList<String> members = (ArrayList<String>) cfg.getStringList("Islands.Members");
+		String t = "§3"+PlayerAtlas.getPlayername(members.get(0));
+		for(int i = 1; i != members.size(); i++) t = t + "§f, §3"+PlayerAtlas.getPlayername(members.get(i));
+		return t;
 	}
 	/**
 	 * Gibt die Location einer Insel zurück
@@ -589,6 +649,26 @@ public class SkyFileManager {
 		
 		return (uuid.equals(cfg.getString("Islands.Owner UUID")) ? true : false);
 	}
+	/**
+	 * Gibt an, ob der Spieler ein Member einer Insel ist.
+	 * @param uuid
+	 * @return
+	 */
+	public static boolean isMemberOfAnIsland(UUID uuid) {
+		File file = new File("plugins/SkyBlock/Inseln/"+uuid+"-Insel.yml");
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+		if(file.exists() == false) return false;
+		else return !(cfg.getString("Islands.Owner UUID").equals(uuid.toString()));
+	}
+	/**
+	 * Gibt einen Boolean zurück, ob die Insel belegt oder frei ist
+	 * @param island_id
+	 * @return
+	 */
+	public static boolean isClaimed(int island_id) {
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(new File("plugins/SkyBlock/Insel-Index-File.yml"));
+		return (cfg.getBoolean("Islands.ID-"+island_id+".Claimed"));
+	}
 	
 //	/**
 //	 * Erstellt eine Profil-Datei eines Spieler, der keine eigene Insel hat sondern nur Member auf einer anderen Insel ist.
@@ -707,18 +787,6 @@ public class SkyFileManager {
 	}
 	
 	/**
-	 * Gibt an, ob der Spieler ein Member einer Insel ist.
-	 * @param uuid
-	 * @return
-	 */
-	public static boolean isMemberOfAnIsland(UUID uuid) {
-		File file = new File("plugins/SkyBlock/Inseln/"+uuid+"-Insel.yml");
-		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-		if(file.exists() == false) return false;
-		else return !(cfg.getString("Islands.Owner UUID").equals(uuid.toString()));
-	}
-	
-	/**
 	 * Fügt einen neuen Member hinzu, der auch gespeichert wird.
 	 * @param uuid
 	 * @param new_member
@@ -740,6 +808,53 @@ public class SkyFileManager {
 		}
 	}
 	/**
+	 * Verbannt einen Spieler von einer Insel und löscht dabei seinen Member Status
+	 * @param owner
+	 * @param uuid
+	 * @return
+	 */
+	public static boolean banPlayerFromIsland(Player owner, UUID uuid) {
+		File file = new File("plugins/SkyBlock/Inseln/"+PlayerProfiler.getUUID(owner).toString()+"-Insel.yml");
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+		
+		List<String> banned = cfg.getStringList("Islands.Banned Players");
+		if(banned.contains(uuid.toString())) return false;
+		else {
+			removeMember(PlayerProfiler.getUUID(owner).toString(), uuid.toString());
+			banned.add(uuid.toString());
+			cfg.set("Islands.Banned Players", banned);
+			
+			try {
+				cfg.save(file);
+				IslandManager.getIslandData(IslandManager.getProfile(owner).getIslandID()).getSettings().load(true);
+				return true;
+			} catch (IOException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+	}
+	public static boolean unbanPlayerFromIsland(Player owner, UUID uuid) {
+		File file = new File("plugins/SkyBlock/Inseln/"+PlayerProfiler.getUUID(owner).toString()+"-Insel.yml");
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+		
+		List<String> banned = cfg.getStringList("Islands.Banned Players");
+		if(banned.contains(uuid.toString()) == false) return false;
+		else {
+			banned.remove(uuid.toString());
+			cfg.set("Islands.Banned Players", banned);
+			
+			try {
+				cfg.save(file);
+				IslandManager.getIslandData(IslandManager.getProfile(owner).getIslandID()).getSettings().load(true);
+				return true;
+			} catch (IOException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+	}
+	/**
 	 * Entfernt einen Member, was auch gespeichert wird.
 	 * @param uuid
 	 * @param new_member
@@ -749,29 +864,21 @@ public class SkyFileManager {
 		File file = getIslandFile(uuid, true);
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 		ArrayList<String> members = (ArrayList<String>) cfg.getStringList("Islands.Members");
-		UUID owner_uuid = UUID.fromString(cfg.getString("Islands.Owner UUID"));
-		members.remove(member);
-		cfg.set("Islands.Members", members);
-		try {
-			cfg.save(file);
-			if(PlayerProfiler.getPlayer(owner_uuid) != null) IslandManager.getProfile(PlayerProfiler.getPlayer(owner_uuid)).reload();
-			
-			deleteIslandFile(UUID.fromString(member));
-			return true;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
-	
-	/**
-	 * Gibt einen Boolean zurück, ob die Insel belegt oder frei ist
-	 * @param island_id
-	 * @return
-	 */
-	public static boolean isClaimed(int island_id) {
-		FileConfiguration cfg = YamlConfiguration.loadConfiguration(new File("plugins/SkyBlock/Insel-Index-File.yml"));
-		return (cfg.getBoolean("Islands.ID-"+island_id+".Claimed"));
+		if(members.contains(member)) {
+			UUID owner_uuid = UUID.fromString(cfg.getString("Islands.Owner UUID"));
+			members.remove(member);
+			cfg.set("Islands.Members", members);
+			try {
+				cfg.save(file);
+				if(PlayerProfiler.getPlayer(owner_uuid) != null) IslandManager.getProfile(PlayerProfiler.getPlayer(owner_uuid)).reload();
+				
+				deleteIslandFile(UUID.fromString(member));
+				return true;
+			} catch (IOException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}else return false;
 	}
 	
 	/**

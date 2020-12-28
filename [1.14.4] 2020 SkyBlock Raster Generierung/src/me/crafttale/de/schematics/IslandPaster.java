@@ -14,9 +14,9 @@ import org.bukkit.block.Chest;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.entity.Player;
 
+import me.crafttale.de.Chat.MessageType;
 import me.crafttale.de.Cuboid;
 import me.crafttale.de.SkyBlock;
-import me.crafttale.de.Chat.MessageType;
 import me.crafttale.de.filemanagement.SkyFileManager;
 import me.crafttale.de.profiles.PlayerProfiler;
 import net.minecraft.server.v1_16_R3.BlockPosition;

@@ -7,6 +7,5 @@
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="C:/Spigot APIs/spigot-1.16.4.jar"/>
-	<classpathentry kind="lib" path="C:/Users/koslo/Desktop/Minecraft 1.16.3 Spigot/plugins/GUIApi-1.16.4-V1.0.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

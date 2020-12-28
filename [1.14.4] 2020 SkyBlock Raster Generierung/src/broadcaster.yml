@@ -14,5 +14,5 @@ Broadcaster:
 #Format: TYPE:;:Chat-Nachricht:;:Hover-Nachricht:;:Command/Zu_kopierenden_ext
     - HOVER:;:&cDieser Server wurde von 4 Leute erstellt.:;:&aMade by Neki, Justin, Benny & Ari
     - CLICK:;:&aWillst zum Spawn?:;:&aKlicke um zum Spawn zu gelangen:;:/spawn
-    - COPY:;:Klicke hier um den Link zur Website zu kopieren:;:Website-Link?:;:www.suchtpotenzial.com
-    - NORMAL:;:&eSuchtpotenzial.eu
+    - COPY:;:TEST Klicke hier um den Link zur Website zu kopieren:;:Website-Link?:;:play.skytale.de
+    - NORMAL:;:&eTEST play.skytale.de

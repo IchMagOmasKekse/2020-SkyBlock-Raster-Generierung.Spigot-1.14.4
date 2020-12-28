@@ -1,10 +1,14 @@
 package me.crafttale.de.events;
 
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import me.crafttale.de.Settings;
 import me.crafttale.de.SkyBlock;
+import me.crafttale.de.tablist.TablistManager;
+import net.md_5.bungee.api.ChatColor;
 
 public class AsyncChatListener implements Listener {
 	
@@ -13,11 +17,15 @@ public class AsyncChatListener implements Listener {
 	}
 	
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onChat(AsyncPlayerChatEvent e) {
 		if(e.getPlayer().isOp() || e.getPlayer().hasPermission("skyblock.chat.color")) {
-			e.setMessage(e.getMessage().replace("&", "§"));
+			e.setMessage(ChatColor.translateAlternateColorCodes('&', e.getMessage()));
 		}
+		e.setFormat(Settings.chat_format.replace("{USERNAME}", e.getPlayer().getName())
+				.replace("{RANK_PREFIX}", TablistManager.getTeamPrefix(e.getPlayer()))
+				.replace("{RANK_SUFFIX}", TablistManager.getTeamSuffix(e.getPlayer()))
+				.replace("{CHAT_MESSAGE}", e.getMessage()));
 	}
 	
 }

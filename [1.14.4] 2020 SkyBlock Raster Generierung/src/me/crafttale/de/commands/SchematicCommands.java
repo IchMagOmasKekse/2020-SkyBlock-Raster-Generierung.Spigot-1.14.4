@@ -11,8 +11,8 @@ import org.bukkit.entity.Player;
 import me.crafttale.de.Prefixes;
 import me.crafttale.de.SkyBlock;
 import me.crafttale.de.schematics.SchematicManager;
-import me.crafttale.de.schematics.SkyRect;
 import me.crafttale.de.schematics.SchematicManager.SchematicProfile;
+import me.crafttale.de.schematics.SkyRect;
 
 public class SchematicCommands implements CommandExecutor {
 	

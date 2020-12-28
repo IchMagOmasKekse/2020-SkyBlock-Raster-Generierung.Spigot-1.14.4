@@ -6,8 +6,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import me.crafttale.de.SkyBlock;
 import me.crafttale.de.Chat.MessageType;
+import me.crafttale.de.SkyBlock;
 
 public class BroadcasterCommands implements CommandExecutor {
 

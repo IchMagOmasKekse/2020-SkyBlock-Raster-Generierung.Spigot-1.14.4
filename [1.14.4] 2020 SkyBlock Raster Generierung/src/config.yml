@@ -4,35 +4,80 @@
 # Tipp: Wird ein %-Zeichen vor einem Replacer gesetzt, wird der Replacer ignoriert und das %-Zeichen wird entfernt.
 # Beispiel: MOTD On Ping: 'Hallo, heute teste ich den %{USERNAME} replacer' würde so aussehen 'Hallo, heute teste ich den {USERNAME} replacer'
 #  {USERNAME} wird durch dem Spielernamen der jeweiligen Situation ersetzt
+#  {RANK_PREFIX}{RANK_SUFFIX}{RANK_SEPERATOR}{CHAT_SEPERATOR}{CHAT_MESSAGE}
 #  {SERVER_PREFIX} wird durch dem Server Prefix ersetzt, welcher hier in der Config festgelegt wurde
 #  & -> § Colorcodes halt
 #
-#  'MOTD On Ping' ist die Nachricht die in der Server-Liste angezeigt wird
-MOTD On Ping: '&f-> -> -> &a&l{SERVER_PREFIX}&f <- <- <-\§dTest MOTD. '
-#  'MOTD On Join' ist die Nachricht, die jeder Spieler erhält, sobal er dem Server betritt
-MOTD On Join:
-  - 'Test Nachricht'
-  - 'Zeile 2'
-  - '&7Test: %{USERNAME}-Replacer Test: Dein Name ist &e{USERNAME}&7, richtig?'
-#  'MOTD On Join Once' ist die Nachricht, die jeder Spieler bekommt, wenn er zum ersten Mal an einem Tag den Server betritt. Perfekt um einen Changelog mitzuteilen
-MOTD On Join Once:
-  - '&9Alle Neuerungen auf einem Blick'
-  - ' &7> &fAnpassbare Nachrichten wurden hinzugefügt'
-  - ' &7> &fSchön dass du bei uns gelandet bist!'
-  - ' &7> &bSchaue dir doch gerne das Tutorial zu unserem Server an um bestens Bescheid zu wissen!'
+MOTD:
 #  'MOTD On Join First' ist die Nachricht, die jeder Spieler bekommt, wenn er zum ersten Mal auf den Server kommt
-MOTD On Join First:
-  - '&fZeile 1'
-  - '&7Zeile 2'
-  - '&8Zeile 3'
+  On Join First:
+   - '&fZeile 1'
+   - '&7Zeile 2'
+   - '&8Zeile 3'
+#  'MOTD On Join Once' ist die Nachricht, die jeder Spieler bekommt, wenn er zum ersten Mal an einem Tag den Server betritt. Perfekt um einen Changelog mitzuteilen
+  On Join Once:
+   - '&9Alle Neuerungen auf einem Blick'
+   - ' &7> &fAnpassbare Nachrichten wurden hinzugefügt'
+   - ' &7> &fSchön dass du bei uns gelandet bist!'
+   - ' &7> &bSchaue dir doch gerne das Tutorial zu unserem Server an um bestens Bescheid zu wissen!'
+#  'MOTD On Join' ist die Nachricht, die jeder Spieler erhält, sobal er dem Server betritt
+  On Join:
+   - 'Test Nachricht'
+   - 'Zeile 2'
+   - '&7Test: %{USERNAME}-Replacer Test: Dein Name ist &e{USERNAME}&7, richtig?'
+Ranks:
+#Ranks beinhalten Prefix und Suffix für die Tablist.
+  default:
+    Prefix: '&aSpieler'
+    Suffix: '&7'
+  donor1:
+    Prefix: '&ePremium'
+    Suffix: '&f'
+  donor2:
+    Prefix: '&6Premium&b+'
+    Suffix: '&f'
+  donor3:
+    Prefix: '&3Meister'
+    Suffix: '&f'
+  donor4:
+    Prefix: 'SPENDER4'
+    Suffix: '&7'
+  epic:
+    Prefix: '&b&lEPIC'
+    Suffix: '&f'
+  supporter:
+    Prefix: '&bHelfer'
+    Suffix: '&7'
+  admin:
+    Prefix: '&cAdmin'
+    Suffix: '&7'
+  developer:
+    Prefix: '&9Entwickler'
+    Suffix: '&7'
+Chat:
 #  'No Permission' ist die Nachricht, die ein Spieler erhält, wenn er keine Berechtigung für einen Command hat
-No Permission: '{SERVER_PREFIX} &cDu hast kein Recht dazu!'
+  No Permission: '{SERVER_PREFIX} &cDu hast kein Recht dazu!'
 #  'Join Message' ist die Join-Nachricht
-Join Message: ''
+  Join Message: '&a&l+ &7{USERNAME}'
 #  'Quit Message' ist die Quit-Nachricht
-Quit Message: ''
+  Quit Message: '&c&l- &7{USERNAME}'
 #  'Death Message' ist die Death-Nachricht
-Death Message: ''
+  Death Message: '&c&lTOD &e{USERNAME} ist flöten gegangen'
+  Chat Seperator: ' &7➤ &f'
+  Chat Format: ' {RANK_PREFIX}{RANK_SEPERATOR}{USERNAME}{RANK_SUFFIX}{CHAT_SEPERATOR}{CHAT_MESSAGE}'
+# Auto update config
+Auto Update Config: true
+# SkyBlock Spawn
+Spawn:
+  Radius: 9
+  OffsetY: 5
+  Location:
+    World: 'world'
+    X: 24
+    Y: 92
+    Z: 162
+    Yaw: 0.0
+    Pitch: 0.0
 Economy:
   Console:
     Infinite Money: false
@@ -68,3 +113,8 @@ Economy:
     Start: 0
     Max: 100000
     Min: -1000
+Daily Reward:
+  Reset At:
+    Seconds: 0
+    Minutes: 0
+    Hours: 9
