@@ -39,12 +39,19 @@ commands:
   broadcaster:
     description: 'Main command for the broadcaster'
     aliases: [bc, bcaster, rundruf]
+  cam:
+    description: 'DEBUG COMMAND'
+  isc:
+    description: 'Island Control Command'
+    aliases: [islandcontrol, iscontrol]
+  log:
+    description: 'See the logged messages of SkyBlock'
 permissions:
   skyblock.*:
     description: All permissions for the SkyBlock plugin
     children:
       skyblock.admin: true
-      skyblock.adminhelp: true
+      skyblock.island.adminhelp: true
       skyblock.commandhelp: true
       skyblock.unclaimed: true
       skyblock.claimed: true
@@ -76,6 +83,13 @@ permissions:
       skyblock.island.spy: true
       skyblock.island.visit: true
       skyblock.island.gamemode.bypass: true
+      skyblock.island.control: true
+      skyblock.island.control.help: true
+      skyblock.island.control.edit: true
+      skyblock.island.control.edit.changeowner: true
+      skyblock.log: true
+      skyblock.log.help: true
+      skyblock.log.save: true
       skyblock.modify.islands: true
       skyblock.interact.entity: true
       skyblock.coins: true
@@ -84,7 +98,7 @@ permissions:
       skyblock.broadcaster: true
   skyblock.admin:
     description: You cannot get kicked off of a Island by a player if you have this permission
-    skyblock.adminhelp:
+    skyblock.island.adminhelp:
     description: See admin help for various admin processes
   skyblock.commandhelp:
     description: See help for all alvailable commands which you can use
@@ -144,6 +158,20 @@ permissions:
     description: Visit an Island of another Player
   skyblock.island.gamemode.bypass:
     description: Keep your GameMode after you have created a Island
+  skyblock.island.control:
+    description: Get a list of all ISC. command functions
+  skyblock.island.control.help:
+    description: Get help about a ISC. command function
+  skyblock.island.control.edit:
+    description: Get help for command for editing an island
+  skyblock.island.control.edit.changeowner:
+    description: Change the owner of an island
+  skyblock.log:
+    description: Show 100 last lines of the log
+  skyblock.log.help:
+    description: Get help for the log command
+  skyblock.log.save:
+    description: Save the actual log
   skyblock.modify.islands:
     description: Place and break blocks on other Islands
   skyblock.interact.entity:

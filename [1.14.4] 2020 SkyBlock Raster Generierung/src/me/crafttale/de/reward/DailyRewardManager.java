@@ -12,10 +12,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import me.crafttale.de.Chat;
-import me.crafttale.de.SkyBlock;
 import me.crafttale.de.Chat.MessageType;
-import me.crafttale.de.profiles.PlayerProfiler;
 import me.crafttale.de.Settings;
+import me.crafttale.de.SkyBlock;
+import me.crafttale.de.profiles.PlayerProfiler;
 
 public class DailyRewardManager {
 	
@@ -39,7 +39,7 @@ public class DailyRewardManager {
 	
 	public static void update() {
 		if(new File("plugins/SkyBlock/daily_rewards.yml").exists() == false) createDailyRewardsFile();
-		if(update_cooldown == 0) {		
+		if(update_cooldown == 0) {
 			String seconds, minutes, hours;
 			seconds = SkyBlock.getCurrentSeconds();
 			minutes = SkyBlock.getCurrentMinutes();

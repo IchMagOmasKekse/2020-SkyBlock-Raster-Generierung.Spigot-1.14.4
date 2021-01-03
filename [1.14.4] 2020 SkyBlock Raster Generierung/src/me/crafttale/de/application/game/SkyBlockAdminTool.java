@@ -41,7 +41,7 @@ public class SkyBlockAdminTool extends Canvas implements Runnable {
 	public static void main(String[] args) {
 		new SkyBlockAdminTool();
 		for(String s : args) {
-			if(s.contains("-generate")) IndexFileGenerator.generate();
+			if(s.contains("-generate")) IndexFileGenerator.generate(null);
 		}
 	}
 	
@@ -94,7 +94,7 @@ public class SkyBlockAdminTool extends Canvas implements Runnable {
 //		new FTPDownloader().download();
 	}
 	public void startGame() {
-		System.err.println("Es wurde kein Ursprung gesetzt um das Spiel zu starten!");
+		System.err.println(getTimeInString()+" Es wurde kein Ursprung gesetzt um das Spiel zu starten!");
 	}
 	
 	private void start() {
@@ -223,7 +223,7 @@ public class SkyBlockAdminTool extends Canvas implements Runnable {
 	}
 	
 	public boolean generateNewIndexFile(boolean generate) {
-		isGenerated = IndexFileGenerator.generate();
+		isGenerated = IndexFileGenerator.generate(null);
 		return isGenerated;
 	}
 	

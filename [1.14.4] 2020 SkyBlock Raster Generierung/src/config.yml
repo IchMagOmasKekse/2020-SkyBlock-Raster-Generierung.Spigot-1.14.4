@@ -67,6 +67,17 @@ Chat:
   Chat Format: ' {RANK_PREFIX}{RANK_SEPERATOR}{USERNAME}{RANK_SUFFIX}{CHAT_SEPERATOR}{CHAT_MESSAGE}'
 # Auto update config
 Auto Update Config: true
+XLogger:
+  Log Date: true
+  Auto Save:
+    Enabled: true
+# Die Anzahl an log Zeilen, bei der der XLogger automatisch speichert und den log leert.
+    Save At: 5000
+  Log:
+    Command Usage: true
+    Chatmessages: true
+    Debug Messages: true
+    Plugin Intern Processes: true
 # SkyBlock Spawn
 Spawn:
   Radius: 9

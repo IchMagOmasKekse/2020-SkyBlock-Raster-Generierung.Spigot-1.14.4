@@ -4,12 +4,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -19,7 +22,10 @@ import me.crafttale.de.Cuboid;
 import me.crafttale.de.PlayerAtlas;
 import me.crafttale.de.SkyBlock;
 import me.crafttale.de.SkyBlockGenerator;
+import me.crafttale.de.SkyWorld;
 import me.crafttale.de.filemanagement.SkyFileManager;
+import me.crafttale.de.gadgets.JumpPads;
+import me.crafttale.de.gadgets.lobby.Spawn;
 import me.crafttale.de.profiles.PlayerProfiler.PlayerProfile;
 import me.crafttale.de.tablist.TablistManager;
 
@@ -38,28 +44,51 @@ public class IslandManager {
 		}
 		
 		timer = new BukkitRunnable() {
+			
 			boolean isOnAnIsland = false;
-			boolean pvp = false;
+			boolean isOnNoneIsland = true;
+			boolean skip = false;
+			
 			@Override
 			public void run() {
 				if(islandDatas == null) loadAllIslandData();
 					for(Player p : Bukkit.getOnlinePlayers()) {
 						PlayerProfile profile = PlayerProfiler.getProfile(PlayerProfiler.getUUID(p));
 						if(profile.getStandort() == null) profile.registerStandort();
+						
 						if(islandDatas.isEmpty() == false) {
 							for(IslandData data : islandDatas.values()) {
-								if(isOnAnIsland == false && data.getVolume().isIn(p.getLocation())) {
-									if(p != null && data != null && data.getOwnerUuid() != null) ActionBar.send(false, "§fDein Standort: §aInsel #"+data.getIslandId()+" §fBesitzer: §a"+(PlayerAtlas.getPlayername(data.getOwnerUuid().toString())), p);
-									else ActionBar.send(false, "§fDein Standort: §aWildnis", p);
-									
-									if(profile.getStandort().getIslandData() == null) profile.registerStandort(data);
-									profile.getStandort().reset().setIslandId(data.island_id, p.getLocation(), data).getIslandData().checkForBannedLocation(p);
-									
-									isOnAnIsland = true;																			
+								if(data.getIslandId() == 10 && data.getVolume().isIn(p.getLocation()) && isOnAnIsland == false) {
+									p.setFallDistance(0f);
+									ActionBar.send(false, "§fDein Standort: §eSpawn", p);
+									PlayerProfiler.getProfile(PlayerProfiler.getUUID(p)).getStandort().setName("Spawn", p.getLocation());
+									JumpPads.checkJumpPad(p);
+									if(p.getLocation().getY() <= 30) {
+										new BukkitRunnable() { @Override public void run() { p.teleport(Spawn.getRandomLocationInSpawnArea()); } }.runTask(SkyBlock.getSB());
+									}
+									skip = true;
+								}else {									
+									if(isOnAnIsland == false && data.getVolume().isIn(p.getLocation())) {
+										if(p != null && data != null && data.getOwnerUuid() != null) {
+											ActionBar.send(false, "§fDein Standort: §aInsel #"+data.getIslandId()+" §fBesitzer: §a"+(PlayerAtlas.getPlayername(data.getOwnerUuid().toString())), p);
+										} else if(data.getOwnerUuid() == null) {
+											data.reloadData();
+											if(data.getOwnerUuid() == null) {
+												ActionBar.send(false, "§fDein Standort: §aInsel #"+data.getIslandId()+"§f(§7Kein Besitzer§f)", p);
+											}
+											isOnAnIsland = false;
+										}
+										
+										if(profile.getStandort().getIslandData() == null) profile.registerStandort(data);
+										profile.getStandort().reset().setIslandId(data.island_id, p.getLocation(), data).getIslandData().checkForBannedLocation(p);
+										
+										isOnAnIsland = true;
+										isOnNoneIsland = false;
+									}
 								}
 							}
-						}
-						if(isOnAnIsland == false) {
+						}else isOnAnIsland = false;
+						if((isOnAnIsland == false || isOnNoneIsland == true) && skip == false) {
 							if(SkyBlock.spawnCuboid.isIn(p.getLocation())) {
 								ActionBar.send(false, "§fDein Standort: §eSpawn", p);
 								PlayerProfiler.getProfile(PlayerProfiler.getUUID(p)).getStandort().setName("Spawn", p.getLocation());
@@ -73,11 +102,14 @@ public class IslandManager {
 								ActionBar.send(false, "§fDein Standort: §aWildnis", p);
 								PlayerProfiler.getProfile(PlayerProfiler.getUUID(p)).getStandort().setName("Wildnis", p.getLocation());
 							}
-						}else isOnAnIsland = false;
+						}
 						
+						isOnAnIsland = false;
+						isOnNoneIsland = true;
+						skip = false;
 						TablistManager.setTablist(p);
+						SkyBlock.sendTimeTitleNotification();
 					}
-					pvp = !pvp;
 			}
 		};
 		timer.runTaskTimerAsynchronously(SkyBlock.getSB(), 0l, 5l);
@@ -93,8 +125,10 @@ public class IslandManager {
 		return false;
 	}
 	
-	/*
-	 * TODO: Gibt das Insel Profil zurück
+	/**
+	 * Gibt das Insel Profil zurück
+	 * @param p
+	 * @return
 	 */
 	public static IslandProfile getProfile(Player p) {
 		if(profiles.containsKey(p)) return profiles.get(p);
@@ -102,6 +136,17 @@ public class IslandManager {
 			loadProfile(p);
 			return profiles.get(p);
 		}
+	}
+	
+	public static IslandProfile getProfile(String uuid) {
+		if(profiles.isEmpty() == false) {			
+			for(Player player : profiles.keySet()) {
+				if(PlayerProfiler.getUUID(player).toString().equals(uuid)) {
+					return profiles.get(player);
+				}
+			}
+		}
+		return null;
 	}
 	/**
 	 * Gibt die IslandData einer Insel zurück
@@ -165,10 +210,11 @@ public class IslandManager {
 		
 		for(int id = 1; id != SkyBlockGenerator.amountOfIslands; id++) {
 			islandDatas.put(id,
-					new IslandData(id, new Location(Bukkit.getWorld(cfg.getString("Islands.ID-"+id+".World")), cfg.getDouble("Islands.ID-"+id+".LocX"), cfg.getDouble("Islands.ID-"+id+".LocY"), cfg.getDouble("Islands.ID-"+id+".LocZ")),
+					new IslandData(id, new Location(Bukkit.getWorld(cfg.getString("Islands.ID-"+id+".World")), cfg.getDouble("Islands.ID-"+id+".LocX"), SkyBlockGenerator.islandHeight, cfg.getDouble("Islands.ID-"+id+".LocZ")),
 					(cfg.getString("Islands.ID-"+id+".Owner UUID").equals("none") ? false : true),
 					cfg.getString("Islands.ID-"+id+".Owner UUID")));
 		}
+		
 		return true;
 	}
 	
@@ -189,6 +235,41 @@ public class IslandManager {
 		Location pos2 = new Location(Bukkit.getWorld(cfg.getString("Islands.ID-"+island_id+".World")), x2, 256, z2);
 		return new Cuboid(pos1, pos2);
 	}
+	
+	/**
+	 * Entfernt alle Entities auf einer Insel und gibt die anzahl der entfernten Entities zurück
+	 * @param island_id
+	 * @param types
+	 * @return
+	 */
+	public static int clearAllEntitiesAtIsland(int island_id, List<EntityType> types) {
+		List<Entity> entities = Bukkit.getWorld(SkyWorld.skyblockworld).getEntities();
+		Cuboid volume = getIslandCuboid(island_id);
+		int removed = 0;
+		for(Entity ent : entities) {
+			if(types.contains(ent.getType())) {
+				if(volume.isIn(ent.getLocation())) {
+					ent.remove();
+					removed++;
+				}
+			}
+		}
+		return removed;
+	}
+//	public static int clearAllEntitiesAtIsland(int island_id, EntityType[] types) {
+//		List<Entity> entities = Bukkit.getWorld(SkyWorld.skyblockworld).getEntities();
+//		Cuboid volume = getIslandCuboid(island_id);
+//		int removed = 0;
+//		for(Entity ent : entities) {
+//			for(EntityType type : types) {
+//				if(ent.getType() == type && volume.isIn(ent.getLocation())) {
+//					ent.remove();
+//					removed++;
+//				}
+//			}
+//		}
+//		return removed;
+//	}
 	
 	/*
 	 * TODO: Beseitigt die Insel
@@ -299,14 +380,28 @@ public class IslandManager {
 			if(hasOwner) this.owner_uuid = UUID.fromString(owner_uuid);
 			else this.owner_uuid = null;
 			
-			this.volume = new Cuboid(center.clone().add(-SkyBlockGenerator.issize, 0, -SkyBlockGenerator.issize),
-					center.clone().add(SkyBlockGenerator.issize, 256, SkyBlockGenerator.issize));
+			this.volume = new Cuboid(new Location(center.getWorld(),
+					center.getX()-(SkyBlockGenerator.issize/2),
+					0,
+					center.getZ()-(SkyBlockGenerator.issize/2)),
+					new Location(center.getWorld(),
+							center.getX()+(SkyBlockGenerator.issize/2),
+							256,
+							center.getZ()+(SkyBlockGenerator.issize/2)));
+			
 			loc1 = volume.getPoint1();
 			loc2 = volume.getPoint2();
-			
 			if(hasOwner) {
 				settings = new Settings(island_id);
 			}
+		}
+		
+		public void reloadData() {
+			this.hasOwner = (SkyFileManager.getIslandStatus(island_id).getOwnerUUID().equals("none") ? false:true);
+			if(hasOwner && SkyFileManager.getIslandStatus(island_id).getOwnerUUID() != null) {
+				this.owner_uuid = UUID.fromString(SkyFileManager.getIslandStatus(island_id).getOwnerUUID());
+			}
+			loadSettings();
 		}
 		
 		public void checkForBannedLocation(Player p) {
@@ -421,6 +516,7 @@ public class IslandManager {
 			}
 			
 			public void load(boolean saveBefore) {
+				if(owner_uuid == null) return;
 				if(saveBefore) save();
 				if(PlayerProfiler.isRegistered(owner_uuid)) {
 					File file = new File("plugins/SkyBlock/Inseln/"+owner_uuid.toString()+"-Insel.yml");
@@ -441,7 +537,7 @@ public class IslandManager {
 			}
 			
 			public boolean isBanned(UUID uuid) {
-				return banned_players.contains(uuid.toString());
+				return (banned_players == null ? false : banned_players.contains(uuid.toString()));
 			}
 			
 			public String getStringListOfBannedPlayer() {
@@ -484,46 +580,46 @@ public class IslandManager {
 				}else if(value instanceof Boolean) {
 					if(setting.equals("allowVisiting")) {
 						allowVisiting = (boolean)value;
-						SkyBlock.sendMessage(MessageType.WARNING, player, "Eigenschaft §bErlaube Besuche §czu §3"+value+" §cgeändert");
+						if(player != null) SkyBlock.sendMessage(MessageType.WARNING, player, "Eigenschaft §bErlaube Besuche §czu §3"+value+" §cgeändert");
 						for(String uuid : getProfile(player).getMembers())
 							if(Bukkit.getPlayer(UUID.fromString(uuid)) != null) 
-							SkyBlock.sendMessage(MessageType.WARNING, Bukkit.getPlayer(UUID.fromString(uuid)), "Eigenschaft §bErlaube Besuche §czu §3"+value+" §cgeändert");
+								if(player != null) SkyBlock.sendMessage(MessageType.WARNING, Bukkit.getPlayer(UUID.fromString(uuid)), "Eigenschaft §bErlaube Besuche §czu §3"+value+" §cgeändert");
 					} else if(setting.equals("fireSpread")) {
 						fireSpread = (boolean)value;
-						SkyBlock.sendMessage(MessageType.WARNING, player, "Eigenschaft §bErlaube Feuerausbreitung §czu §3"+value+" §cgeändert");
+						if(player != null) SkyBlock.sendMessage(MessageType.WARNING, player, "Eigenschaft §bErlaube Feuerausbreitung §czu §3"+value+" §cgeändert");
 						for(String uuid : getProfile(player).getMembers())
 							if(Bukkit.getPlayer(UUID.fromString(uuid)) != null)
-								SkyBlock.sendMessage(MessageType.WARNING, Bukkit.getPlayer(UUID.fromString(uuid)), "Eigenschaft §bErlaube Feuerausbreitung §czu §3"+value+" §cgeändert");
+								if(player != null) SkyBlock.sendMessage(MessageType.WARNING, Bukkit.getPlayer(UUID.fromString(uuid)), "Eigenschaft §bErlaube Feuerausbreitung §czu §3"+value+" §cgeändert");
 					} else if(setting.equals("monsterSpawning")) {
 						monsterSpawning = (boolean)value;
-						SkyBlock.sendMessage(MessageType.WARNING, player, "Eigenschaft §bErlaube natürliche Monster-Spawning §czu §3"+value+" §cgeändert");
+						if(player != null) SkyBlock.sendMessage(MessageType.WARNING, player, "Eigenschaft §bErlaube natürliche Monster-Spawning §czu §3"+value+" §cgeändert");
 						for(String uuid : getProfile(player).getMembers())
 							if(Bukkit.getPlayer(UUID.fromString(uuid)) != null) 
-							SkyBlock.sendMessage(MessageType.WARNING, Bukkit.getPlayer(UUID.fromString(uuid)), "Eigenschaft §bErlaube natürliche Monster-Spawning §czu §3"+value+" §cgeändert");
+								if(player != null) SkyBlock.sendMessage(MessageType.WARNING, Bukkit.getPlayer(UUID.fromString(uuid)), "Eigenschaft §bErlaube natürliche Monster-Spawning §czu §3"+value+" §cgeändert");
 					} else if(setting.equals("animalSpawning")) {
 						animalSpawning = (boolean)value;
-						SkyBlock.sendMessage(MessageType.WARNING, player, "Eigenschaft §bErlaube natürliche Tiere-Spawning §czu §3"+value+" §cgeändert");
+						if(player != null) SkyBlock.sendMessage(MessageType.WARNING, player, "Eigenschaft §bErlaube natürliche Tiere-Spawning §czu §3"+value+" §cgeändert");
 						for(String uuid : getProfile(player).getMembers())
 							if(Bukkit.getPlayer(UUID.fromString(uuid)) != null) 
-							SkyBlock.sendMessage(MessageType.WARNING, Bukkit.getPlayer(UUID.fromString(uuid)), "Eigenschaft §bErlaube natürliche Tiere-Spawning §czu §3"+value+" §cgeändert");
+								if(player != null) SkyBlock.sendMessage(MessageType.WARNING, Bukkit.getPlayer(UUID.fromString(uuid)), "Eigenschaft §bErlaube natürliche Tiere-Spawning §czu §3"+value+" §cgeändert");
 					} else if(setting.equals("tntDamage")) {
 						tntDamage = (boolean)value;
-						SkyBlock.sendMessage(MessageType.WARNING, player, "Eigenschaft §bErlaube Zerstörung durch TNT §czu §3"+value+" §cgeändert");
+						if(player != null) SkyBlock.sendMessage(MessageType.WARNING, player, "Eigenschaft §bErlaube Zerstörung durch TNT §czu §3"+value+" §cgeändert");
 						for(String uuid : getProfile(player).getMembers())
 							if(Bukkit.getPlayer(UUID.fromString(uuid)) != null) 
-							SkyBlock.sendMessage(MessageType.WARNING, Bukkit.getPlayer(UUID.fromString(uuid)), "Eigenschaft §bErlaube Zerstörung durch TNT §czu §3"+value+" §cgeändert");
+								if(player != null) SkyBlock.sendMessage(MessageType.WARNING, Bukkit.getPlayer(UUID.fromString(uuid)), "Eigenschaft §bErlaube Zerstörung durch TNT §czu §3"+value+" §cgeändert");
 					} else if(setting.equals("mobGriefing")) {
 						mobGriefing = (boolean)value;
-						SkyBlock.sendMessage(MessageType.WARNING, player, "Eigenschaft §bErlaube Zerstörung durch Mobs §czu §3"+value+" §cgeändert");
+						if(player != null) SkyBlock.sendMessage(MessageType.WARNING, player, "Eigenschaft §bErlaube Zerstörung durch Mobs §czu §3"+value+" §cgeändert");
 						for(String uuid : getProfile(player).getMembers())
 							if(Bukkit.getPlayer(UUID.fromString(uuid)) != null)
-							SkyBlock.sendMessage(MessageType.WARNING, Bukkit.getPlayer(UUID.fromString(uuid)), "Eigenschaft §bErlaube Zerstörung durch Mobs §czu §3"+value+" §cgeändert");
+								if(player != null) SkyBlock.sendMessage(MessageType.WARNING, Bukkit.getPlayer(UUID.fromString(uuid)), "Eigenschaft §bErlaube Zerstörung durch Mobs §czu §3"+value+" §cgeändert");
 					} else if(setting.equals("pvp")) {
 						pvp = (boolean)value;
-						SkyBlock.sendMessage(MessageType.WARNING, player, "Eigenschaft §bPVP §czu §3"+value+" §cgeändert");
+						if(player != null) SkyBlock.sendMessage(MessageType.WARNING, player, "Eigenschaft §bPVP §czu §3"+value+" §cgeändert");
 						for(String uuid : getProfile(player).getMembers())
 							if(Bukkit.getPlayer(UUID.fromString(uuid)) != null)
-							SkyBlock.sendMessage(MessageType.WARNING, Bukkit.getPlayer(UUID.fromString(uuid)), "Eigenschaft §bPVP §czu §3"+value+" §cgeändert");
+								if(player != null) SkyBlock.sendMessage(MessageType.WARNING, Bukkit.getPlayer(UUID.fromString(uuid)), "Eigenschaft §bPVP §czu §3"+value+" §cgeändert");
 					}			
 					return true;
 				}else if(value instanceof Float) {
@@ -604,11 +700,27 @@ public class IslandManager {
 				int z2 = z1+(SkyBlockGenerator.issize);
 				if(SkyFileManager.getWorldName(owner.toString()) == null) Bukkit.broadcastMessage("getWorldName == null");
 				if(Bukkit.getWorld(SkyFileManager.getWorldName(owner.toString())) == null) Bukkit.broadcastMessage("getWorld == null");
-				Location pos1 = new Location(Bukkit.getWorld(SkyFileManager.getWorldName(owner.toString())), x1, 0, z1);
+				Location pos1 = new Location(Bukkit.getWorld(SkyFileManager.getWorldName(owner.toString())), x1,   0, z1);
 				Location pos2 = new Location(Bukkit.getWorld(SkyFileManager.getWorldName(owner.toString())), x2, 256, z2);
 				this.cuboid = new Cuboid(pos1, pos2);
 				members = getMembers();
 			}
+		}
+		
+		/**
+		 * Löscht die Insel Datein aller Member, damit sie eine Neue Insel erstellen können
+		 * @return
+		 */
+		public boolean deleteAllMembers() {
+			if(members.isEmpty() == false) for(String suuid : members) {
+				String owner_name = PlayerAtlas.getPlayername(uuid.toString());
+				new File("plugins/SkyBlock/Inseln/"+suuid+"-Insel.yml").delete();
+				Player p = PlayerProfiler.getPlayer(UUID.fromString(suuid));
+				
+				if(p != null && IslandManager.getIslandData(getProfile(p).getIslandID()).getVolume().isIn(p.getLocation()) == true) p.teleport(SkyBlock.spawn);
+				if(p != null) SkyBlock.sendMessage(MessageType.INFO, p, "§f"+owner_name+" §ahat eure Insel gelöscht. Erstelle Dir eine eigene Insel mit §f/is create");
+			}
+			return true;
 		}
 		
 		/**
@@ -625,7 +737,7 @@ public class IslandManager {
 				int z2 = z1+(SkyBlockGenerator.issize);
 				if(SkyFileManager.getWorldName(uuid.toString()) == null) Bukkit.broadcastMessage("getWorldName == null");
 				if(Bukkit.getWorld(SkyFileManager.getWorldName(uuid.toString())) == null) Bukkit.broadcastMessage("getWorld == null");
-				Location pos1 = new Location(Bukkit.getWorld(SkyFileManager.getWorldName(uuid.toString())), x1, 0, z1);
+				Location pos1 = new Location(Bukkit.getWorld(SkyFileManager.getWorldName(uuid.toString())), x1,   0, z1);
 				Location pos2 = new Location(Bukkit.getWorld(SkyFileManager.getWorldName(uuid.toString())), x2, 256, z2);
 				this.cuboid = new Cuboid(pos1, pos2);	
 				members = getMembers();

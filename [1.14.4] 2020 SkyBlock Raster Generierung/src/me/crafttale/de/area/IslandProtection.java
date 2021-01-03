@@ -1,5 +1,7 @@
 package me.crafttale.de.area;
 
+import java.util.HashMap;
+
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
@@ -13,9 +15,11 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import me.crafttale.de.Settings;
 import me.crafttale.de.SkyBlock;
@@ -26,8 +30,28 @@ import me.crafttale.de.profiles.PlayerProfiler;
 
 public class IslandProtection implements Listener {
 	
+	private static HashMap<Player, BukkitRunnable> spawnProtections = new HashMap<Player, BukkitRunnable>();
+	
 	public IslandProtection() {
 		SkyBlock.getSB().getServer().getPluginManager().registerEvents(this, SkyBlock.getSB());
+	}
+	
+	public static void giveSpawnProtection(Player p, boolean resetIfExist) {
+		if(spawnProtections.containsKey(p) && resetIfExist) {
+			spawnProtections.get(p).cancel();
+			spawnProtections.remove(p);
+		}
+		if(spawnProtections.containsKey(p) == false) {
+			spawnProtections.put(p, new BukkitRunnable() {
+				
+				@Override
+				public void run() {
+					spawnProtections.remove(p);
+				}
+				
+			});
+			spawnProtections.get(p).runTaskLater(SkyBlock.getSB(), 4*20l);
+		}
 	}
 	
 	@EventHandler
@@ -111,6 +135,10 @@ public class IslandProtection implements Listener {
 		}
 	}
 	@EventHandler
+	public void onEntityDamage(EntityDamageEvent e) {
+		if(e.getEntity() instanceof Player && spawnProtections.containsKey(((Player)e.getEntity()))) e.setCancelled(true);
+	}
+	@EventHandler
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 		if(e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
 			
@@ -163,19 +191,19 @@ public class IslandProtection implements Listener {
 		if(island_id == 0) {
 			e.setCancelled(true);
 		}else {
-			if(e.getEntityType() == EntityType.PRIMED_TNT) {
-				if(island_id != 0 &&
-						IslandManager.getIslandData(IslandManager.getIslandId(e.getLocation())) != null &&
-						IslandManager.getIslandData(IslandManager.getIslandId(e.getLocation())).getSettings() != null &&
-						IslandManager.getIslandData(IslandManager.getIslandId(e.getLocation())).getSettings().isTntDamage() == false) {
-					e.setCancelled(true);
-				}
-			}else if(e.getEntityType() == EntityType.CREEPER) {				
+			if(e.getEntityType() == EntityType.CREEPER) {
 				if(island_id != 0 &&
 						IslandManager.getIslandData(IslandManager.getIslandId(e.getLocation())) != null &&
 						IslandManager.getIslandData(IslandManager.getIslandId(e.getLocation())).getSettings() != null &&
 						IslandManager.getIslandData(IslandManager.getIslandId(e.getLocation())).getSettings().isMobGriefing() == false) {
 					e.setCancelled(true);	
+				}
+			}else {
+				if(island_id != 0 &&
+						IslandManager.getIslandData(IslandManager.getIslandId(e.getLocation())) != null &&
+						IslandManager.getIslandData(IslandManager.getIslandId(e.getLocation())).getSettings() != null &&
+						IslandManager.getIslandData(IslandManager.getIslandId(e.getLocation())).getSettings().isTntDamage() == false) {
+					e.setCancelled(true);
 				}
 			}
 		}

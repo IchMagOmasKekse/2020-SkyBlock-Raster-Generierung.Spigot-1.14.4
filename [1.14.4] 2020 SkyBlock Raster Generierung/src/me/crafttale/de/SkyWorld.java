@@ -2,6 +2,7 @@ package me.crafttale.de;
 
 import java.util.ArrayList;
 
+import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -19,6 +20,7 @@ import me.crafttale.de.economy.EconomyManager;
 import me.crafttale.de.economy.EconomyManager.EditOperation;
 import me.crafttale.de.economy.EconomyManager.MoneyType;
 import me.crafttale.de.filemanagement.SkyFileManager;
+import me.crafttale.de.gadgets.lobby.Spawn;
 import me.crafttale.de.profiles.PlayerProfiler;
 
 public class SkyWorld implements Listener {
@@ -46,19 +48,22 @@ public class SkyWorld implements Listener {
 				if(SkyBlock.randomInteger(0, 1) == 0) e.getEntity().setCustomName("§eVerkäufer");
 			}else if(e.getEntity().getType() == EntityType.PHANTOM) {
 				e.setCancelled(true);
+			}else if(e.getEntity().getType() == EntityType.TRADER_LLAMA) {
+				e.setCancelled(true);
 			}else if(e.getEntity() instanceof LivingEntity) {
 				e.getEntity().setCustomName(mob_names.get(SkyBlock.randomInteger(0, mob_names.size()-1)));
 			}
 		}
 	}
 	@EventHandler
-	public void onMobSpawn(EntityDamageEvent e) {
-		if(e.getEntity().getWorld().getName().equals("world")) {			
+	public void onDamage(EntityDamageEvent e) {
+		if(e.getEntity().getWorld().getName().equals("world")) {
 			if(e.getEntity() instanceof Player) {
 				e.setCancelled(true);
 				((Player)e.getEntity()).setHealth(((Player)e.getEntity()).getHealthScale());
 			}
 		}
+		Spawn.onDamage(e);
 	}
 	@EventHandler
 	public void onDeath(PlayerDeathEvent e) {
@@ -81,12 +86,18 @@ public class SkyWorld implements Listener {
 	}
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onRespawn(PlayerRespawnEvent e) {
-		if(Settings.respawnAtIslandIFDiedInSkyBlock()) {
-			if(e.getPlayer().getWorld().getName().equals(skyblockworld)) {
-				e.setRespawnLocation(SkyFileManager.getPlayerDefinedIslandSpawn(e.getPlayer()));
-			}else if(e.getPlayer().getWorld().getName().equals("world")) {
-				
-			}
+		if(PlayerProfiler.getProfile(PlayerProfiler.getUUID(e.getPlayer())).getStandort().getName().toLowerCase().equals("spawn")) {
+			Spawn.onRespawn(e);
+		}else {			
+			if(Settings.respawnAtIslandIFDiedInSkyBlock()) {
+				if(e.getPlayer().getWorld().getName().equals(skyblockworld)) {
+					Location respawn = SkyFileManager.getPlayerDefinedIslandSpawn(e.getPlayer());
+					if(respawn == null) e.setRespawnLocation(SkyBlock.spawn);
+					else e.setRespawnLocation(respawn);
+				}else if(e.getPlayer().getWorld().getName().equals("world")) {
+					
+				}
+			}else e.setRespawnLocation(Spawn.getRandomLocationInSpawnArea());
 		}
 	}
 	@EventHandler

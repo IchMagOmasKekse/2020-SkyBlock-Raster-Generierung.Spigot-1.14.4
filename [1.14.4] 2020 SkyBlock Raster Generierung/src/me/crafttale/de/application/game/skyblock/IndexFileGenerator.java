@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import me.crafttale.de.SkyBlock;
 import me.crafttale.de.SkyBlockGenerator;
 import me.crafttale.de.application.game.SkyBlockAdminTool;
 
@@ -42,10 +43,11 @@ public class IndexFileGenerator {
 	
 	static int curx = 500;
 	static int cury = 300;
-	public static boolean generate() {
+	public static boolean generate(SkyBlock sb) {
 		if(SkyBlockAdminTool.isGenerated == false) {
+			System.out.println("Erstelle Insel-Index-File.yml...");
 			if(generateDatabank) {
-				file = new File("plugins/SkyBlock/Insel-Index-File.yml");
+				file = new File("src/Insel-Index-File.yml");
 				cfg = YamlConfiguration.loadConfiguration(file);
 				cfg.set("Islands.Amount Generated", amountOfIslands);
 				cfg.set("Islands.Amount Claimed", 0);
@@ -117,7 +119,11 @@ public class IndexFileGenerator {
 				/*
 				 * TODO: Exportieren der Island-Databank-File fÃ¼r Ãœbernahme auf dem Server
 				 */
-				try { cfg.save(file); return true;} catch (IOException e) { e.printStackTrace(); return false;}
+				try {
+					cfg.save(file);
+					System.out.println("Datei Gespeichert!");
+					return true;
+				} catch (IOException e) { e.printStackTrace(); return false;}
 			}else return true;
 		}else return false;
 	}
@@ -131,17 +137,6 @@ public class IndexFileGenerator {
 			cfg.set("Islands.ID-"+id+".World", "skyblockworld");
 			cfg.set("Islands.ID-"+id+".LocX", x);
 			cfg.set("Islands.ID-"+id+".LocZ", y);
-//			cfg.set("Islands.ID-"+id+".Collab With", "none");
-//			cfg.set("Islands.ID-"+id+".Biome", "minecraft:forest");
-//			cfg.set("Islands.ID-"+id+".Settings.Allow Visiting", true);
-//			cfg.set("Islands.ID-"+id+".Settings.Firespread", true);
-//			cfg.set("Islands.ID-"+id+".Settings.Monsterspawning", true);
-//			cfg.set("Islands.ID-"+id+".Settings.Animalspawning", true);
-//			cfg.set("Islands.ID-"+id+".Settings.TNT Damage", true);
-//			cfg.set("Islands.ID-"+id+".Settings.Mob Griefing", true);
-//			cfg.set("Islands.ID-"+id+".Settings.PVP", false);
-//			cfg.set("Islands.ID-"+id+".Members", emptylist.toString());
-//			cfg.set("Islands.ID-"+id+".Banned Players", emptylist.toString());
 		}
 		IndexFileGenerator.islands.add(island);
 	}
@@ -175,6 +170,14 @@ public class IndexFileGenerator {
 				g.drawString(id+"", x+((int)((issize-SkyBlockAdminTool.getCamera().getOffset())/2)), y+10);
 				g.setColor(Color.WHITE);
 				g.drawString(id+"", x+((int)((issize-SkyBlockAdminTool.getCamera().getOffset())/2))+2, y+11);
+				g.setColor(c);
+				g.fillRect((int)(x+(issize/2)+1-SkyBlockAdminTool.getCamera().getOffset()), (int)(y+(issize/2)+1-SkyBlockAdminTool.getCamera().getOffset()), 1, 1);
+				
+//				g.setColor(Color.WHITE);
+//				g.drawLine((int)(x+(issize/2)+1-SkyBlockAdminTool.getCamera().getOffset()),
+//						(int)(y+(issize/2)+1-SkyBlockAdminTool.getCamera().getOffset()),
+//						(int)(x+(issize/2)+1-SkyBlockAdminTool.getCamera().getOffset())-(issize/2),
+//						(int)(y+(issize/2)+1-SkyBlockAdminTool.getCamera().getOffset()));
 				return true;
 			}
 			return false;

@@ -18,7 +18,9 @@ import me.crafttale.de.profiles.IslandManager;
 import me.crafttale.de.profiles.PlayerProfiler;
 
 public class IslandInviteGUI extends GUI {
-
+	
+	boolean hasAccepted = false;
+	
 	public IslandInviteGUI(Player player, Player player2) {
 		super(player, player2, GUIType.ISLAND_INVITE__GUI);
 	}
@@ -31,6 +33,9 @@ public class IslandInviteGUI extends GUI {
 		item = new ItemStack(Material.LIME_BANNER);
 		meta = item.getItemMeta();
 		meta.setDisplayName("§aAnnehmen");
+		lore.clear();
+		lore.add("§4ACHTUNG: §cDeine aktuelle Insel wird gelöscht!");
+		meta.setLore(lore);
 		item.setItemMeta(meta);
 		openedInv.setItem(0, item);
 		
@@ -45,7 +50,7 @@ public class IslandInviteGUI extends GUI {
 
 	@Override
 	public void stop() {
-		SkyBlock.sendMessage(MessageType.INFO, player2, "§e"+PlayerProfiler.getCurrentPlayerName(player)+" §7hat deine Einladung abgelehnt.");
+		if(hasAccepted==false)SkyBlock.sendMessage(MessageType.INFO, player2, "§e"+PlayerProfiler.getCurrentPlayerName(player)+" §7hat deine Einladung abgelehnt.");
 	}
 
 	@Override
@@ -63,6 +68,7 @@ public class IslandInviteGUI extends GUI {
 				SkyBlock.sendMessage(MessageType.INFO, player2, "§e"+PlayerProfiler.getCurrentPlayerName(player)+" §7hat deine Einladung abgelehnt.");
 				GUIManager.closeGUI(player);
 			}else if(item.getType() == Material.LIME_BANNER) {
+				hasAccepted = true;
 				GUIManager.closeGUI(player);
 				player.playSound(player.getEyeLocation(), Sound.ENTITY_PLAYER_LEVELUP, 6f, 1f);
 				SkyBlock.sendMessage(MessageType.INFO, player2, "§e"+PlayerProfiler.getCurrentPlayerName(player)+" §7hat deine Einladung angenommen");

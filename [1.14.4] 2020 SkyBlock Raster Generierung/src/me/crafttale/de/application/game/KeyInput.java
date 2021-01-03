@@ -117,7 +117,7 @@ public class KeyInput extends KeyAdapter {
 				if(text.equals("")) break;
 				IndexFileGenerator.pause = true;
 				IndexFileGenerator.amountOfIslands = Integer.valueOf(text);
-				IndexFileGenerator.generate();
+				IndexFileGenerator.generate(null);
 				text="";
 				pressed_keys.remove(key);
 				break;

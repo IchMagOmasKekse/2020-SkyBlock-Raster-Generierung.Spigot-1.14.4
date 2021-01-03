@@ -17,6 +17,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import me.crafttale.de.profiles.IslandManager;
 import me.crafttale.de.profiles.IslandManager.IslandData;
+import me.crafttale.de.profiles.PlayerProfiler;
 
 public abstract class GUI {
 	
@@ -96,7 +97,7 @@ public abstract class GUI {
 	 */
 	public void closeGui() {
 		stop();
-		if(closeInventoryWhenGetClosed) player.closeInventory();
+		if(closeInventoryWhenGetClosed && usesAnInventory && player.getOpenInventory() != null) player.closeInventory();
 	}
 	
 	/**
@@ -285,8 +286,10 @@ public abstract class GUI {
 			meta = item.getItemMeta();
 			meta.setDisplayName("§aErlaubt");
 			item.setItemMeta(meta);
-			
+
 			IslandData data = IslandManager.getIslandData(IslandManager.getProfile(player).getIslandID());
+			if(data.getOwnerUuid() == null) data.setNewOwner(PlayerProfiler.getUUID(player));
+			if(data.getSettings() == null) data.loadSettings();
 			
 			openedInv.setItem(9, (data.getSettings().isAllowVisiting() ? item : verboten));
 			openedInv.setItem(10, (data.getSettings().isFireSpread() ? item : verboten));

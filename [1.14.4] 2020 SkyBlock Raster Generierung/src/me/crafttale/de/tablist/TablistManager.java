@@ -77,31 +77,31 @@ public class TablistManager {
 	private static void removeTeam(Player p, int index) {
 		switch(index) {
 		case 0:
-			p.setPlayerListName(p.getPlayerListName().replace(t_developer.getPrefix()+pxToPlayernameSeperator, ""));
+			p.setPlayerListName(p.getPlayerListName().replace(t_developer.getPrefix(), ""));
 			t_developer.removeEntry(p.getName()); break;
 		case 1:
-			p.setPlayerListName(p.getPlayerListName().replace(t_admin.getPrefix()+pxToPlayernameSeperator, ""));
+			p.setPlayerListName(p.getPlayerListName().replace(t_admin.getPrefix(), ""));
 			t_admin.removeEntry(p.getName()); break;
 		case 2:
-			p.setPlayerListName(p.getPlayerListName().replace(t_supporter.getPrefix()+pxToPlayernameSeperator, ""));
+			p.setPlayerListName(p.getPlayerListName().replace(t_supporter.getPrefix(), ""));
 			t_supporter.removeEntry(p.getName()); break;
 		case 3:
-			p.setPlayerListName(p.getPlayerListName().replace(t_default.getPrefix()+pxToPlayernameSeperator, ""));
+			p.setPlayerListName(p.getPlayerListName().replace(t_default.getPrefix(), ""));
 			t_default.removeEntry(p.getName()); break;
 		case 4:
-			p.setPlayerListName(p.getPlayerListName().replace(t_donor1.getPrefix()+pxToPlayernameSeperator, ""));
+			p.setPlayerListName(p.getPlayerListName().replace(t_donor1.getPrefix(), ""));
 			t_donor1.removeEntry(p.getName()); break;
 		case 5:
-			p.setPlayerListName(p.getPlayerListName().replace(t_donor2.getPrefix()+pxToPlayernameSeperator, ""));
+			p.setPlayerListName(p.getPlayerListName().replace(t_donor2.getPrefix(), ""));
 			t_donor2.removeEntry(p.getName()); break;
 		case 6:
-			p.setPlayerListName(p.getPlayerListName().replace(t_donor3.getPrefix()+pxToPlayernameSeperator, ""));
+			p.setPlayerListName(p.getPlayerListName().replace(t_donor3.getPrefix(), ""));
 			t_donor3.removeEntry(p.getName()); break;
 		case 7:
-			p.setPlayerListName(p.getPlayerListName().replace(t_donor4.getPrefix()+pxToPlayernameSeperator, ""));
+			p.setPlayerListName(p.getPlayerListName().replace(t_donor4.getPrefix(), ""));
 			t_donor4.removeEntry(p.getName()); break;
 		case 8:
-			p.setPlayerListName(p.getPlayerListName().replace(t_epic.getPrefix()+pxToPlayernameSeperator, ""));
+			p.setPlayerListName(p.getPlayerListName().replace(t_epic.getPrefix(), ""));
 			t_epic.removeEntry(p.getName()); break;
 		}
 		givenTeam.remove(p, index);
@@ -115,47 +115,47 @@ public class TablistManager {
 	    	switch (i) {
 	    	case 0:
 	    		t_developer.addEntry(p.getName());
-	    		p.setPlayerListName(t_developer.getPrefix()+pxToPlayernameSeperator+p.getPlayerListName().replace(p.getName(), Settings.suffix_developer+p.getName()));
+	    		p.setPlayerListName(t_developer.getPrefix()+p.getPlayerListName().replace(p.getName(), Settings.suffix_developer+p.getName()));
 	    		givenTeam.put(p, i);
 	    		break;
 	    	case 1:
 	    		t_admin.addEntry(p.getName());
-	    		p.setPlayerListName(t_admin.getPrefix()+pxToPlayernameSeperator+p.getPlayerListName().replace(p.getName(), Settings.suffix_admin+p.getName()));
+	    		p.setPlayerListName(t_admin.getPrefix()+p.getPlayerListName().replace(p.getName(), Settings.suffix_admin+p.getName()));
 	    		givenTeam.put(p, i);
 	    		break;
 	    	case 2:
 	    		t_supporter.addEntry(p.getName());
-	    		p.setPlayerListName(t_supporter.getPrefix()+pxToPlayernameSeperator+p.getPlayerListName().replace(p.getName(), Settings.suffix_supporter+p.getName()));
+	    		p.setPlayerListName(t_supporter.getPrefix()+p.getPlayerListName().replace(p.getName(), Settings.suffix_supporter+p.getName()));
 	    		givenTeam.put(p, i);
 	    		break;
 	    	case 3:
 	    		t_default.addEntry(p.getName());
-	    		p.setPlayerListName(t_default.getPrefix()+pxToPlayernameSeperator+p.getPlayerListName().replace(p.getName(), Settings.suffix_default+p.getName()));
+	    		p.setPlayerListName(t_default.getPrefix()+p.getPlayerListName().replace(p.getName(), Settings.suffix_default+p.getName()));
 	    		givenTeam.put(p, i);
 	    		break;
 	    	case 4:
 	    		t_donor1.addEntry(p.getName());
-	    		p.setPlayerListName(t_donor1.getPrefix()+pxToPlayernameSeperator+p.getPlayerListName().replace(p.getName(), Settings.suffix_donor1+p.getName()));
+	    		p.setPlayerListName(t_donor1.getPrefix()+p.getPlayerListName().replace(p.getName(), Settings.suffix_donor1+p.getName()));
 	    		givenTeam.put(p, i);
 	    		break;
 	    	case 5:
 	    		t_donor2.addEntry(p.getName());
-	    		p.setPlayerListName(t_donor2.getPrefix()+pxToPlayernameSeperator+p.getPlayerListName().replace(p.getName(), Settings.suffix_donor2+p.getName()));
+	    		p.setPlayerListName(t_donor2.getPrefix()+p.getPlayerListName().replace(p.getName(), Settings.suffix_donor2+p.getName()));
 	    		givenTeam.put(p, i);
 	    		break;
 	    	case 6:
 	    		t_donor3.addEntry(p.getName());
-	    		p.setPlayerListName(t_donor3.getPrefix()+pxToPlayernameSeperator+p.getPlayerListName().replace(p.getName(), Settings.suffix_donor3+p.getName()));
+	    		p.setPlayerListName(t_donor3.getPrefix()+p.getPlayerListName().replace(p.getName(), Settings.suffix_donor3+p.getName()));
 	    		givenTeam.put(p, i);
 	    		break;
 	    	case 7:
 	    		t_donor4.addEntry(p.getName());
-	    		p.setPlayerListName(t_donor4.getPrefix()+pxToPlayernameSeperator+p.getPlayerListName().replace(p.getName(), Settings.suffix_donor4+p.getName()));
+	    		p.setPlayerListName(t_donor4.getPrefix()+p.getPlayerListName().replace(p.getName(), Settings.suffix_donor4+p.getName()));
 	    		givenTeam.put(p, i);
 	    		break;
 	    	case 8:
 	    		t_epic.addEntry(p.getName());
-	    		p.setPlayerListName(t_epic.getPrefix()+pxToPlayernameSeperator+p.getPlayerListName().replace(p.getName(), Settings.suffix_epic+p.getName()));
+	    		p.setPlayerListName(t_epic.getPrefix()+p.getPlayerListName().replace(p.getName(), Settings.suffix_epic+p.getName()));
 	    		givenTeam.put(p, i);
 	    		break;
 	    	default:

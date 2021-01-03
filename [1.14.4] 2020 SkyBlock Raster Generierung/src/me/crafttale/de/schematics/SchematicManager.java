@@ -27,6 +27,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import me.crafttale.de.Cuboid;
 import me.crafttale.de.Prefixes;
 import me.crafttale.de.SkyBlock;
+import me.crafttale.de.area.IslandProtection;
 import me.crafttale.de.commands.SkyBlockCommandFunction;
 import me.crafttale.de.filemanagement.SkyFileManager;
 import me.crafttale.de.schematics.SchematicReaderAndWriter.BlockProfile;
@@ -79,7 +80,7 @@ public class SchematicManager implements Listener {
 		boolean success = IslandPaster.pasteIsland(p, loc, isGameplay);
 		if(SkyBlockCommandFunction.isCreating.contains(p)) SkyBlockCommandFunction.isCreating.remove(p);
 		p.setGameMode(GameMode.SURVIVAL);
-		p.performCommand("is");
+		IslandProtection.giveSpawnProtection(p, true);
 		return success;
 	}
 	

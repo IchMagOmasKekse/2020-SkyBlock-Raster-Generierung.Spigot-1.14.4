@@ -30,6 +30,7 @@ import me.crafttale.de.area.SpawnToIslandPortal;
 import me.crafttale.de.commands.BroadcasterCommands;
 import me.crafttale.de.commands.SchematicCommands;
 import me.crafttale.de.commands.SkyBlockCommands;
+import me.crafttale.de.display.DisplayManager;
 import me.crafttale.de.economy.PriceSetter;
 import me.crafttale.de.economy.SkyCoinHandler;
 import me.crafttale.de.economy.shops.ShopOpenListener;
@@ -39,6 +40,7 @@ import me.crafttale.de.events.JoinAndQuitListener;
 import me.crafttale.de.events.PlayerDamageListener;
 import me.crafttale.de.events.ServerListListener;
 import me.crafttale.de.filemanagement.SkyFileManager;
+import me.crafttale.de.gadgets.lobby.Spawn;
 import me.crafttale.de.generators.CobbleGeneratorRenewed;
 import me.crafttale.de.generators.SkyWorldGenerator;
 import me.crafttale.de.gui.GUIClicker;
@@ -47,6 +49,8 @@ import me.crafttale.de.infotainment.Broadcaster;
 import me.crafttale.de.inventory.ChestContent;
 import me.crafttale.de.profiles.IslandManager;
 import me.crafttale.de.profiles.PlayerProfiler;
+import me.crafttale.de.profiles.log.XLogger;
+import me.crafttale.de.profiles.log.XLogger.LogType;
 import me.crafttale.de.requests.Request.RequestManager;
 import me.crafttale.de.reward.DailyRewardManager;
 import me.crafttale.de.schematics.ChestGenerator;
@@ -64,11 +68,25 @@ public class SkyBlock extends JavaPlugin {
 	public BukkitRunnable spawn_checker = null;
 	public static SkyBlockAdminTool admintool = null;
 	public static Broadcaster broadcaster = null;
+	public static boolean sendTimeTitleNotification = true;
 	
 	@Override
 	public void onEnable() {
 		instance = this;
-		PlayerProfiler.registerAll();
+		
+		new XLogger();
+
+		getCurrentDate();
+		getCurrentTime();
+		new SkyFileManager(this);
+		
+		/* DIESE REIHENFOLGE MUSS SO BLEIBEN! */
+		Settings.reloadSettings();
+		XLogger.loadSettings();
+		/* REIHENFOLGE ENDE */
+		
+		XLogger.log(LogType.PluginInternProcess, "----------> Enabling...");
+		
 		preInit(); //Benötigte Inhalte werden geladen
 		init(); //Einstellungen werden getätigt
 		postInit(); //Listener, Commands, Craftingrezepte und weitere Additionen werden hinzugefgt
@@ -82,21 +100,26 @@ public class SkyBlock extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
+		XLogger.log(LogType.PluginInternProcess, "----------> Disabling...");
 		if(spawn_checker != null) spawn_checker.cancel();
 		if(broadcaster!= null) broadcaster.stop();
 		PlayerProfiler.unregisterAll();
 		IslandManager.unloadAll();
 		DailyRewardManager.stop();
 		TablistManager.unset();
+		DisplayManager.removeAll();
+		XLogger.save(true);
 	}
 	
 	/*
 	 * TODO: Benötigte Inhalte werden geladen und zum Starten des Plugins breitgestellt
 	 */
 	public void preInit() {
-		new SkyFileManager();
+		XLogger.log(LogType.PluginInternProcess, "----------> Pre-Initialisation-Stuff...");
+		PlayerProfiler.registerAll();
+		
 //		spawn = Bukkit.getWorld("world").getSpawnLocation();
-		spawn = new Location(Bukkit.getWorld("world"), 24, 94, 162, 0, 0);
+		spawn = new Location(Bukkit.getWorld("skyblockworld"), 18.5, 86, 75.5, -90, 0);
 	}
 	
 	/**
@@ -104,11 +127,8 @@ public class SkyBlock extends JavaPlugin {
 	 * @param
 	 */
 	public void init() {
-		if(Bukkit.getWorld(SkyWorld.skyblockworld) == null) {
-			generateSkyBlockWorld();
-		}
-		
-		Settings.reloadSettings();
+		XLogger.log(LogType.PluginInternProcess, "----------> Initialisation-Stuff...");
+		generateSkyBlockWorld();
 		
 		new SkyWorld();//MUSS VOR new SkyBlockgenerator() stehen!!
 		new SkyBlockGenerator();
@@ -126,7 +146,7 @@ public class SkyBlock extends JavaPlugin {
 	 * @param
 	 */
 	public void postInit() {
-		
+		XLogger.log(LogType.PluginInternProcess, "----------> Post-Initialisation-Stuff...");
 		//Tablist Setzten
 		new TablistManager();
 		
@@ -169,6 +189,12 @@ public class SkyBlock extends JavaPlugin {
 		
 		//Shop
 		new ShopOpenListener();
+		
+		//Displays
+		new DisplayManager();
+		
+		//Spawn wird fertiggestellt
+		new Spawn();
 		
 		//Erstelle SkyBock Welt
 		if(generateNewWorld && new File("plugins/SkyBlock/Islands-Databank.yml").exists() == false) {
@@ -281,9 +307,11 @@ public class SkyBlock extends JavaPlugin {
 		WorldCreator cr = new WorldCreator(SkyWorld.skyblockworld);
 		cr.generator(generator);
 		cr.generateStructures(false);
-		for(Player p : Bukkit.getOnlinePlayers()) p.sendMessage("§eSkyWorld Wird generiert...");
+		XLogger.log(LogType.PluginInternProcess, "§eSkyWorld Wird generiert...");
 		Bukkit.getConsoleSender().sendMessage("§eSkyWorld Wird generiert...");
+		for(Player p : Bukkit.getOnlinePlayers()) p.sendMessage("§eSkyWorld Wird generiert...");
 		Bukkit.createWorld(cr);
+		XLogger.log(LogType.PluginInternProcess, "§eSkyWorld Wurde generiert!");
 		Bukkit.getConsoleSender().sendMessage("§eSkyWorld Wurde generiert!");
 		for(Player p : Bukkit.getOnlinePlayers()) p.sendMessage("§eSkyWorld Wurde generiert!");
 		generateNewWorld = true;
@@ -418,6 +446,29 @@ public class SkyBlock extends JavaPlugin {
 		return SkyBlockAdminTool.isGenerated;
 	}
 	
+	private static String trigger_1 = "23:59:59";
+	private static String trigger_2 = "00:00:00";
+	public static String current_time = "";
+	public static String current_date = "";
+	public static void sendTimeTitleNotification() {
+		/**
+		 * Log Speichern.
+		 */
+		if(current_time.equals("00:00:00")) XLogger.save();
+		
+		if(current_time.equals(trigger_1) && sendTimeTitleNotification) {
+			XLogger.log(LogType.PluginInternProcess, "Time-Title-Notification wird versendet!");
+			for(Player p : Bukkit.getOnlinePlayers()) {
+				p.sendTitle("§a"+current_date, "§b"+current_time, 0, 40, 0);
+			}
+		}else if(current_time.equals(trigger_2)){
+				for(Player p : Bukkit.getOnlinePlayers()) {
+					p.sendTitle("§a"+current_date, "§b"+current_time, 0, 40, 60);
+				}
+				sendTimeTitleNotification = false;
+		}else sendTimeTitleNotification = true;
+	}
+	
 	/**
 	 * Gibt die Aktuelle Uhrzeit in einem String zurück
 	 * @return
@@ -425,6 +476,7 @@ public class SkyBlock extends JavaPlugin {
 	public static String getCurrentTime() {
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
 		LocalDateTime now = LocalDateTime.now();
+		current_time = dtf.format(now);
 		return dtf.format(now);
 	}
 	public static String getCurrentSeconds() {
@@ -450,6 +502,7 @@ public class SkyBlock extends JavaPlugin {
 	public static String getCurrentDate() {
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 		LocalDateTime now = LocalDateTime.now();
+		current_date = dtf.format(now);
 		return dtf.format(now);
 	}
 	

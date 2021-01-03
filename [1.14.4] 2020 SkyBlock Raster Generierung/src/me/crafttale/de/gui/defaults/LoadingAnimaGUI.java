@@ -11,8 +11,21 @@ import me.crafttale.de.gui.GUIManager;
 
 public class LoadingAnimaGUI extends GUI {
 
+	public String subtitle = "§oLädt";
+	public String subtitleFinished = "100%";
+	public String subtitleClosing = "";
+	
 	public LoadingAnimaGUI(Player player) {
 		super(player, GUIType.LOADING_ANIMA);
+		loop = true;
+		maxFrames = 3;
+	}
+	
+	public LoadingAnimaGUI(Player player, String subtitle, String subtitleFinished, String subtitleClosing) {
+		super(player, GUIType.LOADING_ANIMA);
+		this.subtitle= subtitle;
+		this.subtitleFinished = subtitleFinished;
+		this.subtitleClosing = subtitleClosing;
 		loop = true;
 		maxFrames = 3;
 	}
@@ -26,19 +39,19 @@ public class LoadingAnimaGUI extends GUI {
 			public void run() {
 				switch(frame) {
 				case 0:
-					player.sendTitle("§fO§7oo", "§oLädt", 0, (int)speed+10, 0);
+					player.sendTitle("§fO§7oo", subtitle, 0, (int)speed+10, 0);
 					nextFrame();
 					break;
 				case 1:
-					player.sendTitle("§7o§fO§7o", "§oLädt", 0, (int)speed+10, 0);
+					player.sendTitle("§7o§fO§7o", subtitle, 0, (int)speed+10, 0);
 					nextFrame();
 					break;
 				case 2:
-					player.sendTitle("§7oo§fO", "§oLädt", 0, (int)speed+10, 0);
+					player.sendTitle("§7oo§fO", subtitle, 0, (int)speed+10, 0);
 					nextFrame();
 					break;
 				case 3:
-					player.sendTitle("§7o§fO§7o", "§oLädt", 0, (int)speed+10, 0);
+					player.sendTitle("§7o§fO§7o", subtitle, 0, (int)speed+10, 0);
 					if(stopAnimation)nextFrame();
 					else frame = 0;
 					break;
@@ -48,7 +61,7 @@ public class LoadingAnimaGUI extends GUI {
 							frame = 0;
 						}else {
 							stop();
-							player.sendTitle("", "", 0, (int)speed+10, 0);
+							player.sendTitle("", subtitleFinished, 0, (int)speed+10, 0);
 							GUIManager.closeGUI(player);
 						}
 						break;
@@ -57,13 +70,19 @@ public class LoadingAnimaGUI extends GUI {
 		};
 		animator.runTaskTimer(SkyBlock.getSB(), 0l, speed);
 	}
+	
+	public void loadingFinished() {
+		player.sendTitle("", subtitleFinished, 0, (int)speed+10, 10);
+		loop = false;
+		frame = 4;
+	}
 
 	@Override
 	public void stop() {
 		this.stopAnimation = true;
 		if(animator == null) return;
 		else animator.cancel();
-		player.sendTitle("", "100%", 0, (int)speed+10, 0);
+		player.sendTitle("", subtitleClosing, 0, (int)speed+10, 10);
 	}
 
 	@Override

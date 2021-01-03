@@ -18,7 +18,10 @@ import me.crafttale.de.Chat.MessageType;
 import me.crafttale.de.Cuboid;
 import me.crafttale.de.SkyBlock;
 import me.crafttale.de.filemanagement.SkyFileManager;
+import me.crafttale.de.gui.GUIManager;
+import me.crafttale.de.gui.defaults.LoadingAnimaGUI;
 import me.crafttale.de.profiles.PlayerProfiler;
+import me.crafttale.de.waitlobby.WaitLobby;
 import net.minecraft.server.v1_16_R3.BlockPosition;
 import net.minecraft.server.v1_16_R3.ChunkSection;
 import net.minecraft.server.v1_16_R3.IBlockData;
@@ -75,7 +78,8 @@ public class IslandPaster {
 		case 0:
 			/* Stone-Layer */
 			
-			SkyBlock.sendMessage(MessageType.NONE, p, "Generiere Stein-Ebene...");
+			if(GUIManager.getGUI(p) instanceof LoadingAnimaGUI) ((LoadingAnimaGUI)GUIManager.getGUI(p)).subtitle = "Generiere Stein-Ebene...";
+			else SkyBlock.sendMessage(MessageType.NONE,  p, "Generiere Stein-Ebene...");
 			
 			fill(c.getPoint1(), c.getPoint2(), Material.STONE, 100);
 			
@@ -83,7 +87,8 @@ public class IslandPaster {
 		case 1:
 			/* Blackstone-Layer */
 			
-			SkyBlock.sendMessage(MessageType.NONE, p, "Generiere Schwarzstein-Ebene...");
+			if(GUIManager.getGUI(p) instanceof LoadingAnimaGUI) ((LoadingAnimaGUI)GUIManager.getGUI(p)).subtitle = "Generiere Schwarzstein-Ebene...";
+			else SkyBlock.sendMessage(MessageType.NONE,  p, "Generiere Schwarzstein-Ebene...");
 			
 			fill(c.getPoint1().add(0, 0, 0), c.getPoint2().add(0, -total_layers, 0), Material.BLACKSTONE, 100);
 			
@@ -92,7 +97,8 @@ public class IslandPaster {
 			
 			/* Dirt-Layer */
 			
-			SkyBlock.sendMessage(MessageType.NONE, p, "Generiere Dirt-Ebene...");
+			if(GUIManager.getGUI(p) instanceof LoadingAnimaGUI) ((LoadingAnimaGUI)GUIManager.getGUI(p)).subtitle = "Generiere Dirt-Ebene...";
+			else SkyBlock.sendMessage(MessageType.NONE,  p, "Generiere Dirt-Ebene...");
 			
 			l = c.getPoint1();
 			l.setY(c.getPoint2().getY()-(dirt_layers-1));
@@ -108,7 +114,8 @@ public class IslandPaster {
 			
 			/* Grass-Layer */
 			
-			SkyBlock.sendMessage(MessageType.NONE, p, "Generiere Grassblock-Ebene...");
+			if(GUIManager.getGUI(p) instanceof LoadingAnimaGUI) ((LoadingAnimaGUI)GUIManager.getGUI(p)).subtitle = "Generiere Grassblock-Ebene...";
+			else SkyBlock.sendMessage(MessageType.NONE,  p, "Generiere Grassblock-Ebene...");
 			
 			l = c.getPoint1();
 			l.setY(c.getPoint2().getY());
@@ -120,7 +127,8 @@ public class IslandPaster {
 			
 			/* Ore-Layer */
 			
-			SkyBlock.sendMessage(MessageType.NONE, p, "Generiere Erze...");
+			if(GUIManager.getGUI(p) instanceof LoadingAnimaGUI) ((LoadingAnimaGUI)GUIManager.getGUI(p)).subtitle = "Generiere Erze...";
+			else SkyBlock.sendMessage(MessageType.NONE,  p, "Generiere Erze...");
 
 			for(Material mat : ores.keySet()) {
 				for(int i = 0; i != ores.get(mat); i++) {
@@ -136,7 +144,8 @@ public class IslandPaster {
 			/* Flora-Layer */
 			
 			if(grow_flora) {
-				SkyBlock.sendMessage(MessageType.NONE, p, "Generiere Flora...");
+				if(GUIManager.getGUI(p) instanceof LoadingAnimaGUI) ((LoadingAnimaGUI)GUIManager.getGUI(p)).subtitle = "Generiere Flora...";
+				else SkyBlock.sendMessage(MessageType.NONE,  p, "Generiere Flora...");
 				
 				int chance_for_nothing = 10; // Chance dass Anstatt Pflanzen halt Luft platziert wird.
 				
@@ -172,7 +181,8 @@ public class IslandPaster {
 			
 			/* Tree&Chest-Layer */
 			
-			SkyBlock.sendMessage(MessageType.NONE, p, "Generiere Baum- und Kisten-Ebene...");
+			if(GUIManager.getGUI(p) instanceof LoadingAnimaGUI) ((LoadingAnimaGUI)GUIManager.getGUI(p)).subtitle = "Generiere Baum- und Kisten-Ebene...";
+			else SkyBlock.sendMessage(MessageType.NONE,  p, "Generiere Baum- und Kisten-Ebene...");
 			
 			ArrayList<Block> scanned = scanFor(c, "BEDROCK");
 			
@@ -229,7 +239,8 @@ public class IslandPaster {
 			
 			step+=1;
 			default:
-				SkyBlock.sendMessage(MessageType.NONE, p, "§aGeneration abgeschlossen.");
+				SkyBlock.sendMessage(MessageType.NONE, p, "§aGenerierung abgeschlossen.");
+				WaitLobby.takeOutFromWaitingLobby(p, SkyFileManager.getPlayerDefinedIslandSpawn(p));
 		}
 		return true;
 	}

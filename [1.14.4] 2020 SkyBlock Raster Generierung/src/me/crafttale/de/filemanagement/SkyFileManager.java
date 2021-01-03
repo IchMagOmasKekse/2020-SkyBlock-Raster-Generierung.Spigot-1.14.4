@@ -25,6 +25,7 @@ import me.crafttale.de.Settings;
 import me.crafttale.de.SkyBlock;
 import me.crafttale.de.SkyBlockGenerator;
 import me.crafttale.de.profiles.IslandManager;
+import me.crafttale.de.profiles.IslandManager.IslandData;
 import me.crafttale.de.profiles.PlayerProfiler;
 
 public class SkyFileManager {
@@ -33,7 +34,7 @@ public class SkyFileManager {
 //	private static File island_index_File = new File("plugins/SkyBlock/Insel-Index-File.yml");
 	private static ArrayList<String> emptylist = new ArrayList<String>();
 
-	public SkyFileManager() {
+	public SkyFileManager(SkyBlock sb) {
 		SkyBlock.getSB().saveResource("Insel-Index-File.yml", false);
 		SkyBlock.getSB().saveResource("config.yml", false);
 	}
@@ -392,10 +393,20 @@ public class SkyFileManager {
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(index);
 		if(island_id > cfg.getInt("Islands.Amount Generated")) return null;
 		
-		Location loc = new Location(Bukkit.getWorld(SkyBlockGenerator.skyworldName),
-				cfg.getDouble("Islands.ID-"+island_id+".LocX"),
-						SkyBlockGenerator.islandHeight,
-						cfg.getDouble("Islands.ID-"+island_id+".LocZ"));
+		Location loc = null;
+		
+		if(island_id == 0) {
+			/*  */
+			loc = new Location(Bukkit.getWorld(SkyBlockGenerator.skyworldName),
+					cfg.getDouble("Islands.ID-"+island_id+".LocX"),
+							SkyBlockGenerator.islandHeight,
+							cfg.getDouble("Islands.ID-"+island_id+".LocZ"));
+		}else {
+			loc = new Location(Bukkit.getWorld(SkyBlockGenerator.skyworldName),
+					cfg.getDouble("Islands.ID-"+island_id+".LocX"),
+							SkyBlockGenerator.islandHeight,
+							cfg.getDouble("Islands.ID-"+island_id+".LocZ"));
+		}
 		return loc;
 	}
 	/**
@@ -524,6 +535,96 @@ public class SkyFileManager {
 	}
 	
 	/**
+	 * Methode für den /isc Befehl.
+	 * 
+	 * Setzt einen neuen Besitzer einer Insel oder entfernt ihn.
+	 * @param island_id
+	 * @param uuid
+	 */
+	public static boolean EDITsetIslandOwner(int island_id, String uuid) {
+		File file = new File("plugins/SkyBlock/Insel-Index-File.yml");
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+		
+		int prev_id = getIslandID(uuid);
+		
+		if(uuid == null ||uuid.equalsIgnoreCase("null")) {
+			cfg.set("Islands.ID-"+prev_id+".Claimed", false);
+			cfg.set("Islands.ID-"+prev_id+".Owner UUID", "none");
+			
+			cfg.set("Islands.ID-"+island_id+".Claimed", false);
+			cfg.set("Islands.ID-"+island_id+".Owner UUID", "none");
+		}else if(uuid.toString().equals(cfg.getString("Islands.ID-"+island_id+".Owner UUID")) == false){
+			cfg.set("Islands.ID-"+prev_id+".Owner UUID", "none");
+			cfg.set("Islands.ID-"+island_id+".Owner UUID", uuid);
+		}
+		try { cfg.save(file); } catch (IOException e) { e.printStackTrace(); }
+		
+		file = new File("plugins/SkyBlock/Inseln/"+uuid+"-Insel.yml");
+		cfg = YamlConfiguration.loadConfiguration(file);
+		
+		if(uuid == null) {
+			cfg.set("Islands", island_id);
+			cfg.set("Islands.Owner UUID", "none");
+		}else if(uuid.toString().equals(cfg.getString("Islands.ID.Owner UUID")) == false){
+			cfg.set("Islands.Owner UUID", uuid);
+		}
+		try { cfg.save(file); } catch (IOException e) { e.printStackTrace(); }
+		
+		if(IslandManager.getProfile(uuid) != null) IslandManager.getProfile(uuid).reload();
+		IslandManager.getIslandData(island_id).reloadData();
+		
+		return true;
+	}
+	
+	/**
+	 * Methode für den /isc Befehl.
+	 * 
+	 * Bearbeitet die Liste der verbannten Spieler
+	 * @param island_id
+	 * @param uuid
+	 */
+	public static boolean EDITsetBannedPlayers(int island_id, UUID owner, ArrayList<String> uuids) {
+		File file = new File("plugins/SkyBlock/Inseln/"+owner.toString()+"-Insel.yml");
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+		
+		cfg.set("Islands.ID-"+island_id+".Banned Players", uuids);
+		
+		try { cfg.save(file); } catch (IOException e) { e.printStackTrace(); }
+		return true;
+	}
+	
+	/**
+	 * Methode für den /isc Befehl.
+	 * 
+	 * Bearbeitet die Liste der Member
+	 * @param island_id
+	 * @param uuid
+	 */
+	public static boolean EDITsetMembers(int island_id, UUID owner, ArrayList<String> uuids) {
+		File file = new File("plugins/SkyBlock/Inseln/"+owner.toString()+"-Insel.yml");
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+		
+		cfg.set("Islands.ID-"+island_id+".Members", uuids);
+		
+		try { cfg.save(file); } catch (IOException e) { e.printStackTrace(); }
+		return true;
+	}
+	
+	/**
+	 * Methode für den /isc Befehl.
+	 * 
+	 * Bearbeitet eine Insel-Eigenschaft
+	 * @param island_id
+	 * @param uuid
+	 */
+	public static boolean EDITProperty(int island_id, String property, Object value) {
+		IslandData data = IslandManager.getIslandData(island_id);
+		if(data == null || data.getSettings() == null) return false;
+		else data.getSettings().edit(property, value, null);
+		return true;
+	}
+	
+	/**
 	 * Setzt den Spielerspawn neu
 	 * @param owner
 	 * @param loc
@@ -613,6 +714,10 @@ public class SkyFileManager {
 				try {
 					cfg2.save(index);
 					IslandManager.clearIsland(runs, owner, id);
+					IslandManager.getIslandData(id).reloadData();
+					IslandManager.getProfile(owner).deleteAllMembers();
+					
+					IslandManager.unloadProfile(owner);
 					owner.sendMessage(Prefixes.SERVER.px()+"§aDeine Insel wurde gelöscht");
 					return true;
 				} catch (IOException e) {
@@ -655,9 +760,11 @@ public class SkyFileManager {
 	 * @return
 	 */
 	public static boolean isMemberOfAnIsland(UUID uuid) {
-		File file = new File("plugins/SkyBlock/Inseln/"+uuid+"-Insel.yml");
+//		SkyBlock.sendMessage(MessageType.INFO, "UUID = "+uuid);
+		File file = new File("plugins/SkyBlock/Inseln/"+uuid.toString()+"-Insel.yml");
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 		if(file.exists() == false) return false;
+		else if(uuid.toString() == null) return false;
 		else return !(cfg.getString("Islands.Owner UUID").equals(uuid.toString()));
 	}
 	/**

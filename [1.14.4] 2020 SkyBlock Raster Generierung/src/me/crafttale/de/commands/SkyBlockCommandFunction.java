@@ -12,8 +12,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import me.crafttale.de.Chat;
-import me.crafttale.de.PlayerAtlas;
 import me.crafttale.de.Chat.MessageType;
+import me.crafttale.de.PlayerAtlas;
 import me.crafttale.de.Prefixes;
 import me.crafttale.de.Settings;
 import me.crafttale.de.SkyBlock;
@@ -28,6 +28,7 @@ import me.crafttale.de.requests.Request;
 import me.crafttale.de.requests.Request.RequestManager;
 import me.crafttale.de.requests.VisitRequest;
 import me.crafttale.de.schematics.SchematicManager;
+import me.crafttale.de.waitlobby.WaitLobby;
 
 public class SkyBlockCommandFunction {
 	
@@ -195,30 +196,42 @@ public class SkyBlockCommandFunction {
 	 * @return
 	 */
 	public static boolean teleportToIsland(Player p) {
-		if(SkyBlock.hasPermission(p, "skyblock.island")) {//Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)	
-			if(SkyFileManager.isMemberOfAnIsland(PlayerProfiler.getUUID(p))) {
-				IslandManager.loadProfile(p);//TODO: Muss Membering-Insel laden
-				if(p.getGameMode() == GameMode.ADVENTURE) p.setGameMode(GameMode.SURVIVAL);
-				
-				Location loc = null;
-				if(SkyFileManager.getPlayerDefinedIslandSpawn(p) != null) loc = SkyFileManager.getPlayerDefinedIslandSpawn(p);
-				else loc = SkyFileManager.getLocationOfIsland(p);
-				
-				p.teleport(loc);
-			}else {				
-				if(SkyFileManager.hasIsland(p)) {
-					IslandManager.loadProfile(p);
-					Location loc = null;
-					if(SkyFileManager.getPlayerDefinedIslandSpawn(p) != null) loc = SkyFileManager.getPlayerDefinedIslandSpawn(p);
-					else loc = SkyFileManager.getLocationOfIsland(p);
-					
-					if(p.getGameMode() == GameMode.ADVENTURE) p.setGameMode(GameMode.SURVIVAL);
-					p.teleport(loc);
-					if(p.isOp() == false && p.hasPermission("skyblock.island.gamemode.bypass") == false) p.setGameMode(GameMode.SURVIVAL); 
-					SkyBlock.spawnFireworks(p.getLocation(), 1, true, false, Type.BURST, Color.LIME);
-				}else p.performCommand("is create");
+		if(p.hasPermission("skyblock.island")) if(p.getGameMode() == GameMode.ADVENTURE) p.setGameMode(GameMode.SURVIVAL);
+		new BukkitRunnable() {
+			Location loc = null;
+			
+			@Override
+			public void run() {				
+				if(SkyBlock.hasPermission(p, "skyblock.island")) {//Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)	
+					if(SkyFileManager.isMemberOfAnIsland(PlayerProfiler.getUUID(p))) {
+						IslandManager.loadProfile(p);//TODO: Muss Membering-Insel laden
+						
+						if(SkyFileManager.getPlayerDefinedIslandSpawn(p) != null) loc = SkyFileManager.getPlayerDefinedIslandSpawn(p);
+						else loc = SkyFileManager.getLocationOfIsland(p);
+						
+						new BukkitRunnable() { @Override public void run() { p.teleport(loc); } }.runTask(SkyBlock.getSB());
+						
+					}else {				
+						if(SkyFileManager.hasIsland(p)) {
+							IslandManager.loadProfile(p);
+							new BukkitRunnable() {
+								@Override public void run() {
+									if(SkyFileManager.getPlayerDefinedIslandSpawn(p) != null) loc = SkyFileManager.getPlayerDefinedIslandSpawn(p);
+									else loc = SkyFileManager.getLocationOfIsland(p);
+									
+									if(p.getGameMode() == GameMode.ADVENTURE) p.setGameMode(GameMode.SURVIVAL);
+									p.teleport(loc);
+									if(p.isOp() == false && p.hasPermission("skyblock.island.gamemode.bypass") == false) p.setGameMode(GameMode.SURVIVAL); 
+									SkyBlock.spawnFireworks(p.getLocation(), 1, true, false, Type.BURST, Color.LIME);
+								}
+							}.runTask(SkyBlock.getSB());
+						}else {
+							new BukkitRunnable() { @Override public void run() { p.performCommand("is create"); } }.runTask(SkyBlock.getSB());
+						}
+					}
+				}
 			}
-		}
+		}.runTaskAsynchronously(SkyBlock.getSB());
 		return true;
 	}
 	
@@ -242,30 +255,52 @@ public class SkyBlockCommandFunction {
 				p.sendMessage(Prefixes.SERVER.px()+"Du besitzt bereits eine Insel");
 				p.sendMessage(Prefixes.SERVER.px()+"Du wurdest zu deiner Insel teleportiert");
 			}else {
-				int id = SkyFileManager.getUnclaimedIslandID(false);
-				SkyFileManager.claimIsland(id, p, p);
-				p.sendMessage(Prefixes.SERVER.px()+"§aDeine Insel wurde erfolgreich erstellt");
-				p.sendMessage(Prefixes.SERVER.px()+"Du hast die Insel Nummer §b"+id+"§7!");
+				WaitLobby.sendToWaitingLobby(p);
+				p.sendMessage(Prefixes.SERVER.px()+"§aReservierung Deiner Insel läuft..");
+
 				
-				is_loc = new Location(SkyFileManager.getWorld(PlayerProfiler.getUUID(p).toString()),
-						SkyFileManager.getLocationX(PlayerProfiler.getUUID(p).toString()),
-						SkyBlockGenerator.islandHeight,
-						SkyFileManager.getLocationZ(PlayerProfiler.getUUID(p).toString()));
-				
-				p.sendMessage(Prefixes.SERVER.px()+"§aInsel wird generiert...");
-				
-				/* PlayerSpawn korrekt setzen */
-				Location spawn = is_loc.clone();
-				spawn.setY(SkyBlockGenerator.islandHeight+1);
-				SkyFileManager.setPlayerDefinedIslandSpawn(p, spawn);
-				/* -------------------------- */
-				
-				SchematicManager.pasteSchematicAt(is_loc, p, island_schematic_name, true);
+				LoadingAnimaGUI lGui = new LoadingAnimaGUI(p, "§oInsel wird Reserviert...", "§aReservierung erfolgreich!", "§aReservierung erfolgreich!");
+				GUIManager.openGUI(p, lGui);
+				new BukkitRunnable() {
+					
+					@Override
+					public void run() {
+						int id = SkyFileManager.getUnclaimedIslandID(false);
+						SkyFileManager.claimIsland(id, p, p);
+						p.sendMessage(Prefixes.SERVER.px()+"§aDeine Insel wurde erfolgreich beansprucht");
+						p.sendMessage(Prefixes.SERVER.px()+"Du hast die Insel Nummer §b"+id+"§7!");
+						
+						Location is_loc = new Location(SkyFileManager.getWorld(PlayerProfiler.getUUID(p).toString()),
+								SkyFileManager.getLocationX(PlayerProfiler.getUUID(p).toString()),
+								SkyBlockGenerator.islandHeight,
+								SkyFileManager.getLocationZ(PlayerProfiler.getUUID(p).toString()));
+						
+						p.sendMessage(Prefixes.SERVER.px()+"§aInsel wird generiert...");
+						
+						/* PlayerSpawn korrekt setzen */
+						Location spawn = is_loc.clone();
+						spawn.setY(SkyBlockGenerator.islandHeight+1);
+						SkyFileManager.setPlayerDefinedIslandSpawn(p, spawn);
+						/* -------------------------- */
+						
+//						lGui.loadingFinished();
+						
+						new BukkitRunnable() {
+							@Override public void run() {
+								GUIManager.closeGUI(p);
+								SchematicManager.pasteSchematicAt(is_loc, p, island_schematic_name, true);
+								IslandManager.loadProfile(p);		
+								if(is_loc.getBlock().getType().isSolid() == false && is_loc.clone().add(0,-1,0).getBlock().getType().isSolid() == false) is_loc.getBlock().setType(Material.STONE);
+							}
+						}.runTaskLater(SkyBlock.getSB(), 2*20l);
+					}
+				}.runTaskAsynchronously(SkyBlock.getSB());
 				
 			}
-			IslandManager.loadProfile(p);
-			
-			if(is_loc.getBlock().getType().isSolid() == false && is_loc.clone().add(0,-1,0).getBlock().getType().isSolid() == false) is_loc.getBlock().setType(Material.STONE);
+			if(is_loc != null) {				
+				IslandManager.loadProfile(p);		
+				if(is_loc.getBlock().getType().isSolid() == false && is_loc.clone().add(0,-1,0).getBlock().getType().isSolid() == false) is_loc.getBlock().setType(Material.STONE);
+			}
 //			p.setGameMode(GameMode.SPECTATOR);
 //			p.teleport(is_loc);
 		}
@@ -278,7 +313,8 @@ public class SkyBlockCommandFunction {
 	 * @param p
 	 */
 	public static void sendAllClaimedIsland(Player p, int page) {
-		GUIManager.openGUI(p, new LoadingAnimaGUI(p));
+		LoadingAnimaGUI lGui = new LoadingAnimaGUI(p, "§oLade besetzte Inseln...", "§a100%", "§a100%");
+		GUIManager.openGUI(p, lGui);
 		new BukkitRunnable() {
 			
 			@Override
@@ -307,6 +343,7 @@ public class SkyBlockCommandFunction {
 					SkyBlock.sendMessage(MessageType.INFO, p, amount+" Insel*n vergeben auf dieser Seite(Alle Seiten zsm. beinhalten "+amount_total+")");
 					Chat.sendClickableMessage(p, "§aNächste Seite", "Klicke um die Nächste Seite zu öffnen", "/claimed "+(page+1), false, true);
 				}
+				lGui.loadingFinished();
 				new BukkitRunnable() { @Override public void run() { GUIManager.closeGUI(p); } }.runTask(SkyBlock.getSB());
 			}
 		}.runTaskAsynchronously(SkyBlock.getSB());
@@ -317,7 +354,8 @@ public class SkyBlockCommandFunction {
 	 * @param p
 	 */
 	public static void sendAllUnclaimedIsland(Player p, int page) {
-		GUIManager.openGUI(p, new LoadingAnimaGUI(p));
+		LoadingAnimaGUI lGui = new LoadingAnimaGUI(p, "§oLade unbesetzte Inseln...", "§a100%", "§a100%");
+		GUIManager.openGUI(p, lGui);
 		new BukkitRunnable() {
 			
 			@Override
@@ -346,6 +384,7 @@ public class SkyBlockCommandFunction {
 					SkyBlock.sendMessage(MessageType.INFO, p, amount+" Insel*n verfügbar auf dieser Seite(Alle Seiten zsm. beinhalten "+amount_total+")");
 					Chat.sendClickableMessage(p, "§aNächste Seite", "Klicke um die Nächste Seite zu öffnen", "/unclaimed "+(page+1), false, true);
 				}
+				lGui.loadingFinished();
 				new BukkitRunnable() { @Override public void run() { GUIManager.closeGUI(p); } }.runTask(SkyBlock.getSB());
 			}
 		}.runTaskAsynchronously(SkyBlock.getSB());

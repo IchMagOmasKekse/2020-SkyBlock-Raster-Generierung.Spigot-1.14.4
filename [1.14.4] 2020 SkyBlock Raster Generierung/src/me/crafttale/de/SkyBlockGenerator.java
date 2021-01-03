@@ -11,8 +11,8 @@ import org.bukkit.entity.Player;
 public class SkyBlockGenerator {
 	
 	private static ConcurrentLinkedQueue<Location> locs = new ConcurrentLinkedQueue<Location>();
-	public static int issize = 200; // Verhältnis 1:1 ; Angegeben in Blöcken
-	public static int amountOfIslands = 1500;
+	public static int issize = 200; // Verhältnis 1:1 ; Angegeben in Blöcken(Durchmesser)
+	public static int amountOfIslands = 2500;
 	public static int spaceBetweenIslands = 25; //Verhältnis 1:1 ; Angegeben in Blöcken
 	public static int default_issize = 400; //NICHT VERÄNDERN! // Verhältnis 1:1 ; Angegeben in Blöcken
 	public static int default_amountOfIslands = 500; //NICHT VERÄNDERN!
@@ -65,47 +65,47 @@ public class SkyBlockGenerator {
 		int addy1 = 1; //â†“
 		int addx2 = 2; //â†’
 		int addy2 = 0; //â†‘
-		while(left < (default_amountOfIslands+1) || pause == true) {
+		while(left < (amountOfIslands+1) || pause == true) {
 			
 			if(round==0) {
 				addIsland(curx, curz, left);
 				left++;
 			}
 			
-			if(left < (default_amountOfIslands+1)) { //â†‘
+			if(left < (amountOfIslands+1)) { //â†‘
 				for(int a = 0; a != addy2; a++) {
-					if(left < (default_amountOfIslands+1)) {						
-						curz-=(default_issize+default_spaceBetweenIslands);
+					if(left < (amountOfIslands+1)) {						
+						curz-=(issize+spaceBetweenIslands);
 						addIsland(curx, curz, left);
 						left++;
 					}else break;
 				}
 			}
 			
-			if(left < (default_amountOfIslands+1)) { //â†§
+			if(left < (amountOfIslands+1)) { //â†§
 				for(int a = 0; a != addx1; a++) {
-					if(left < (default_amountOfIslands+1)) {						
-						curx-=(default_issize+default_spaceBetweenIslands);
+					if(left < (amountOfIslands+1)) {						
+						curx-=(issize+spaceBetweenIslands);
 						addIsland(curx, curz, left);
 						left++;
 					}else break;
 				}			
 			}
 			
-			if(left < (default_amountOfIslands+1)) { //â†“
+			if(left < (amountOfIslands+1)) { //â†“
 				for(int a = 0; a != addy1; a++) {
-					if(left < (default_amountOfIslands+1)) {						
-						curz+=(default_issize+default_spaceBetweenIslands);
+					if(left < (amountOfIslands+1)) {						
+						curz+=(issize+spaceBetweenIslands);
 						addIsland(curx, curz, left);
 						left++;
 					}else break;
 				}	
 			}
 			
-			if(left < (default_amountOfIslands+1)) { //â†’
+			if(left < (amountOfIslands+1)) { //â†’
 				for(int a = 0; a != addx2; a++) {
-					if(left < (default_amountOfIslands+1)) {
-						curx+=(default_issize+default_spaceBetweenIslands);
+					if(left < (amountOfIslands+1)) {
+						curx+=(issize+spaceBetweenIslands);
 						addIsland(curx, curz, left);
 						left++;
 					}else break;

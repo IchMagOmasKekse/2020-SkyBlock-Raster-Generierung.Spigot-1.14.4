@@ -22,12 +22,14 @@ import me.crafttale.de.SkyBlockGenerator;
 import me.crafttale.de.economy.EconomyManager;
 import me.crafttale.de.economy.SkyCoinHandler;
 import me.crafttale.de.filemanagement.SkyFileManager;
+import me.crafttale.de.gadgets.lobby.Spawn;
 import me.crafttale.de.gui.GUI.GUIType;
 import me.crafttale.de.gui.GUIManager;
 import me.crafttale.de.gui.reward.RewardGUI;
 import me.crafttale.de.profiles.PlayerProfiler;
 import me.crafttale.de.reward.DailyRewardManager;
 import me.crafttale.de.tablist.TablistManager;
+import me.crafttale.de.waitlobby.WaitLobby;
 
 public class JoinAndQuitListener implements Listener {
 	
@@ -52,6 +54,7 @@ public class JoinAndQuitListener implements Listener {
 				PlayerProfiler.registerPlayer(e.getPlayer());
 				PlayerAtlas.savePlayer(e.getPlayer());
 				runnables.remove(e.getPlayer().getName()+"1");
+				WaitLobby.hideExtraPlayer(e.getPlayer());
 			}
 		});
 		runnables.get(e.getPlayer().getName()+"1").runTaskAsynchronously(SkyBlock.getSB());
@@ -100,12 +103,13 @@ public class JoinAndQuitListener implements Listener {
 			runnables.get(player.getName()+"2").runTaskLater(SkyBlock.getSB(), 15l);
 		}
 		TablistManager.editTablist(player);
-		
+		e.getPlayer().teleport(Spawn.getRandomLocationInSpawnArea());
 		
 		
 		/* Join Effects */
 //		SkyBlock.spawnFireworks(player.getLocation().clone(), 1, true, true, Type.BALL_LARGE);
 //		GUIManager.openGUI(player, new JoinMelodyGUI(player));
+		if(player.getName().equals("IchMagOmasKekse")) player.sendMessage("Island Control Commands machen!");
 	}
 	
 	@EventHandler

@@ -11,6 +11,8 @@ import me.crafttale.de.SkyBlock;
 import me.crafttale.de.economy.SkyCoinHandler;
 import me.crafttale.de.gui.GUI;
 import me.crafttale.de.gui.GUIManager;
+import me.crafttale.de.profiles.log.XLogger;
+import me.crafttale.de.profiles.log.XLogger.LogType;
 import me.crafttale.de.reward.DailyRewardManager;
 
 public class RewardGUI extends GUI {
@@ -248,6 +250,7 @@ public class RewardGUI extends GUI {
 				item.hasItemMeta() &&
 				item.getItemMeta().hasDisplayName() &&
 				item.getItemMeta().getDisplayName().equals(reward_displayname)) {
+			XLogger.log(LogType.PluginInternProcess, player.getName()+" -> Tägliche Belohnung wurde eingesammelt");
 			SkyCoinHandler.addJoinCoins(player);
 			GUIManager.closeGUI(player);
 			DailyRewardManager.registerPlayerHasGotDailyReward(player);

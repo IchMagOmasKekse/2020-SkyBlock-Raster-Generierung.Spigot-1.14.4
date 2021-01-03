@@ -11,11 +11,13 @@ import net.md_5.bungee.api.ChatColor;
 
 public class Settings {
 	
+	/* Random */
 	private static int islandsPerPage = 19; //Die Anzahl an Inseln, die bei /unclaimed und /claimed angezeigt werden. Maximal 99!
 	private static boolean decreaseAmountClaimedAfterDeletedIsland = false;
 	private static boolean isMaintenance = false; //Gibt an, ob der Server gerade von einem Developer berarbeitet wird
 	private static boolean respawnAtIslandIFDiedInSkyBlock = true; //Gibt an, ob der Spieler auf seiner Insel respawnt, nachdem er von ihr heruntergefallen ist
 	private static boolean allowTraderSpawnOnIsland = true; //Gibt an, ob Händler(mit Lamas) auf der Insel spawnen darf
+	/* Economy */
 	private static int start_money1 = 0; //Startmoney: Money1
 	private static int start_money2 = 0; //Startmoney: Money2
 	private static int start_money3 = 0; //Startmoney: Money3
@@ -46,6 +48,14 @@ public class Settings {
 	/* Chat */
 	public static String chat_seperator = "";
 	public static String chat_format = "";
+	/* XLogger */
+	public static boolean xloggerAutoSave = true;
+	public static int xloggerAutoSaveAt = 5000;
+	public static boolean xloggerLogDate = true;
+	public static boolean xloggerLogCommandUsage = true;
+	public static boolean xloggerLogChatMessage = true;
+	public static boolean xloggerLogDebugMessage = true;
+	public static boolean xloggerLogPluginInternProcesses = true;
 	
 	public static void reloadSettings() {
 		File file = new File("plugins/SkyBlock/config.yml");
@@ -79,6 +89,15 @@ public class Settings {
 				
 		chat_seperator = ChatColor.translateAlternateColorCodes('&', cfg.getString("Chat.Chat Seperator"));
 		chat_format = ChatColor.translateAlternateColorCodes('&', cfg.getString("Chat.Chat Format")).replace("{CHAT_SEPERATOR}", chat_seperator).replace("{RANK_SEPERATOR}", TablistManager.pxToPlayernameSeperator);
+		
+		xloggerAutoSave = cfg.getBoolean("XLogger.Auto Save.Enabled");
+		xloggerAutoSaveAt = cfg.getInt("XLogger.Auto Save.Save At");
+		xloggerLogDate = cfg.getBoolean("XLogger.Log Date");
+		xloggerLogCommandUsage = cfg.getBoolean("XLogger.Log.Command Usage");
+		xloggerLogChatMessage = cfg.getBoolean("XLogger.Log.Chatmessages");
+		xloggerLogDebugMessage = cfg.getBoolean("XLogger.Log.Debug Messages");
+		xloggerLogPluginInternProcesses = cfg.getBoolean("XLogger.Log.Plugin Intern Processes");
+		
 		/*
 		 * READ SETTINGS OUT OF config.yml
 		 */
