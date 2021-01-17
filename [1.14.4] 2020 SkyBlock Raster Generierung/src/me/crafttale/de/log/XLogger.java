@@ -1,4 +1,4 @@
-package me.crafttale.de.profiles.log;
+package me.crafttale.de.log;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,6 +14,7 @@ import me.crafttale.de.SkyBlock;
 public class XLogger {
 	private static String log = "";
 	private static String seperator = "#SEP#";
+	private static String entryPrefix = "[0000]";
 	private static int autoSaveAt = 5000;
 	private static boolean autoSave = true;
 	private static boolean logDate = true;
@@ -50,13 +51,14 @@ public class XLogger {
 			break;
 		}
 		if(message.endsWith(".") == false && type != LogType.CommandUsage) message = message+".";
-		if(logDate == false) log = log+seperator+"["+type.px+"] "+message;
-		else log = log+seperator+"["+SkyBlock.getCurrentDate()+"/"+SkyBlock.getCurrentTime()+"]["+type.px+"] "+message;
+		if(logDate == false) log = log+seperator+entryPrefix+"["+type.px+"] "+message;
+		else log = log+seperator+entryPrefix+"["+SkyBlock.getCurrentDate()+"/"+SkyBlock.getCurrentTime()+"]["+type.px+"] "+message;
 		
 		logged++;
+		generateNewEntryPrefix();
 		if(autoSave && logged == autoSaveAt) {
-			if(logDate == false) log = log+seperator+"["+LogType.PluginInternProcess.px+"] "+"Auto saving...";
-			else log = log+seperator+"["+SkyBlock.getCurrentDate()+"/"+SkyBlock.getCurrentTime()+"]["+LogType.PluginInternProcess.px+"] "+"Auto saving...";
+			if(logDate == false) log = log+seperator+entryPrefix+"["+LogType.PluginInternProcess.px+"] "+"Auto saving...";
+			else log = log+seperator+entryPrefix+"["+SkyBlock.getCurrentDate()+"/"+SkyBlock.getCurrentTime()+"]["+LogType.PluginInternProcess.px+"] "+"Auto saving...";
 			save(true);
 		}
 	}
@@ -75,14 +77,14 @@ public class XLogger {
 	 */
 	public static LinkedList<String> getLog() {
 		LinkedList<String> list_rev = new LinkedList<String>(); //Reversed, sonst wird der Log falschherum gespeichert
-		String[] sar = log.replace(seperator, System.lineSeparator()).split(seperator);
+		String[] sar = log.replace(seperator, System.lineSeparator()+"§f").split(seperator);
 		for(int i = 0; i != sar.length; i++) list_rev.add(sar[i]);
 		return list_rev;
 	}
 	
 	/**
 	 * Speichert den Log in eine Datei. Anschließend wird der Log gesäubert, wenn erwünscht.
-	 * plugins/SkyBlock/logs/Datum-log.yml
+	 * plugins/"+SkyBlock.getSB().getDescription().getName()+"/logs/Datum-log.yml
 	 * @return
 	 */
 	public static String save() {
@@ -90,7 +92,7 @@ public class XLogger {
 	}
 	/**
 	 * Speichert den Log in eine Datei. Anschließend wird der Log gesäubert, wenn erwünscht.
-	 * plugins/SkyBlock/logs/Datum-log.yml
+	 * plugins/"+SkyBlock.getSB().getDescription().getName()+"/logs/Datum-log.yml
 	 * @return
 	 */
 	public static String save(boolean clear) {
@@ -102,7 +104,7 @@ public class XLogger {
 		}
 		
 	    try {
-	        FileWriter writer = new FileWriter("plugins/SkyBlock/logs/"+date+"-log.yml");
+	        FileWriter writer = new FileWriter("plugins/"+SkyBlock.getSB().getDescription().getName()+"/logs/"+date+"-log.yml");
 	        for(String s : list_rev) {
 	        	writer.write(s);
 	        	writer.write(System.lineSeparator());
@@ -133,7 +135,7 @@ public class XLogger {
 	 * @return
 	 */
 	private static String getCompressedDate() {
-		return SkyBlock.getCurrentDate().replace(".", "-")+"-"+SkyBlock.getCurrentTime().replace(".", "-");
+		return SkyBlock.getCurrentDate().replace(".", "-").replace(":", "-")+"-"+SkyBlock.getCurrentTime().replace(".", "-").replace(":", "-");
 	}
 	
 	private static String getOnlinePlayers() {
@@ -143,6 +145,39 @@ public class XLogger {
 			else s = s+", "+p.getName();
 		}
 		return s;
+	}
+	
+	private static int amountZero = new String(autoSaveAt+"").length()-1;
+	public static void generateNewEntryPrefix() {
+		for(int i = 0; i != autoSaveAt; i++) {
+			
+			if(logged < 10) {
+				entryPrefix = "[";
+				for(int a = 0; a != amountZero; a++) entryPrefix = entryPrefix + "0";
+				
+				entryPrefix = entryPrefix + logged + "]";
+			}else if(logged < 100) {
+				entryPrefix = "[";
+				for(int a = 0; a != amountZero-1; a++) entryPrefix = entryPrefix + "0";
+				
+				entryPrefix = entryPrefix + logged + "]";
+			}else if(logged < 1000) {
+				entryPrefix = "[";
+				for(int a = 0; a != amountZero-2; a++) entryPrefix = entryPrefix + "0";
+				
+				entryPrefix = entryPrefix + logged + "]";
+			}else if(logged < 10000) {
+				entryPrefix = "[";
+				for(int a = 0; a != amountZero-3; a++) entryPrefix = entryPrefix + "0";
+				
+				entryPrefix = entryPrefix + logged + "]";
+			}else if(logged < 100000) {
+				entryPrefix = "[";
+				for(int a = 0; a != amountZero-4; a++) entryPrefix = entryPrefix + "0";
+				
+				entryPrefix = entryPrefix + logged + "]";
+			}
+		}
 	}
 	
 	public static enum LogType {

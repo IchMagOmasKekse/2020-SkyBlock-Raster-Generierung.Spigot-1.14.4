@@ -4,11 +4,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import me.crafttale.de.Settings;
 import me.crafttale.de.SkyBlock;
+import me.crafttale.de.atmosphere.RealTimeInGame;
 
 public class TablistManager {
 	
@@ -206,7 +208,15 @@ public class TablistManager {
 //		if(p.isOp()) p.setPlayerListName("§cAdmin §7"+p.getName());
 //		else p.setPlayerListName("§aSpieler §7"+p.getName());
 		if(sb != null) editTablist(p);
-		p.setPlayerListHeaderFooter("\n§6§lC R A F T T A L E . D E\n§7§m--§8§m==§8[§9§o BETA RELEASE! §8]§m==§7§m--\n\n§b"+SkyBlock.getCurrentDate()+"\n§3"+SkyBlock.getCurrentTime()+" Uhr", "\n§6www.crafttale.de\n");
+		p.setPlayerListHeaderFooter("\n§6§lC R A F T T A L E . D E\n§7§m--§8§m==§8[§9§o BETA RELEASE! §8]§m==§7§m--\n\n§b"+SkyBlock.getCurrentDate()+"\n§3"+SkyBlock.getCurrentTime()+" Uhr\n§3(§f"+RealTimeInGame.time+" §3ticks)", "\n§6www.crafttale.de\n");
+	}
+	
+	/**
+	 * Behandelt einen Spieler, nachdem er gejoint ist.
+	 * @param e
+	 */
+	public static void onJoin(PlayerJoinEvent e) {
+		editTablist(e.getPlayer());
 	}
 	
 }

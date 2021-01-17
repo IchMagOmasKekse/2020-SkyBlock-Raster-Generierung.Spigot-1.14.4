@@ -105,7 +105,6 @@ public class GUIManager  {
 			guis.remove(p);
 			return true;
 		}else return false;
-		
 	}
 	
 	/**

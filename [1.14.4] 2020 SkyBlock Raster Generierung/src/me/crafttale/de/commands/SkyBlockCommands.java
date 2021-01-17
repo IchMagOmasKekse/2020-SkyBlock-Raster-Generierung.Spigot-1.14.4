@@ -16,6 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import me.crafttale.de.Chat;
 import me.crafttale.de.Chat.MessageType;
+import me.crafttale.de.casino.CasinoManager;
 import me.crafttale.de.PlayerAtlas;
 import me.crafttale.de.Prefixes;
 import me.crafttale.de.Settings;
@@ -25,6 +26,7 @@ import me.crafttale.de.economy.EconomyManager;
 import me.crafttale.de.economy.EconomyManager.MoneyType;
 import me.crafttale.de.economy.PriceSetter;
 import me.crafttale.de.filemanagement.SkyFileManager;
+import me.crafttale.de.gadgets.lobby.Spawn;
 import me.crafttale.de.generators.CobbleGeneratorRenewed;
 import me.crafttale.de.generators.CobbleGeneratorRenewed.CobblestoneGeneratorFileReader;
 import me.crafttale.de.generators.CobbleGeneratorRenewed.GeneratorResultData;
@@ -45,11 +47,11 @@ import me.crafttale.de.gui.island.VisitAcceptedGUI;
 import me.crafttale.de.gui.island.VisitDeniedGUI;
 import me.crafttale.de.gui.melody.JoinMelodyGUI;
 import me.crafttale.de.gui.reward.RewardGUI;
+import me.crafttale.de.log.XLogger;
+import me.crafttale.de.log.XLogger.LogType;
 import me.crafttale.de.profiles.IslandManager;
 import me.crafttale.de.profiles.IslandManager.IslandData;
 import me.crafttale.de.profiles.PlayerProfiler;
-import me.crafttale.de.profiles.log.XLogger;
-import me.crafttale.de.profiles.log.XLogger.LogType;
 import me.crafttale.de.reward.DailyRewardManager;
 import me.crafttale.de.tablist.TablistManager;
 
@@ -74,16 +76,13 @@ public class SkyBlockCommands implements CommandExecutor {
 		commands.add("cam");
 		commands.add("isc");
 		commands.add("log");
+		commands.add("spawn");
 		
-		int registered = 0;
+		XLogger.log(LogType.PluginInternProcess, "§eRegistriere SkyBlock Commands");
 		for(int i = 0; i != commands.size(); i++) {
-			XLogger.log(LogType.PluginInternProcess, "§aRegistriere Befehl: §f"+commands.get(i));
-			SkyBlock.sendConsoleMessage(MessageType.INFO, "§aRegistriere Befehl: §f"+commands.get(i));
+			XLogger.log(LogType.PluginInternProcess, "§aRegistriere SkyBlock Befehl: §2"+commands.get(i));
 			SkyBlock.getSB().getCommand(commands.get(i)).setExecutor(this);
-			registered++;
 		}
-		XLogger.log(LogType.PluginInternProcess, "§aBefehle registriert(Anzahl): §f"+registered);
-		SkyBlock.sendConsoleMessage(MessageType.INFO, "§aBefehle registriert(Anzahl): §f"+registered);
 		
 	}
 	
@@ -94,14 +93,25 @@ public class SkyBlockCommands implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String arg2, String[] args) {
 		if(sender instanceof Player) {
 			Player p = (Player) sender;
-			if(cmd.getName().equalsIgnoreCase("log")) {
+			if(cmd.getName().equalsIgnoreCase("spawn")) {
+//				//TODO: Island Control Command
+				if(SkyBlock.hasPermission(p, "skyblock.spawn")) {
+					switch(args.length) {
+					case 0:
+						if(SkyBlock.hasPermission(p, "skyblock.spawn")) {
+							p.teleport(Spawn.getRandomLocationInSpawnArea());
+						}
+						break;
+					}
+				}
+			} else if(cmd.getName().equalsIgnoreCase("log")) {
 //				//TODO: Island Control Command
 				if(SkyBlock.hasPermission(p, "skyblock.log")) {
 					switch(args.length) {
 					case 0:
 						SkyBlock.sendMessage(MessageType.INFO, p, "Die 100 letzten Log Einträge(§avon heute§7):");
 						int i = 0;
-						if(XLogger.getLog().isEmpty() == false) {							
+						if(XLogger.getLog().isEmpty() == false) {
 							for(String entry : XLogger.getLog()) {
 								if(i!=100 && entry != null) {
 									p.sendMessage(entry);
@@ -294,7 +304,7 @@ public class SkyBlockCommands implements CommandExecutor {
 						if(SkyFileManager.releaseIsland(id)) {
 							SkyBlock.sendOperatorMessage(MessageType.NONE, p.getName()+
 									" hat die Insel "+id+" freigegeben!");
-						}else SkyBlock.sendMessage(MessageType.ERROR, p, "Die Insel §f"+id+MessageType.ERROR.getSuffix()+"konnte nicht freigegeben werden!");
+						}else SkyBlock.sendMessage(MessageType.ERROR, p, "Die Insel §f"+id+MessageType.ERROR.sx()+"konnte nicht freigegeben werden!");
 							
 						break;
 					}
@@ -408,6 +418,7 @@ public class SkyBlockCommands implements CommandExecutor {
 						Settings.reloadSettings();
 						new TablistManager();
 						TablistManager.reloadAllPlayers();
+						CasinoManager.reloadContent();
 						SkyBlock.sendMessage(MessageType.INFO, "Einstellungen werden teilweise neugeladen. Um alle Einstellungen neu zu laden, führe ein Reload/Neustart durch.");
 					}else if(args[0].equalsIgnoreCase("help") && SkyBlock.hasPermission(p, "skyblock.island.help")) { //Benutzerdifinierte Permissionabfrage(Siehe unteren Quellcode)				
 						sendCommandInfo(p, "is");

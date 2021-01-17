@@ -9,12 +9,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import me.crafttale.de.Chat;
 import me.crafttale.de.Chat.MessageType;
 import me.crafttale.de.Settings;
 import me.crafttale.de.SkyBlock;
+import me.crafttale.de.gui.GUIManager;
+import me.crafttale.de.gui.reward.RewardGUI;
 import me.crafttale.de.profiles.PlayerProfiler;
 
 public class DailyRewardManager {
@@ -97,6 +100,21 @@ public class DailyRewardManager {
 		List<String> users = cfg.getStringList("Got A Daily Reward");
 		
 		return users.contains(PlayerProfiler.getUUID(p).toString());
+	}
+
+	/**
+	 * Behandelt einen Spieler, nachdem er gejoint ist.
+	 * @param e
+	 */
+	public static void onJoin(PlayerJoinEvent e) {
+		new BukkitRunnable() {
+			@Override
+			public void run() {					
+				GUIManager.openGUI(e.getPlayer(), new RewardGUI(e.getPlayer()));
+			}
+		}.runTaskLater(SkyBlock.getSB(), 20l);
+		
+		Chat.sendClickableMessage(e.getPlayer(), "§6Klicke hier um deine Tägliche Belohnung abzuholen", "! FREE ITEMS ! YEAH !", "/dailyreward", true, true);
 	}
 	
 }

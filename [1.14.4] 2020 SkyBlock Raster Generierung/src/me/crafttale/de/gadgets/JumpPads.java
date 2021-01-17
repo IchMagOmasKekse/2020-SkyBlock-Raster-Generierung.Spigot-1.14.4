@@ -25,13 +25,13 @@ public class JumpPads {
 	}
 	
 	public static void checkJumpPad(Player p) {
-		if(PlayerProfiler.getProfile(PlayerProfiler.getUUID(p)).getStandort().getName().toLowerCase().equals("spawn") == false) return;
+		if(PlayerProfiler.isRegistered(p) && PlayerProfiler.getProfile(PlayerProfiler.getUUID(p)).getStandort().getName().toLowerCase().equals("spawn") == false) return;
 		Location loc = p.getLocation();
 		Block b = p.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY()-1, loc.getBlockZ());
 		switch(b.getType()) {
 		case EMERALD_BLOCK:
 			/* Speed Effekt geben, wenn man auf Smaragdblöcken steht */
-			new BukkitRunnable() { @Override public void run() { p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 5*20, 2)); } }.runTask(SkyBlock.getSB());
+			new BukkitRunnable() { @Override public void run() { p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 30*20, 2)); } }.runTask(SkyBlock.getSB());
 			break;
 		case DIAMOND_BLOCK:
 			/* Boost geben, wenn man auf Diamandblöcken steht */

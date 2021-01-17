@@ -4,6 +4,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPhysicsEvent;
 
@@ -29,7 +30,7 @@ public class BlockDetectorListener implements Listener {
 //		}
 //	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onLiquid(BlockPhysicsEvent e) {
 		if(e.getBlock().isLiquid()) {
 			for(Cuboid c : cancel_zones) {

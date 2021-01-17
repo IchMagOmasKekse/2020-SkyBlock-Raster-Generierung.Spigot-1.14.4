@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -21,6 +22,7 @@ import me.crafttale.de.profiles.PlayerProfiler;
 
 public abstract class GUI {
 	
+	protected Location loc = null;
 	protected Player player = null, player2 = null, player3 = null;
 	protected UUID targetUUID = null;
 	protected Inventory openedInv = null;
@@ -42,6 +44,12 @@ public abstract class GUI {
 	public GUI(Player player, GUIType type) {
 		this.player = player;
 		this.type = type;
+		start();
+	}
+	public GUI(Player player, GUIType type, Location loc) {
+		this.player = player;
+		this.type = type;
+		this.loc = loc;
 		start();
 	}
 	public GUI(Player player, UUID targetUUID, GUIType type) {
@@ -139,7 +147,7 @@ public abstract class GUI {
 		case OWN_CREATION:
 			processedTitle = type.getTitle();
 			GUIManager.guis.put(player,  this);
-			player.openInventory(openedInv);
+			if(player != null && openedInv != null) player.openInventory(openedInv);
 			break;
 		case REWARD_GUI:
 			openedInv = Bukkit.createInventory(player, 9, type.getTitle());

@@ -31,7 +31,7 @@ import me.crafttale.de.profiles.PlayerProfiler;
 public class SkyFileManager {
 	
 	private static Random ran = new Random();
-//	private static File island_index_File = new File("plugins/SkyBlock/Insel-Index-File.yml");
+//	private static File island_index_File = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Insel-Index-File.yml");
 	private static ArrayList<String> emptylist = new ArrayList<String>();
 
 	public SkyFileManager(SkyBlock sb) {
@@ -80,7 +80,7 @@ public class SkyFileManager {
 	 * @return
 	 */
 	public static ArrayList<IslandStatus> getIslandsWithStatus() {
-		FileConfiguration cfg = YamlConfiguration.loadConfiguration(new File("plugins/SkyBlock/Insel-Index-File.yml"));
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Insel-Index-File.yml"));
 		int amount = cfg.getInt("Islands.Amount Generated");
 		
 		ArrayList<IslandStatus> ids = new ArrayList<IslandStatus>();
@@ -99,7 +99,7 @@ public class SkyFileManager {
 	 * @return
 	 */
 	public static IslandStatus getIslandStatus(int island_id) {
-		FileConfiguration cfg = YamlConfiguration.loadConfiguration(new File("plugins/SkyBlock/Insel-Index-File.yml"));	
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Insel-Index-File.yml"));	
 		IslandStatus status = new IslandStatus(island_id, cfg.getBoolean("Islands.ID-"+island_id+".Claimed"),
 				((cfg.getString("Islands.ID-"+island_id+".Owner UUID") == null || cfg.getString("Islands.ID-"+island_id+".Owner UUID").equals("none")) ? true : false), cfg.getString("Islands.ID-"+island_id+".Owner UUID"));
 
@@ -111,7 +111,7 @@ public class SkyFileManager {
 	 * @return
 	 */
 	public static ArrayList<Integer> getClaimedIslands() {
-		FileConfiguration cfg = YamlConfiguration.loadConfiguration(new File("plugins/SkyBlock/Insel-Index-File.yml"));
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Insel-Index-File.yml"));
 		int amount = cfg.getInt("Islands.Amount Generated");
 		
 		ArrayList<Integer> ids = new ArrayList<Integer>();
@@ -125,7 +125,7 @@ public class SkyFileManager {
 	 * @return
 	 */
 	public static ArrayList<Integer> getUnclaimedIslands() {
-		FileConfiguration cfg = YamlConfiguration.loadConfiguration(new File("plugins/SkyBlock/Insel-Index-File.yml"));
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Insel-Index-File.yml"));
 		int amount = cfg.getInt("Islands.Amount Generated");
 		
 		ArrayList<Integer> ids = new ArrayList<Integer>();
@@ -144,11 +144,11 @@ public class SkyFileManager {
 	 */
 	public static File getIslandFile(String uuid, boolean getOwnerFileInsteadOfMemberFile) {
 		if(isMemberOfAnIsland(UUID.fromString(uuid))) {
-			File file = new File("plugins/SkyBlock/Inseln/"+uuid+"-Insel.yml");
+			File file = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Inseln/"+uuid+"-Insel.yml");
 			FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
-			if(getOwnerFileInsteadOfMemberFile)	return new File("plugins/SkyBlock/Inseln/"+cfg.getString("Islands.Owner UUID")+"-Insel.yml");
+			if(getOwnerFileInsteadOfMemberFile)	return new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Inseln/"+cfg.getString("Islands.Owner UUID")+"-Insel.yml");
 			else return file;
-		}else return new File("plugins/SkyBlock/Inseln/"+uuid+"-Insel.yml");
+		}else return new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Inseln/"+uuid+"-Insel.yml");
 	}
 	/**
 	 * Gibt die OwnerIsland-File zurück.
@@ -165,7 +165,7 @@ public class SkyFileManager {
 	 */
 	public static int getIslandIDWhereHeIsMemberOf(UUID uuid) {
 		if(isMemberOfAnIsland(uuid)) {			
-			File file = new File("plugins/SkyBlock/Inseln/"+uuid+"-Insel.yml");
+			File file = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Inseln/"+uuid+"-Insel.yml");
 			FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 			if(file.exists() == false) return -1;
 			else return cfg.getInt("Islands.ID");
@@ -176,7 +176,7 @@ public class SkyFileManager {
 	 * @return
 	 */
 	public static ArrayList<Integer> getRemovers() {
-		File file = new File("plugins/SkyBlock/running_island_remover.yml");
+		File file = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/running_island_remover.yml");
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 		
 		ArrayList<Integer> removers = new ArrayList<Integer>();
@@ -260,7 +260,7 @@ public class SkyFileManager {
 	 * @return
 	 */
 	public static Location getSkyBlockCenteredSpawnLocation() {
-		File file = new File("plugins/SkyBlock/config.yml");
+		File file = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/config.yml");
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 				
 		Location l = new Location(Bukkit.getWorld(cfg.getString("Spawn.Location.World")),
@@ -278,7 +278,7 @@ public class SkyFileManager {
 	 * @return
 	 */
 	public static Cuboid getSpawnCuboid() {
-		File file = new File("plugins/SkyBlock/config.yml");
+		File file = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/config.yml");
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 		
 		int radius = cfg.getInt("Spawn.Radius");
@@ -314,15 +314,15 @@ public class SkyFileManager {
 	 * @return
 	 */
 	public static String getWorldNameOutOfIslandIndexFile(int island_id) {
-		FileConfiguration cfg = YamlConfiguration.loadConfiguration(new File("plugins/SkyBlock/Insel-Index-File.yml"));
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Insel-Index-File.yml"));
 		return cfg.getString("Islands.Id-"+island_id+".Worldname");
 	}
 	public static int getLocXOutOfIslandIndexFile(int island_id) {
-		FileConfiguration cfg = YamlConfiguration.loadConfiguration(new File("plugins/SkyBlock/Insel-Index-File.yml"));
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Insel-Index-File.yml"));
 		return cfg.getInt("Islands.Id-"+island_id+".LocX");
 	}
 	public static int getLocZOutOfIslandIndexFile(int island_id) {
-		FileConfiguration cfg = YamlConfiguration.loadConfiguration(new File("plugins/SkyBlock/Insel-Index-File.yml"));
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Insel-Index-File.yml"));
 		return cfg.getInt("Islands.Id-"+island_id+".LocZ");
 	}
 	
@@ -332,7 +332,7 @@ public class SkyFileManager {
 	 * @return
 	 */
 	public static int getUnclaimedIslandID(boolean random_pick) {
-		FileConfiguration cfg = YamlConfiguration.loadConfiguration(new File("plugins/SkyBlock/Insel-Index-File.yml"));
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Insel-Index-File.yml"));
 		int unclaimed_id = 0;
 		if(random_pick) {
 			while(cfg.getBoolean("Islands.ID-"+unclaimed_id+".Claimed") == true) {
@@ -389,7 +389,7 @@ public class SkyFileManager {
 	 * @return
 	 */
 	public static Location getLocationOfIsland(int island_id) {
-		File index = new File("plugins/SkyBlock/Insel-Index-File.yml");
+		File index = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Insel-Index-File.yml");
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(index);
 		if(island_id > cfg.getInt("Islands.Amount Generated")) return null;
 		
@@ -439,7 +439,7 @@ public class SkyFileManager {
 	 * @return
 	 */
 	public static Location getPlayerDefinedIslandSpawn(Player owner) {
-		File file = new File("plugins/SkyBlock/Inseln/"+PlayerProfiler.getUUID(owner).toString()+"-Insel.yml");
+		File file = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Inseln/"+PlayerProfiler.getUUID(owner).toString()+"-Insel.yml");
 		if(file.exists() == false) return null;
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 		Location loc = new Location(Bukkit.getWorld(cfg.getString("Islands.Spawnpoint.World")),
@@ -463,7 +463,7 @@ public class SkyFileManager {
 				break;
 			}
 		}
-		File file = new File("plugins/SkyBlock/Inseln/"+owner+"-Insel.yml");
+		File file = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Inseln/"+owner+"-Insel.yml");
 		if(file.exists() == false) return null;
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 		Location loc = new Location(Bukkit.getWorld(cfg.getString("Islands.Spawnpoint.World")),
@@ -484,7 +484,7 @@ public class SkyFileManager {
 		for(String uuid : IslandManager.getProfile(owner).getMembers()) {
 			if(Bukkit.getPlayer(UUID.fromString(uuid)) != null) {
 				Player p = PlayerProfiler.getPlayer(UUID.fromString(uuid));
-				File file = new File("plugins/SkyBlock/Inseln/"+PlayerProfiler.getUUID(p).toString()+"-Insel.yml");
+				File file = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Inseln/"+PlayerProfiler.getUUID(p).toString()+"-Insel.yml");
 				if(file.exists() == false) return false;
 				FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 				cfg.set("Islands.Spawnpoint.World", spawn.getWorld().getName());
@@ -500,7 +500,7 @@ public class SkyFileManager {
 				}
 			}else if(Bukkit.getOfflinePlayer(UUID.fromString(uuid)) != null) {
 				OfflinePlayer p = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
-				File file = new File("plugins/SkyBlock/Inseln/"+p.getUniqueId().toString()+"-Insel.yml");
+				File file = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Inseln/"+p.getUniqueId().toString()+"-Insel.yml");
 				if(file.exists() == false) return false;
 				FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 				cfg.set("Islands.Spawnpoint.World", spawn.getWorld().getName());
@@ -516,7 +516,7 @@ public class SkyFileManager {
 				}
 			}
 		}
-		File file = new File("plugins/SkyBlock/Inseln/"+PlayerProfiler.getUUID(owner).toString()+"-Insel.yml");
+		File file = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Inseln/"+PlayerProfiler.getUUID(owner).toString()+"-Insel.yml");
 		if(file.exists() == false) return false;
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 		cfg.set("Islands.Spawnpoint.World", spawn.getWorld().getName());
@@ -542,7 +542,7 @@ public class SkyFileManager {
 	 * @param uuid
 	 */
 	public static boolean EDITsetIslandOwner(int island_id, String uuid) {
-		File file = new File("plugins/SkyBlock/Insel-Index-File.yml");
+		File file = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Insel-Index-File.yml");
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 		
 		int prev_id = getIslandID(uuid);
@@ -559,7 +559,7 @@ public class SkyFileManager {
 		}
 		try { cfg.save(file); } catch (IOException e) { e.printStackTrace(); }
 		
-		file = new File("plugins/SkyBlock/Inseln/"+uuid+"-Insel.yml");
+		file = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Inseln/"+uuid+"-Insel.yml");
 		cfg = YamlConfiguration.loadConfiguration(file);
 		
 		if(uuid == null) {
@@ -584,7 +584,7 @@ public class SkyFileManager {
 	 * @param uuid
 	 */
 	public static boolean EDITsetBannedPlayers(int island_id, UUID owner, ArrayList<String> uuids) {
-		File file = new File("plugins/SkyBlock/Inseln/"+owner.toString()+"-Insel.yml");
+		File file = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Inseln/"+owner.toString()+"-Insel.yml");
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 		
 		cfg.set("Islands.ID-"+island_id+".Banned Players", uuids);
@@ -601,7 +601,7 @@ public class SkyFileManager {
 	 * @param uuid
 	 */
 	public static boolean EDITsetMembers(int island_id, UUID owner, ArrayList<String> uuids) {
-		File file = new File("plugins/SkyBlock/Inseln/"+owner.toString()+"-Insel.yml");
+		File file = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Inseln/"+owner.toString()+"-Insel.yml");
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 		
 		cfg.set("Islands.ID-"+island_id+".Members", uuids);
@@ -655,7 +655,7 @@ public class SkyFileManager {
 	 * @return
 	 */
 	public static boolean releaseIsland(int island_id) {
-		File index = new File("plugins/SkyBlock/Insel-Index-File.yml");
+		File index = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Insel-Index-File.yml");
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(index);
 		
 		int amount = cfg.getInt("Islands.Amount Generated");
@@ -698,7 +698,7 @@ public class SkyFileManager {
 				return false;
 			}else {
 				if(!Settings.isInMaintenance()) owner.teleport(SkyBlock.spawn);
-				File index = new File("plugins/SkyBlock/Insel-Index-File.yml");
+				File index = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Insel-Index-File.yml");
 				FileConfiguration cfg1 = YamlConfiguration.loadConfiguration(getIslandFile(PlayerProfiler.getUUID(owner).toString()));
 				FileConfiguration cfg2 = YamlConfiguration.loadConfiguration(index);
 				int id = cfg1.getInt("Islands.ID");
@@ -715,7 +715,7 @@ public class SkyFileManager {
 					cfg2.save(index);
 					IslandManager.clearIsland(runs, owner, id);
 					IslandManager.getIslandData(id).reloadData();
-					IslandManager.getProfile(owner).deleteAllMembers();
+					if(IslandManager.getProfile(owner) != null) IslandManager.getProfile(owner).deleteAllMembers();
 					
 					IslandManager.unloadProfile(owner);
 					owner.sendMessage(Prefixes.SERVER.px()+"§aDeine Insel wurde gelöscht");
@@ -761,7 +761,7 @@ public class SkyFileManager {
 	 */
 	public static boolean isMemberOfAnIsland(UUID uuid) {
 //		SkyBlock.sendMessage(MessageType.INFO, "UUID = "+uuid);
-		File file = new File("plugins/SkyBlock/Inseln/"+uuid.toString()+"-Insel.yml");
+		File file = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Inseln/"+uuid.toString()+"-Insel.yml");
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 		if(file.exists() == false) return false;
 		else if(uuid.toString() == null) return false;
@@ -773,7 +773,7 @@ public class SkyFileManager {
 	 * @return
 	 */
 	public static boolean isClaimed(int island_id) {
-		FileConfiguration cfg = YamlConfiguration.loadConfiguration(new File("plugins/SkyBlock/Insel-Index-File.yml"));
+		FileConfiguration cfg = YamlConfiguration.loadConfiguration(new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Insel-Index-File.yml"));
 		return (cfg.getBoolean("Islands.ID-"+island_id+".Claimed"));
 	}
 	
@@ -785,7 +785,7 @@ public class SkyFileManager {
 //	 * @return
 //	 */
 //	public static boolean createMemberIslandFile(int island_id, Player owner, Player joiner) {
-//		File profile = new File("plugins/SkyBlock/Profiles/"+PlayerProfiler.getUUID(joiner).toString()+".yml");
+//		File profile = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Profiles/"+PlayerProfiler.getUUID(joiner).toString()+".yml");
 //		FileConfiguration cfg = YamlConfiguration.loadConfiguration(profile);
 //		
 //		
@@ -806,7 +806,7 @@ public class SkyFileManager {
 	 * @return
 	 */
 	public static boolean claimIsland(int island_id, Player player, Player owner) {
-		File index = new File("plugins/SkyBlock/Insel-Index-File.yml");
+		File index = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Insel-Index-File.yml");
 		
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(index);
 		if(isClaimed(island_id) == false || player != owner) {
@@ -877,7 +877,7 @@ public class SkyFileManager {
 			IslandManager.getProfile(joiner).reload();
 			joiner.sendMessage("Dein Profil wurde geupdatet");
 		}
-//		File profile = new File("plugins/SkyBlock/Profiles/"+uuid+".yml");
+//		File profile = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Profiles/"+uuid+".yml");
 //		FileConfiguration cfg_pro = YamlConfiguration.loadConfiguration(profile);
 //		
 //		if(owner == null) profile.delete();
@@ -921,7 +921,7 @@ public class SkyFileManager {
 	 * @return
 	 */
 	public static boolean banPlayerFromIsland(Player owner, UUID uuid) {
-		File file = new File("plugins/SkyBlock/Inseln/"+PlayerProfiler.getUUID(owner).toString()+"-Insel.yml");
+		File file = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Inseln/"+PlayerProfiler.getUUID(owner).toString()+"-Insel.yml");
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 		
 		List<String> banned = cfg.getStringList("Islands.Banned Players");
@@ -942,7 +942,7 @@ public class SkyFileManager {
 		}
 	}
 	public static boolean unbanPlayerFromIsland(Player owner, UUID uuid) {
-		File file = new File("plugins/SkyBlock/Inseln/"+PlayerProfiler.getUUID(owner).toString()+"-Insel.yml");
+		File file = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Inseln/"+PlayerProfiler.getUUID(owner).toString()+"-Insel.yml");
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 		
 		List<String> banned = cfg.getStringList("Islands.Banned Players");
@@ -1021,7 +1021,7 @@ public class SkyFileManager {
 	 * @param island_id
 	 */
 	public static void markIslandAsClaimable(int island_id) {
-		File index = new File("plugins/SkyBlock/Insel-Index-File.yml");
+		File index = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Insel-Index-File.yml");
 		FileConfiguration cfg2 = YamlConfiguration.loadConfiguration(index);
 		
 		//Insel freigeben für neuen Besitzer
@@ -1039,7 +1039,7 @@ public class SkyFileManager {
 	 * @param island_id
 	 */
 	public static void saveIslandRemover(int island_id) {
-		File file = new File("plugins/SkyBlock/running_island_remover.yml");
+		File file = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/running_island_remover.yml");
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 		
 		ArrayList<Integer> removers = new ArrayList<Integer>();
@@ -1061,7 +1061,7 @@ public class SkyFileManager {
 	 * @param island_id
 	 */
 	public static void removeIslandRemover(int island_id) {
-		File file = new File("plugins/SkyBlock/running_island_remover.yml");
+		File file = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/running_island_remover.yml");
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 		
 		cfg.set("Removers", cfg.getStringList("Removers").remove(""+island_id));

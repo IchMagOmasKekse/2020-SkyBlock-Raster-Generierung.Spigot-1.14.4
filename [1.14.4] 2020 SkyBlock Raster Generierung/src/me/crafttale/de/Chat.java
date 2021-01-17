@@ -5,8 +5,14 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import me.crafttale.de.log.XLogger;
+import me.crafttale.de.log.XLogger.LogType;
 import me.crafttale.de.profiles.PlayerProfiler;
+import me.crafttale.de.profiles.PlayerSettings;
+import me.crafttale.de.profiles.processing.ProcessType;
+import me.crafttale.de.tablist.TablistManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -120,6 +126,27 @@ public class Chat {
 		return s;
 	}
 	
+	/**
+	 * Behandelt Chat Nachrichten, wenn sie versendet werden.
+	 * @param e
+	 */
+	public static void onChatting(AsyncPlayerChatEvent e) {
+		if((boolean)PlayerSettings.getConfirmation(ProcessType.ALLOW_CHAT_MESSAGES, e.getPlayer()) == true) {
+			if(e.getPlayer().isOp() || e.getPlayer().hasPermission("skyblock.chat.color")) {
+				e.setMessage(ChatColor.translateAlternateColorCodes('&', e.getMessage()));
+			}
+			e.setFormat(Settings.chat_format.replace("{USERNAME}", e.getPlayer().getName())
+					.replace("{RANK_PREFIX}", TablistManager.getTeamPrefix(e.getPlayer()))
+					.replace("{RANK_SUFFIX}", TablistManager.getTeamSuffix(e.getPlayer()))
+					.replace("{CHAT_MESSAGE}", e.getMessage()));
+			XLogger.log(LogType.ChatMessage, e.getFormat());
+		}else {
+			e.setCancelled(true);
+			SkyBlock.sendMessage(MessageType.INFO, e.getPlayer(), "Du hast ausgestellt, dass Du Chat-Nachrichten senden kannst.");
+			XLogger.log(LogType.ChatMessage, "CANCELLED BY PLAYERSETTINGS "+e.getFormat());
+		}
+	}
+	
 	public static enum MessageType {
 		
 		/*
@@ -142,13 +169,13 @@ public class Chat {
 		 * Gibt den Prefix der Wichtigkeit zurück
 		 * @return
 		 */
-		public String getPrefix() { return prefix; }
+		public String px() { return prefix; }
 		/**
 		 * Gibt den Suffix der Wichtigkeit zurück.
 		 * Dieser ist meistens ein Colorcode.
 		 * @return
 		 */
-		public String getSuffix() { return suffix; }
+		public String sx() { return suffix; }
 		
 	}
 	

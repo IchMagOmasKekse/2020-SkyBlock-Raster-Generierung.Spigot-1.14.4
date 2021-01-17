@@ -1,6 +1,6 @@
 name: SkyBlock
 author: TeamSkytale
-version: 1.5.4
+version: 1.6.0
 api-version: 1.16
 main: me.crafttale.de.SkyBlock
 commands:
@@ -46,6 +46,15 @@ commands:
     aliases: [islandcontrol, iscontrol]
   log:
     description: 'See the logged messages of SkyBlock'
+  spawn:
+    description: 'Teleport to spawn'
+  npc:
+    description: 'Handle the NPCs'
+  model:
+    description: 'Create und handle models'
+    aliases: [ml, mls]
+  shop:
+    description: 'Main command for the shops'
 permissions:
   skyblock.*:
     description: All permissions for the SkyBlock plugin
@@ -91,11 +100,17 @@ permissions:
       skyblock.log.help: true
       skyblock.log.save: true
       skyblock.modify.islands: true
+      skyblock.modify.spawn: true
+      skyblock.damage.atspawn: true
       skyblock.interact.entity: true
       skyblock.coins: true
       skyblock.dailyreward: true
       skyblock.gui: true
       skyblock.broadcaster: true
+      skyblock.spawn: true
+      skyblock.npc: true
+      skyblock.model: true
+      skyblock.shop: true
   skyblock.admin:
     description: You cannot get kicked off of a Island by a player if you have this permission
     skyblock.island.adminhelp:
@@ -174,6 +189,10 @@ permissions:
     description: Save the actual log
   skyblock.modify.islands:
     description: Place and break blocks on other Islands
+  skyblock.modify.spawn:
+    description: Place and break block at spawn
+  skyblock.damage.atspawn:
+    description: Damage entities at spawn(Admin only!)
   skyblock.interact.entity:
     description: Interact with entities on other Islands
   skyblock.coins:
@@ -186,6 +205,8 @@ permissions:
     description: Open a gui
   skyblock.broadcaster:
     description: Prepare the broadcaster
+  skyblock.spawn:
+    description: Teleport to spawn
   skyblock.tablist.developer:
     description: Get Developer Rank in tablist
   skyblock.tablist.admin:
@@ -204,3 +225,9 @@ permissions:
     description: Get Donor4 Rank in tablist
   skyblock.tablist.epic:
     description: Get EPIC Rank in tablist
+  skyblock.npc:
+    description: Handle the NPCs
+  skyblock.model:
+    description: Create and handle models
+  skyblock.shop:
+    description: Main command for the shops

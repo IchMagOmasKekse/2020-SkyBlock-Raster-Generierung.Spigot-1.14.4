@@ -12,10 +12,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 import me.crafttale.de.Chat.MessageType;
+import me.crafttale.de.casino.CasinoManager;
 import me.crafttale.de.economy.EconomyManager;
 import me.crafttale.de.economy.EconomyManager.EditOperation;
 import me.crafttale.de.economy.EconomyManager.MoneyType;
@@ -107,7 +109,10 @@ public class SkyWorld implements Listener {
 			e.getPlayer().teleport(SkyFileManager.getPlayerDefinedIslandSpawn(e.getPlayer()));
 		}
 	}
-	
+	@EventHandler
+	public void onClick(PlayerInteractAtEntityEvent e) {
+		CasinoManager.onEntityClick(e);
+	}
 	
 	
 }

@@ -13,6 +13,7 @@ import org.bukkit.FireworkEffect.Builder;
 import org.bukkit.FireworkEffect.Type;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
@@ -27,15 +28,23 @@ import me.crafttale.de.Chat.MessageType;
 import me.crafttale.de.application.game.SkyBlockAdminTool;
 import me.crafttale.de.area.IslandProtection;
 import me.crafttale.de.area.SpawnToIslandPortal;
+import me.crafttale.de.casino.CasinoManager;
 import me.crafttale.de.commands.BroadcasterCommands;
+import me.crafttale.de.commands.ModelCommands;
+import me.crafttale.de.commands.NPCCommands;
 import me.crafttale.de.commands.SchematicCommands;
+import me.crafttale.de.commands.ShopCommands;
 import me.crafttale.de.commands.SkyBlockCommands;
 import me.crafttale.de.display.DisplayManager;
 import me.crafttale.de.economy.PriceSetter;
+import me.crafttale.de.economy.ShopCreatorItem;
+import me.crafttale.de.economy.ShopManager;
 import me.crafttale.de.economy.SkyCoinHandler;
 import me.crafttale.de.economy.shops.ShopOpenListener;
 import me.crafttale.de.events.AsyncChatListener;
 import me.crafttale.de.events.BlockDetectorListener;
+import me.crafttale.de.events.ItemDropListener;
+import me.crafttale.de.events.ItemPickupListener;
 import me.crafttale.de.events.JoinAndQuitListener;
 import me.crafttale.de.events.PlayerDamageListener;
 import me.crafttale.de.events.ServerListListener;
@@ -45,12 +54,15 @@ import me.crafttale.de.generators.CobbleGeneratorRenewed;
 import me.crafttale.de.generators.SkyWorldGenerator;
 import me.crafttale.de.gui.GUIClicker;
 import me.crafttale.de.gui.GUIManager;
+import me.crafttale.de.gui.TravellerGUI;
 import me.crafttale.de.infotainment.Broadcaster;
 import me.crafttale.de.inventory.ChestContent;
+import me.crafttale.de.log.XLogger;
+import me.crafttale.de.log.XLogger.LogType;
+import me.crafttale.de.models.ModelManager;
+import me.crafttale.de.npc.NPCManager;
 import me.crafttale.de.profiles.IslandManager;
 import me.crafttale.de.profiles.PlayerProfiler;
-import me.crafttale.de.profiles.log.XLogger;
-import me.crafttale.de.profiles.log.XLogger.LogType;
 import me.crafttale.de.requests.Request.RequestManager;
 import me.crafttale.de.reward.DailyRewardManager;
 import me.crafttale.de.schematics.ChestGenerator;
@@ -69,6 +81,7 @@ public class SkyBlock extends JavaPlugin {
 	public static SkyBlockAdminTool admintool = null;
 	public static Broadcaster broadcaster = null;
 	public static boolean sendTimeTitleNotification = true;
+	public static String spawnWorldName = "world";
 	
 	@Override
 	public void onEnable() {
@@ -108,6 +121,12 @@ public class SkyBlock extends JavaPlugin {
 		DailyRewardManager.stop();
 		TablistManager.unset();
 		DisplayManager.removeAll();
+		CasinoManager.disable();
+		GUIManager.getGUI(null).stop(); //Traveller GUI stoppen
+		NPCManager.unregisterAll();
+		ModelManager.closeAllModels();
+		ShopManager.despawnAllShops();
+		XLogger.log(LogType.PluginInternProcess, "Stoppe Traveller GUI");
 		XLogger.save(true);
 	}
 	
@@ -119,7 +138,7 @@ public class SkyBlock extends JavaPlugin {
 		PlayerProfiler.registerAll();
 		
 //		spawn = Bukkit.getWorld("world").getSpawnLocation();
-		spawn = new Location(Bukkit.getWorld("skyblockworld"), 18.5, 86, 75.5, -90, 0);
+		spawn = new Location(Bukkit.getWorld("world"), 18.5, 86, 75.5, -90, 0);
 	}
 	
 	/**
@@ -137,6 +156,8 @@ public class SkyBlock extends JavaPlugin {
 		
 		new ChestContent();
 		ChestContent.createDefaultChestContent();
+		
+		new ShopCreatorItem();
 	}
 	
 	/**
@@ -149,17 +170,24 @@ public class SkyBlock extends JavaPlugin {
 		XLogger.log(LogType.PluginInternProcess, "----------> Post-Initialisation-Stuff...");
 		//Tablist Setzten
 		new TablistManager();
-		
 		//DailyRewardManager starten
 		new DailyRewardManager();
-		
 		//Starte den RequestManager
 		new RequestManager();
+		//Starte NPCManager
+		new NPCManager();
+		//Starte ModelManager
+		new ModelManager();
+		//Starte ShopManager
+		new ShopManager();
 		
 		//Registriere Commands
 		new SkyBlockCommands();
 		new SchematicCommands();
 		new BroadcasterCommands();
+		new NPCCommands();
+		new ModelCommands();
+		new ShopCommands();
 		
 		//Registriere Events
 		new SchematicManager();
@@ -168,6 +196,9 @@ public class SkyBlock extends JavaPlugin {
 		new ServerListListener();
 		new AsyncChatListener();
 		new PlayerDamageListener();
+		new ItemDropListener();
+		new ItemPickupListener();
+		
 		new ChestGenerator();
 		new ChestContent();
 		new CobbleGeneratorRenewed();
@@ -192,6 +223,9 @@ public class SkyBlock extends JavaPlugin {
 		
 		//Displays
 		new DisplayManager();
+		
+		//LOOTCHESTS
+		new CasinoManager();
 		
 		//Spawn wird fertiggestellt
 		new Spawn();
@@ -227,10 +261,13 @@ public class SkyBlock extends JavaPlugin {
 		
 		broadcaster = new Broadcaster();
 		new PriceSetter();
+		World w = Bukkit.getWorld("world");
+		if(w == null) SkyBlock.sendConsoleMessage(MessageType.ERROR, "World == null");
+		GUIManager.openGUI(null, new TravellerGUI());
 	}
 	
 	public static void sendRunningVersion(CommandSender sender) {
-		sender.sendMessage("§aSkyBlock Version §f"+getSB().getDescription().getVersion()+" §awird betrieben.");
+		sender.sendMessage("§7SkyBlock[§f§o"+getSB().getDescription().getVersion()+"§7]");
 	}
 	
 	/**
@@ -331,7 +368,7 @@ public class SkyBlock extends JavaPlugin {
     public static void sendOperatorMessage(MessageType type, String... strings) {
     	for(String msg : strings) {
     		for(Player p : Bukkit.getOnlinePlayers()) {
-    			if(p.isOp()) p.sendMessage(Prefixes.ALERT.px()+type.getPrefix()+type.getSuffix()+msg);
+    			if(p.isOp()) p.sendMessage(Prefixes.ALERT.px()+type.px()+type.sx()+msg);
     		}
     	}
     }
@@ -343,7 +380,7 @@ public class SkyBlock extends JavaPlugin {
     	for(String msg : strings) {
     		for(Player p : Bukkit.getOnlinePlayers()) {
 //    			if(p.isOp()) p.sendMessage(Prefixes.SERVER.px()+msg);
-    			p.sendMessage(Prefixes.SERVER.px()+type.getPrefix()+type.getSuffix()+msg);
+    			p.sendMessage(Prefixes.SERVER.px()+type.px()+type.sx()+msg);
     		}
     	}
     }
@@ -354,7 +391,7 @@ public class SkyBlock extends JavaPlugin {
     public static void sendConsoleMessage(MessageType type, String... strings) {
     	for(String msg : strings) {
 //			if(p.isOp()) p.sendMessage(Prefixes.SERVER.px()+msg);
-			Bukkit.getConsoleSender().sendMessage(Prefixes.SERVER.px()+type.getPrefix()+type.getSuffix()+msg);
+			Bukkit.getConsoleSender().sendMessage(Prefixes.SERVER.px()+type.px()+type.sx()+msg);
     	}
     }
     /**
@@ -364,8 +401,8 @@ public class SkyBlock extends JavaPlugin {
      */
     public static void sendMessage(MessageType type, Player p, String... strings) {
     	for(String msg : strings) {
-//    		if(p.isOp()) p.sendMessage(Prefixes.SERVER.px()+type.getPrefix()+type.getSuffix()+msg);
-    		p.sendMessage(Prefixes.SERVER.px()+type.getPrefix()+type.getSuffix()+msg);
+//    		if(p.isOp()) p.sendMessage(Prefixes.SERVER.px()+type.px()+type.sx()+msg);
+    		p.sendMessage(Prefixes.SERVER.px()+type.px()+type.sx()+msg);
     	}
     }
     
@@ -376,7 +413,7 @@ public class SkyBlock extends JavaPlugin {
     public static void sendDeveloperMessage(MessageType type, String... strings) {
     	for(String msg : strings) {
     		for(Player p : Bukkit.getOnlinePlayers()) {
-    			if(PlayerProfiler.getUUID(p).toString().equals("e93f14bb-71c1-4379-bcf8-6dcc0a409ed9")) p.sendMessage(Prefixes.DEVELOPER.px()+type.getPrefix()+type.getSuffix()+msg);
+    			if(PlayerProfiler.getUUID(p).toString().equals("e93f14bb-71c1-4379-bcf8-6dcc0a409ed9")) p.sendMessage(Prefixes.DEVELOPER.px()+type.px()+type.sx()+msg);
     		}
     	}
     }

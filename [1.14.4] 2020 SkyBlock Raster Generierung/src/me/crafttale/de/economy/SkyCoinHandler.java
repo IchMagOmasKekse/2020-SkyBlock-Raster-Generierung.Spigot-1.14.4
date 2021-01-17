@@ -76,7 +76,7 @@ public class SkyCoinHandler {
 	public static void listBoosters(Player p) {
 		SkyBlock.sendMessage(MessageType.INFO, p, "Aktive SkyCoin-Booster:");
 		for(String s : boosters.keySet()) {
-			p.sendMessage("- §b"+s+MessageType.INFO.getSuffix()+"-> §a"+(boosters.get(s).getPercentage()*100)+"%");
+			p.sendMessage("- §b"+s+MessageType.INFO.sx()+"-> §a"+(boosters.get(s).getPercentage()*100)+"%");
 		}
 	}
 	

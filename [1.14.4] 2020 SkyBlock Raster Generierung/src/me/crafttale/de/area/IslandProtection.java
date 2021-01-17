@@ -1,8 +1,10 @@
 package me.crafttale.de.area;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Evoker;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,15 +18,23 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import me.crafttale.de.PlayerAtlas;
 import me.crafttale.de.Settings;
 import me.crafttale.de.SkyBlock;
 import me.crafttale.de.SkyWorld;
+import me.crafttale.de.casino.CasinoManager;
+import me.crafttale.de.economy.ShopManager;
 import me.crafttale.de.filemanagement.SkyFileManager;
+import me.crafttale.de.log.LogBlock;
+import me.crafttale.de.models.ModelManager;
 import me.crafttale.de.profiles.IslandManager;
 import me.crafttale.de.profiles.PlayerProfiler;
 
@@ -56,6 +66,9 @@ public class IslandProtection implements Listener {
 	
 	@EventHandler
 	public void onPlace(BlockPlaceEvent e) {
+		if(e.getBlock().getWorld().getName().equals(SkyBlock.spawnWorldName)) {
+			if(SkyBlock.hasPermission(e.getPlayer(), "skyblock.modify.spawn") == false || e.getPlayer().isOp() == false) e.setCancelled(true);				
+		}
 		Player p = e.getPlayer();
 		/* Abfragen, ob der Spieler gerade einen Block auf einer Insel platzieren möchte */
 		if(p.getWorld().getName().equals(SkyWorld.skyblockworld)) {
@@ -71,9 +84,15 @@ public class IslandProtection implements Listener {
 				}
 			}
 		}
+		ModelManager.onPlace(e);
+		ShopManager.onPlace(e);
+		LogBlock.log(e.getBlock().getLocation(), e.getPlayer());
 	}
 	@EventHandler
 	public void onBreak(BlockBreakEvent e) {
+		if(e.getBlock().getWorld().getName().equals(SkyBlock.spawnWorldName)) {
+			if(SkyBlock.hasPermission(e.getPlayer(), "skyblock.modify.spawn") == false || e.getPlayer().isOp() == false) e.setCancelled(true);				
+		}
 		Player p = e.getPlayer();
 		/* Abfragen, ob der Spieler gerade einen Block auf einer Insel platzieren möchte */
 		if(p.getWorld().getName().equals(SkyWorld.skyblockworld)) {
@@ -89,10 +108,26 @@ public class IslandProtection implements Listener {
 				}
 			}
 		}
+		ModelManager.onBreak(e);
+		if(e.getPlayer().isSneaking() && e.getPlayer().hasPermission("skyblock.logblock")) {
+			e.setCancelled(true);
+			UUID uuid = LogBlock.getChanger(e.getBlock().getLocation());
+			if(uuid == null) p.sendMessage("§3Hier war niemand");
+			else p.sendMessage("§3Hier war §b"+PlayerAtlas.getPlayername(uuid.toString()));
+		}else LogBlock.log(e.getBlock().getLocation(), e.getPlayer());
+	}
+	@EventHandler
+	public void onManipulate(PlayerArmorStandManipulateEvent e) {
+		ModelManager.onManipulate(e);
 	}
 	@EventHandler
 	public void onInteract(PlayerInteractEntityEvent e) {
 		Player p = e.getPlayer();
+		if(e.getRightClicked() instanceof Evoker) {
+			if(e.getRightClicked().getCustomName().equals("Portal Wächter")) {
+				p.sendMessage("IslandProtection.onInteract");
+			}
+		}
 		/* Abfragen, ob der Spieler gerade mit einem Entity auf einer Insel interagieren möchte */
 		if(p.getWorld().getName().equals(SkyWorld.skyblockworld)) {
 			if(p.hasPermission("skyblock.interact.entity") == false && p.hasPermission("skyblock.*") == false && p.isOp() == false) {
@@ -105,13 +140,17 @@ public class IslandProtection implements Listener {
 					e.setCancelled(true);
 				}
 			}
-		}else {
-			
 		}
+		ShopManager.onInteractEntity(e);
+	}
+	@EventHandler
+	public void onInteract(PlayerInteractAtEntityEvent e) {		
+		ModelManager.onInteractEntity(e);
 	}
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e) {
 		Player p = e.getPlayer();
+		ModelManager.checkInput(e.getPlayer(), e.getItem(), e.getAction());
 		if(e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.LEFT_CLICK_BLOCK) {
 			if(e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 				if(p.getInventory().getItemInMainHand() != null && p.getInventory().getItemInMainHand().getType().isBlock()) return;
@@ -133,13 +172,32 @@ public class IslandProtection implements Listener {
 				}
 			}
 		}
+		ModelManager.onInteract(e);
 	}
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent e) {
+		if(e.getEntity().getWorld().getName().equals(SkyBlock.spawnWorldName)) {
+			if((e.getCause() == DamageCause.BLOCK_EXPLOSION || e.getCause() == DamageCause.ENTITY_EXPLOSION)) e.setCancelled(true);
+			else if(e.getCause() == DamageCause.ENTITY_ATTACK) e.setCancelled(false);
+			else e.setCancelled(true);
+		}
+		
 		if(e.getEntity() instanceof Player && spawnProtections.containsKey(((Player)e.getEntity()))) e.setCancelled(true);
 	}
 	@EventHandler
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+		
+		if(e.getEntity().getWorld().getName().equals(SkyBlock.spawnWorldName)) {
+			if(e.getDamager() instanceof Player) {
+				if(((Player)e.getDamager()).hasPermission("skyblock.damage.atspawn") == false || ((Player)e.getDamager()).isOp() == false) {
+					e.setCancelled(true);
+				}else e.setCancelled(false);
+			}else {				
+				if((e.getCause() == DamageCause.BLOCK_EXPLOSION || e.getCause() == DamageCause.ENTITY_EXPLOSION)) e.setCancelled(true);
+				else e.setCancelled(true);
+			}
+		}
+		
 		if(e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
 			
 			Player p = (Player) e.getDamager();
@@ -151,6 +209,9 @@ public class IslandProtection implements Listener {
 				}
 			}
 		}
+		
+		CasinoManager.onDamage(e);
+		ModelManager.onDamage(e);
 	}
 	
 	@EventHandler
@@ -163,6 +224,7 @@ public class IslandProtection implements Listener {
 				if(e.getEntityType().isAlive()) {
 					int island_id = IslandManager.getIslandId(e.getLocation());
 					if(e.getEntity() instanceof Monster) {
+						if(e.getEntity().getWorld().getName().equals(SkyBlock.spawnWorldName) && e.getEntityType() == EntityType.PHANTOM) e.setCancelled(true);
 						if(island_id == 0) {						
 							e.setCancelled(true);	
 						}else if(island_id != 0 &&
@@ -187,6 +249,7 @@ public class IslandProtection implements Listener {
 	}
 	@EventHandler
 	public void onExplosion(EntityExplodeEvent e) {
+		if(e.getEntity().getWorld().getName().equals(SkyBlock.spawnWorldName)) e.setCancelled(true);
 		int island_id = IslandManager.getIslandId(e.getLocation());
 		if(island_id == 0) {
 			e.setCancelled(true);
@@ -210,6 +273,7 @@ public class IslandProtection implements Listener {
 	}
 	@EventHandler
 	public void onExplosion(BlockExplodeEvent e) {
+		if(e.getBlock().getWorld().getName().equals(SkyBlock.spawnWorldName)) e.setCancelled(true);
 		int island_id = IslandManager.getIslandId(e.getBlock().getLocation());
 		if(island_id == 0) {
 			e.setCancelled(true);

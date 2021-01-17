@@ -1,6 +1,7 @@
 package me.crafttale.de.events;
 
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.ServerListPingEvent;
 
@@ -13,7 +14,7 @@ public class ServerListListener implements Listener {
 	}
 	
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onPing(ServerListPingEvent e) {
 		/* Ausgeschaltet, weil die MOTD vom Lobby System gesteuert werden soll */
 //		e.setMotd("§aSkyblock §6§l950% RELEASE BOOSTER!");

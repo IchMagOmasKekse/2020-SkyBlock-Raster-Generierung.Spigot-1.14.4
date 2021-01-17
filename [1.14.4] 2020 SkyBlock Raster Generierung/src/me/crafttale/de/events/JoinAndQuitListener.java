@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -14,7 +15,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import me.crafttale.de.Chat;
 import me.crafttale.de.PlayerAtlas;
 import me.crafttale.de.Prefixes;
 import me.crafttale.de.SkyBlock;
@@ -23,10 +23,9 @@ import me.crafttale.de.economy.EconomyManager;
 import me.crafttale.de.economy.SkyCoinHandler;
 import me.crafttale.de.filemanagement.SkyFileManager;
 import me.crafttale.de.gadgets.lobby.Spawn;
-import me.crafttale.de.gui.GUI.GUIType;
-import me.crafttale.de.gui.GUIManager;
-import me.crafttale.de.gui.reward.RewardGUI;
 import me.crafttale.de.profiles.PlayerProfiler;
+import me.crafttale.de.profiles.PlayerSettings;
+import me.crafttale.de.profiles.processing.ProcessType;
 import me.crafttale.de.reward.DailyRewardManager;
 import me.crafttale.de.tablist.TablistManager;
 import me.crafttale.de.waitlobby.WaitLobby;
@@ -40,7 +39,7 @@ public class JoinAndQuitListener implements Listener {
 		SkyBlock.getSB().getServer().getPluginManager().registerEvents(this, SkyBlock.getSB());
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onLogin(PlayerLoginEvent e) {
 		if(e.getResult() == Result.KICK_WHITELIST) {
 			for(Player p : Bukkit.getOnlinePlayers()) {
@@ -61,7 +60,7 @@ public class JoinAndQuitListener implements Listener {
 		
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onJoin(final PlayerJoinEvent e) {
 		Player player = e.getPlayer();
 		e.setJoinMessage(Prefixes.JOIN.px()+"§e"+player.getName()+" §7ist dem Server beigetreten");
@@ -78,32 +77,13 @@ public class JoinAndQuitListener implements Listener {
 		 * */
 //		PlayerProfiler.registerPlayer(player);
 //		PlayerAtlas.savePlayer(player);
+		PlayerSettings.onJoin(e);
 		if(EconomyManager.hasAccount(PlayerProfiler.getUUID(player)) == false) EconomyManager.createAccount(PlayerProfiler.getUUID(player));
-		SkyCoinHandler.listBoosters(player);		
-		if(DailyRewardManager.hasGotDailyReward(player) == false) {
-			runnables.put(player.getName()+"2", new BukkitRunnable() {
-				Player p = player;
-				@Override
-				public void run() {					
-					GUIManager.openGUI(p, new RewardGUI(p));
-					runnables.remove(p.getName()+"2");
-				}
-			});
-			runnables.get(player.getName()+"2").runTaskLater(SkyBlock.getSB(), 20l);
-			
-			Chat.sendClickableMessage(player, "§6Klicke hier um deine Tägliche Belohnung abzuholen", "! FREE ITEMS ! YEAH !", "/dailyreward", true, true);
-		}else {
-			runnables.put(player.getName()+"2", new BukkitRunnable() {
-				@Override
-				public void run() {
-					Bukkit.dispatchCommand(player, "gui "+GUIType.JOIN_MELODY.toString());
-					runnables.remove(player.getName()+"2");
-				}
-			});
-			runnables.get(player.getName()+"2").runTaskLater(SkyBlock.getSB(), 15l);
-		}
-		TablistManager.editTablist(player);
-		e.getPlayer().teleport(Spawn.getRandomLocationInSpawnArea());
+		SkyCoinHandler.listBoosters(player);
+		if(DailyRewardManager.hasGotDailyReward(player) == false) DailyRewardManager.onJoin(e);
+		else if((boolean)PlayerSettings.getConfirmation(ProcessType.PLAY_JOIN_MELODY, e.getPlayer()) == true) Spawn.playJoinMelody(e);
+		TablistManager.onJoin(e);
+		Spawn.onJoin(e);
 		
 		
 		/* Join Effects */
@@ -112,7 +92,7 @@ public class JoinAndQuitListener implements Listener {
 		if(player.getName().equals("IchMagOmasKekse")) player.sendMessage("Island Control Commands machen!");
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onQuit(PlayerQuitEvent e) {
 		PlayerAtlas.savePlayer(e.getPlayer());
 		e.setQuitMessage(Prefixes.QUIT.px() + "§e"+e.getPlayer().getName()+" §7hat den Server verlassen");

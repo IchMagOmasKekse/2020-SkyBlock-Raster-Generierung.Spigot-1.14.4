@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -23,16 +24,17 @@ import me.crafttale.de.PlayerAtlas;
 import me.crafttale.de.SkyBlock;
 import me.crafttale.de.SkyBlockGenerator;
 import me.crafttale.de.SkyWorld;
+import me.crafttale.de.atmosphere.RealTimeInGame;
 import me.crafttale.de.filemanagement.SkyFileManager;
-import me.crafttale.de.gadgets.JumpPads;
 import me.crafttale.de.gadgets.lobby.Spawn;
+import me.crafttale.de.models.ModelManager;
 import me.crafttale.de.profiles.PlayerProfiler.PlayerProfile;
 import me.crafttale.de.tablist.TablistManager;
 
 public class IslandManager {
 	
-	public static HashMap<Player, IslandProfile> profiles = new HashMap<Player, IslandProfile>();
-	public static HashMap<Integer, IslandData> islandDatas = new HashMap<Integer, IslandData>();
+	public static ConcurrentHashMap<Player, IslandProfile> profiles = new ConcurrentHashMap<Player, IslandProfile>();
+	public static ConcurrentHashMap<Integer, IslandData> islandDatas = new ConcurrentHashMap<Integer, IslandData>();
 	
 	private static BukkitRunnable timer = null;
 	
@@ -52,64 +54,57 @@ public class IslandManager {
 			@Override
 			public void run() {
 				if(islandDatas == null) loadAllIslandData();
-					for(Player p : Bukkit.getOnlinePlayers()) {
-						PlayerProfile profile = PlayerProfiler.getProfile(PlayerProfiler.getUUID(p));
-						if(profile.getStandort() == null) profile.registerStandort();
-						
-						if(islandDatas.isEmpty() == false) {
-							for(IslandData data : islandDatas.values()) {
-								if(data.getIslandId() == 10 && data.getVolume().isIn(p.getLocation()) && isOnAnIsland == false) {
-									p.setFallDistance(0f);
-									ActionBar.send(false, "§fDein Standort: §eSpawn", p);
-									PlayerProfiler.getProfile(PlayerProfiler.getUUID(p)).getStandort().setName("Spawn", p.getLocation());
-									JumpPads.checkJumpPad(p);
-									if(p.getLocation().getY() <= 30) {
-										new BukkitRunnable() { @Override public void run() { p.teleport(Spawn.getRandomLocationInSpawnArea()); } }.runTask(SkyBlock.getSB());
-									}
-									skip = true;
-								}else {									
-									if(isOnAnIsland == false && data.getVolume().isIn(p.getLocation())) {
-										if(p != null && data != null && data.getOwnerUuid() != null) {
-											ActionBar.send(false, "§fDein Standort: §aInsel #"+data.getIslandId()+" §fBesitzer: §a"+(PlayerAtlas.getPlayername(data.getOwnerUuid().toString())), p);
-										} else if(data.getOwnerUuid() == null) {
-											data.reloadData();
-											if(data.getOwnerUuid() == null) {
-												ActionBar.send(false, "§fDein Standort: §aInsel #"+data.getIslandId()+"§f(§7Kein Besitzer§f)", p);
-											}
-											isOnAnIsland = false;
-										}
-										
-										if(profile.getStandort().getIslandData() == null) profile.registerStandort(data);
-										profile.getStandort().reset().setIslandId(data.island_id, p.getLocation(), data).getIslandData().checkForBannedLocation(p);
-										
-										isOnAnIsland = true;
-										isOnNoneIsland = false;
-									}
-								}
-							}
-						}else isOnAnIsland = false;
-						if((isOnAnIsland == false || isOnNoneIsland == true) && skip == false) {
-							if(SkyBlock.spawnCuboid.isIn(p.getLocation())) {
-								ActionBar.send(false, "§fDein Standort: §eSpawn", p);
-								PlayerProfiler.getProfile(PlayerProfiler.getUUID(p)).getStandort().setName("Spawn", p.getLocation());
-							}else if(p.getWorld().getName().equals("shopworld")) {
-								ActionBar.send(false, "§fDein Standort: §bShop", p);
-								PlayerProfiler.getProfile(PlayerProfiler.getUUID(p)).getStandort().setName("Shop", p.getLocation());
-							}else if(p.getLocation().getY() < 0) {
-								ActionBar.send(false, "§8† §7Wir sehen uns im nächsten Leben! §8†", p);
-								PlayerProfiler.getProfile(PlayerProfiler.getUUID(p)).getStandort().setName("Void", p.getLocation());
-							}else {
-								ActionBar.send(false, "§fDein Standort: §aWildnis", p);
-								PlayerProfiler.getProfile(PlayerProfiler.getUUID(p)).getStandort().setName("Wildnis", p.getLocation());
-							}
-						}
-						
+				for(Player p : Bukkit.getOnlinePlayers()) {
+					PlayerProfile profile = PlayerProfiler.getProfile(PlayerProfiler.getUUID(p));
+					if(profile.getStandort() == null) profile.registerStandort();
+					
+					if(Spawn.isAtSpawn(p)) {
+						skip = true;
 						isOnAnIsland = false;
 						isOnNoneIsland = true;
-						skip = false;
-						TablistManager.setTablist(p);
-						SkyBlock.sendTimeTitleNotification();
+						profile.getStandort().reset().setName("Spawn", p.getLocation());
+						if(p.getLocation().getY() <= 30) {
+							new BukkitRunnable() { @Override public void run() { p.teleport(Spawn.getRandomLocationInSpawnArea()); } }.runTask(SkyBlock.getSB());
+						}
+					} else {
+						if(islandDatas.isEmpty() == false) {
+							for(IslandData data : islandDatas.values()) {
+								if(data.getVolume().isIn(p.getLocation()) && isOnAnIsland == false) {
+									p.setFallDistance(0f);
+									Spawn.checkForSubregion(p);
+									PlayerProfiler.getProfile(PlayerProfiler.getUUID(p)).getStandort().setName("Insel", p.getLocation());
+									ActionBar.send(false, "§aInsel-ID: §f"+data.getIslandId()+" §aBesitzer: §f"+PlayerAtlas.getPlayername(data.getOwnerUuid().toString()), p);
+									skip = true;
+									isOnAnIsland = true;
+									isOnNoneIsland = false;
+								}
+							}
+						} else isOnAnIsland = false;
 					}
+					if((isOnAnIsland == false || isOnNoneIsland == true) && skip == false) {
+						if(SkyBlock.spawnCuboid.isIn(p.getLocation())) {
+							ActionBar.send(false, "§fDein Standort: §eSpawn", p);
+							PlayerProfiler.getProfile(PlayerProfiler.getUUID(p)).getStandort().setName("Spawn", p.getLocation());
+						} else if(p.getWorld().getName().equals("shopworld")) {
+							ActionBar.send(false, "§fDein Standort: §bShop", p);
+							PlayerProfiler.getProfile(PlayerProfiler.getUUID(p)).getStandort().setName("Shop", p.getLocation());
+						} else if(p.getLocation().getY() < 0) {
+							ActionBar.send(false, "§8† §7Wir sehen uns im nächsten Leben! §8†", p);
+							PlayerProfiler.getProfile(PlayerProfiler.getUUID(p)).getStandort().setName("Void", p.getLocation());
+						} else {
+							ActionBar.send(false, "§fDein Standort: §aWildnis", p);
+							PlayerProfiler.getProfile(PlayerProfiler.getUUID(p)).getStandort().setName("Wildnis", p.getLocation());
+						}
+					}
+					
+					isOnAnIsland = false;
+					isOnNoneIsland = true;
+					skip = false;
+					TablistManager.setTablist(p);
+					SkyBlock.sendTimeTitleNotification();
+				}
+				ModelManager.update();
+				RealTimeInGame.updateTime();
 			}
 		};
 		timer.runTaskTimerAsynchronously(SkyBlock.getSB(), 0l, 5l);
@@ -158,8 +153,9 @@ public class IslandManager {
 		else return null;
 	}
 	
-	/*
+	/**
 	 * TODO: Meldet alle Insel Profile ab
+	 * @return
 	 */
 	public static boolean unloadAll() {
 		profiles.clear();
@@ -169,8 +165,11 @@ public class IslandManager {
 		return true;
 	}
 	
-	/*
+
+	/**
 	 * TODO: Meldet das Profil einer Insel ab
+	 * @param p
+	 * @return
 	 */
 	public static boolean unloadProfile(Player p) {
 		if(profiles.containsKey(p)) {
@@ -179,8 +178,11 @@ public class IslandManager {
 		}else return false;
 	}
 	
-	/*
-	 * TODO: Registriert das Profil einer Insel 
+
+	/**
+	 * TODO: Registriert das Profil einer Insel
+	 * @param p
+	 * @return
 	 */
 	public static boolean loadProfile(Player p) {
 		if(profiles.containsKey(p)) return false;
@@ -198,15 +200,15 @@ public class IslandManager {
 	}
 	
 	/**
-	 * Lädt die IslandData jeder Insel. Auch die ohne Besitzer.
+	 * TODO: Lädt die IslandData jeder Insel. Auch die ohne Besitzer.
 	 * @return
 	 */
 	public static boolean loadAllIslandData() {
-		File file = new File("plugins/SkyBlock/Insel-Index-File.yml");
+		File file = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Insel-Index-File.yml");
 		if(file.exists() == false) return false;
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 		
-		islandDatas = new HashMap<Integer, IslandData>();
+		islandDatas = new ConcurrentHashMap<Integer, IslandData>();
 		
 		for(int id = 1; id != SkyBlockGenerator.amountOfIslands; id++) {
 			islandDatas.put(id,
@@ -224,7 +226,7 @@ public class IslandManager {
 	 * @return
 	 */
 	public static Cuboid getIslandCuboid(int island_id) {
-		File index = new File("plugins/SkyBlock/Insel-Index-File.yml");
+		File index = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Insel-Index-File.yml");
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(index);
 		
 		int x1 = (int)(cfg.getDouble("Islands.ID-"+island_id+".LocX")-(SkyBlockGenerator.issize/2));
@@ -277,8 +279,8 @@ public class IslandManager {
 	public static boolean clearIsland(final HashMap<Player, BukkitRunnable> runs, final Player p, final int island_id) {
 		
 		MessageType type = MessageType.WARNING;
-		SkyBlock.sendConsoleMessage(type, "Die Insel mit der ID §f"+island_id+type.getSuffix()+" wurde vom Besitzer befreit.",
-				"Diese Insel kann dennoch nicht neu geclaimt werden, weil sie noch von einem Admin gereinigt und anschließend mit §f/release "+island_id+type.getSuffix()+" freigegeben werden muss.");
+		SkyBlock.sendConsoleMessage(type, "Die Insel mit der ID §f"+island_id+type.sx()+" wurde vom Besitzer befreit.",
+				"Diese Insel kann dennoch nicht neu geclaimt werden, weil sie noch von einem Admin gereinigt und anschließend mit §f/release "+island_id+type.sx()+" freigegeben werden muss.");
 		
 //		IslandPaster.removeLiquidAndTileEntities(getProfile(p).cuboid);
 //		SkyFileManager.saveIslandRemover(island_id);
@@ -318,8 +320,8 @@ public class IslandManager {
 	}
 	public static boolean clearIsland(final int island_id) {
 		MessageType type = MessageType.WARNING;
-		SkyBlock.sendConsoleMessage(type, "Die Insel mit der ID §f"+island_id+type.getSuffix()+" wurde vom Besitzer befreit.",
-				"Diese Insel kann dennoch nicht neu geclaimt werden, weil sie noch von einem Admin gereinigt und anschließend mit §f/claimable "+island_id+type.getSuffix()+" freigegeben werden muss.");
+		SkyBlock.sendConsoleMessage(type, "Die Insel mit der ID §f"+island_id+type.sx()+" wurde vom Besitzer befreit.",
+				"Diese Insel kann dennoch nicht neu geclaimt werden, weil sie noch von einem Admin gereinigt und anschließend mit §f/claimable "+island_id+type.sx()+" freigegeben werden muss.");
 		
 //		IslandPaster.removeLiquidAndTileEntities(getIslandCuboid(island_id));
 		
@@ -519,7 +521,7 @@ public class IslandManager {
 				if(owner_uuid == null) return;
 				if(saveBefore) save();
 				if(PlayerProfiler.isRegistered(owner_uuid)) {
-					File file = new File("plugins/SkyBlock/Inseln/"+owner_uuid.toString()+"-Insel.yml");
+					File file = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Inseln/"+owner_uuid.toString()+"-Insel.yml");
 					if(file.exists() == false) return;
 					FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 					
@@ -550,7 +552,7 @@ public class IslandManager {
 			public void save() {
 				//TODO
 				if(PlayerProfiler.isRegistered(owner_uuid)) {
-					File file = new File("plugins/SkyBlock/Inseln/"+owner_uuid.toString()+"-Insel.yml");
+					File file = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Inseln/"+owner_uuid.toString()+"-Insel.yml");
 					if(file.exists() == false) return;
 					FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 					
@@ -714,7 +716,7 @@ public class IslandManager {
 		public boolean deleteAllMembers() {
 			if(members.isEmpty() == false) for(String suuid : members) {
 				String owner_name = PlayerAtlas.getPlayername(uuid.toString());
-				new File("plugins/SkyBlock/Inseln/"+suuid+"-Insel.yml").delete();
+				new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/Inseln/"+suuid+"-Insel.yml").delete();
 				Player p = PlayerProfiler.getPlayer(UUID.fromString(suuid));
 				
 				if(p != null && IslandManager.getIslandData(getProfile(p).getIslandID()).getVolume().isIn(p.getLocation()) == true) p.teleport(SkyBlock.spawn);
@@ -751,22 +753,26 @@ public class IslandManager {
 			return spawnpoint;
 		}
 		
-		/*
+		/**
 		 * TODO: Gibt die ID von der Insel zurück
+		 * @return
 		 */
 		public int getIslandID() {
 			return id;
 		}
 		
-		/*
+		/**
 		 * TODO: Gibt die UUID des Owners zurück
+		 * @return
 		 */
 		public UUID getOwnerUUID() {
 			return uuid;
 		}
 		
-		/*
+		/**
 		 * TODO: Gibt zurück, ob der Spieler p sich auf dem Grundstück der Insel befindet
+		 * @param p
+		 * @return
 		 */
 		public boolean isInIslandregion(Player p) {
 			return cuboid.isIn(p);

@@ -8,8 +8,9 @@ import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import me.crafttale.de.SkyBlock;
-import me.crafttale.de.profiles.log.XLogger;
-import me.crafttale.de.profiles.log.XLogger.LogType;
+import me.crafttale.de.gadgets.lobby.Spawn;
+import me.crafttale.de.log.XLogger;
+import me.crafttale.de.log.XLogger.LogType;
 
 public class DisplayManager extends BukkitRunnable {
 	
@@ -39,29 +40,32 @@ public class DisplayManager extends BukkitRunnable {
 		XLogger.log(LogType.PluginInternProcess, "Lade Displays...");
 		if(loaded) return;
 		
-		Display display = new SkyBlockPortalDisplay(new Location(Bukkit.getWorld("skyblockworld"), 37.5, 84, 75.5));
+		Display display = new SkyBlockPortalDisplay(new Location(Bukkit.getWorld("world"), 37.5, 84, 75.5));
 		displays.put(display.id, display);
 		
-		display = new LootChestDisplay(new Location(Bukkit.getWorld("skyblockworld"), 4.5, 87, 61.5));
+		display = new LootChestDisplay(new Location(Bukkit.getWorld("world"), 4.5, 87, 61.5));
 		displays.put(display.id, display);
 		
-		display = new LootChestDisplay(new Location(Bukkit.getWorld("skyblockworld"), 4.5, 87, 89.5));
+		display = new LootChestDisplay(new Location(Bukkit.getWorld("world"), 4.5, 87, 89.5));
 		displays.put(display.id, display);
 		
-		display = new UniversalDisplay("�bBoost-Pad", new Location(Bukkit.getWorld("skyblockworld"), 36.5, 84, 85.5));
+		display = new UniversalDisplay("§bBoost-Pad", new Location(Bukkit.getWorld("world"), 36.5, 84, 85.5));
 		displays.put(display.id, display);
 		
-		display = new UniversalDisplay("�bBoost-Pad", new Location(Bukkit.getWorld("skyblockworld"), 36.5, 84, 65.5));
+		display = new UniversalDisplay("§bBoost-Pad", new Location(Bukkit.getWorld("world"), 36.5, 84, 65.5));
 		displays.put(display.id, display);
 		
-		display = new UniversalDisplay("�cPVP Arena", new Location(Bukkit.getWorld("skyblockworld"), 20.5, 84, 51.5));
+		display = new UniversalDisplay("§cPVP Arena", new Location(Bukkit.getWorld("world"), 20.5, 84, 51.5));
+		displays.put(display.id, display);
+		
+		display = new UniversalDisplay("§a§l↓ §f☁ §a§l↓", new Location(Bukkit.getWorld(Spawn.spawn_world_name), 86, 116, 325));
 		displays.put(display.id, display);
 				
 		loaded = true;
 	}
 	
 	public static void removeAll() {
-		XLogger.log(LogType.PluginInternProcess, "L�sche alle Displays...");
+		XLogger.log(LogType.PluginInternProcess, "Lösche alle Displays...");
 		for(Display d : displays.values()) d.disable();
 		
 		loaded = false;

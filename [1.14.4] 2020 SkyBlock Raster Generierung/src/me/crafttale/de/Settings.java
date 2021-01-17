@@ -58,7 +58,7 @@ public class Settings {
 	public static boolean xloggerLogPluginInternProcesses = true;
 	
 	public static void reloadSettings() {
-		File file = new File("plugins/SkyBlock/config.yml");
+		File file = new File("plugins/"+SkyBlock.getSB().getDescription().getName()+"/config.yml");
 		FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
 		if(file.exists() == false) SkyBlock.getSB().saveResource("config.yml", true);
 		
